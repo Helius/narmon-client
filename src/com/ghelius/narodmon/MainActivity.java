@@ -87,11 +87,20 @@ public class MainActivity extends Activity {
                         for (int j = 0; j < sensorsArray.length(); j++) {
                             String values =sensorsArray.getJSONObject(j).getString("value");
                             String name =sensorsArray.getJSONObject(j).getString("name");
-                            //Log.d("narodmon","    " + values);
+                            String type =sensorsArray.getJSONObject(j).getString("type");
                             HashMap<String, Object> hm = new HashMap<String, Object>();
                             hm.put(VALUE, values);
                             hm.put(LOCATION, location);
                             hm.put(NAME,name);
+//                            if (type.equals("1")) {
+//                                hm.put(IMGKEY, R.drawable.termometr);
+//                            } else if (type.equals("2")) {
+//                                hm.put(IMGKEY, R.drawable.pressure);
+//                            } else if (type.equals("3")) {
+//                                hm.put(IMGKEY, R.drawable.humidity);
+//                            } else {
+//                                hm.put(IMGKEY, R.drawable.unknown);
+//                            }
                             hm.put(IMGKEY, R.drawable.ic_launcher);
                             listItem.add(hm);
                         }

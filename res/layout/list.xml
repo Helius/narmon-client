@@ -11,32 +11,31 @@
             />
     <LinearLayout
             android:layout_width="fill_parent"
-            android:orientation="vertical"
-            android:layout_height="wrap_content">
-        <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content">
+            android:orientation="horizontal"
+            android:layout_height="wrap_content" android:baselineAligned="false">
 
-        <TextView android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/text1"
-                  android:textSize="25dip"
-                  android:text="text1--------------------------" android:layout_alignParentLeft="true"
-                  android:layout_alignParentTop="true"
-                  android:ellipsize="end" android:singleLine="true" android:layout_weight="1"/>
+        <LinearLayout
+                android:layout_width="0dp"
+                android:orientation="vertical"
+                android:layout_height="wrap_content" android:layout_weight="0.5" android:layout_marginRight="10dp">
+
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:id="@+id/text3"
-                      android:textSize="25dip"
-                      android:text="-Val" android:layout_alignParentLeft="false"
-                      android:layout_alignParentTop="true" android:layout_alignParentRight="true"
-                    />
+                      android:id="@+id/text1"
+                      android:textSize="23dip"
+                      android:text="text1--------------------------"
+                      android:ellipsize="end" android:singleLine="true"/>
+            <TextView android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/text2"
+                      android:text="This is text2" android:singleLine="true"/>
         </LinearLayout>
-
-        <TextView android:layout_width="fill_parent"
+        <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:id="@+id/text2"
-                  android:text="This is text2" android:singleLine="true"/>
+                  android:id="@+id/text3"
+                  android:textSize="25dip"
+                  android:text="-Val"
+                  android:layout_alignParentTop="true"
+                  android:singleLine="true" android:layout_gravity="center_vertical"/>
     </LinearLayout>
 </LinearLayout>
