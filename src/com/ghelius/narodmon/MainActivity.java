@@ -22,15 +22,16 @@ import java.util.HashMap;
 
 public class MainActivity extends Activity {
 
-    private ArrayList<HashMap<String, Object>> listItem; //наш массив объектов, без него никак
-    private static final String BOOKKEY = "bookname";    // Главное название, большими буквами
-    private static final String PRICEKEY = "bookprice";  // Наименование, то что ниже главного
-    private static final String IMGKEY = "iconfromraw";  //Наша будущая картинка
+    private ArrayList<HashMap<String, Object>> listItem;
+    private static final String NAME = "sname";
+    private static final String LOCATION = "slocation";
+    private static final String VALUE = "svalue";
+    private static final String IMGKEY = "iconfromraw";
     private final String TAG = "narodmon";
     private SimpleAdapter adapter = null;
 
 
-    class httpGet extends AsyncTask<String, String, String> {
+    class SensorListUpdater extends AsyncTask<String, String, String> {
 
         private String inputStreamToString(InputStream is) {
             String s = "";
@@ -80,20 +81,20 @@ public class MainActivity extends Activity {
                     JSONObject jObject = new JSONObject(result);
                     JSONArray devicesArray = jObject.getJSONArray("devices");
                     for (int i = 0; i < devicesArray.length(); i++) {
-                        String values = "";
                         String location = devicesArray.getJSONObject(i).getString("location");
                         Log.d("narodmon", + i + ": " + location);
                         JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
                         for (int j = 0; j < sensorsArray.length(); j++) {
-                            values +=sensorsArray.getJSONObject(j).getString("value") + " ";
-                            Log.d("narodmon","    " + values);
-
+                            String values =sensorsArray.getJSONObject(j).getString("value");
+                            String name =sensorsArray.getJSONObject(j).getString("name");
+                            //Log.d("narodmon","    " + values);
+                            HashMap<String, Object> hm = new HashMap<String, Object>();
+                            hm.put(VALUE, values);
+                            hm.put(LOCATION, location);
+                            hm.put(NAME,name);
+                            hm.put(IMGKEY, R.drawable.ic_launcher);
+                            listItem.add(hm);
                         }
-                        HashMap<String, Object> hm = new HashMap<String, Object>();
-                        hm.put(BOOKKEY, values);
-                        hm.put(PRICEKEY, location);
-                        hm.put(IMGKEY, R.drawable.ic_launcher);
-                        listItem.add(hm);
                     }
                     adapter.notifyDataSetChanged();
 
@@ -114,8 +115,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         ListView listView = (ListView)findViewById(R.id.listView);
-        listItem = new ArrayList<HashMap<String,Object>>();      //создаем массив списков
-        HashMap<String, Object> hm;                             //список объектов
+        listItem = new ArrayList<HashMap<String,Object>>();
+        HashMap<String, Object> hm;
 
         WifiManager wifiMan = (WifiManager) this.getSystemService(
                 Context.WIFI_SERVICE);
@@ -125,17 +126,19 @@ public class MainActivity extends Activity {
         adapter = new SimpleAdapter(this,
                 listItem,
                 R.layout.list, new String[]{
-                BOOKKEY,
-                PRICEKEY,
+                NAME,
+                LOCATION,
+                VALUE,
                 IMGKEY,
         }, new int[]{
                 R.id.text1,
                 R.id.text2,
+                R.id.text3,
                 R.id.img});
 
         listView.setAdapter(adapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        new httpGet().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + macAddr + "\"}");
+        new SensorListUpdater().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + macAddr + "\"}");
     }
 }
 
