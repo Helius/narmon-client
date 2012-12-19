@@ -1,0 +1,10 @@
+.classpath
+.project
+.settings
+bin
+gen
+.idea
+*.iml
+out
+local.properties
+proguard-project.txt
