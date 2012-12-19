@@ -92,16 +92,15 @@ public class MainActivity extends Activity {
                             hm.put(VALUE, values);
                             hm.put(LOCATION, location);
                             hm.put(NAME,name);
-//                            if (type.equals("1")) {
-//                                hm.put(IMGKEY, R.drawable.termometr);
-//                            } else if (type.equals("2")) {
-//                                hm.put(IMGKEY, R.drawable.pressure);
-//                            } else if (type.equals("3")) {
-//                                hm.put(IMGKEY, R.drawable.humidity);
-//                            } else {
-//                                hm.put(IMGKEY, R.drawable.unknown);
-//                            }
-                            hm.put(IMGKEY, R.drawable.ic_launcher);
+                            if (type.equals("1")) {
+                                hm.put(IMGKEY, android.R.drawable.ic_menu_compass);
+                            } else if (type.equals("2")) {
+                                hm.put(IMGKEY, android.R.drawable.ic_menu_camera);
+                            } else if (type.equals("3")) {
+                                hm.put(IMGKEY, android.R.drawable.ic_menu_gallery);
+                            } else {
+                                hm.put(IMGKEY, android.R.drawable.ic_menu_mylocation);
+                            }
                             listItem.add(hm);
                         }
                     }
