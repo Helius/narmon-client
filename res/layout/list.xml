@@ -13,7 +13,7 @@
             android:layout_width="fill_parent"
             android:orientation="vertical"
             android:layout_height="wrap_content">
-        <RelativeLayout
+        <LinearLayout
                 android:layout_width="fill_parent"
                 android:orientation="horizontal"
                 android:layout_height="wrap_content">
@@ -24,14 +24,15 @@
                   android:textSize="25dip"
                   android:text="text1--------------------------" android:layout_alignParentLeft="true"
                   android:layout_alignParentTop="true"
-                  android:ellipsize="end" android:singleLine="true"/>
+                  android:ellipsize="end" android:singleLine="true" android:layout_weight="1"/>
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:id="@+id/text3"
                       android:textSize="25dip"
                       android:text="-Val" android:layout_alignParentLeft="false"
-                      android:layout_alignParentTop="true" android:layout_alignParentRight="true"/>
-        </RelativeLayout>
+                      android:layout_alignParentTop="true" android:layout_alignParentRight="true"
+                    />
+        </LinearLayout>
 
         <TextView android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
