@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,19 +18,40 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends Activity {
 
     private ArrayList<HashMap<String, Object>> listItem;
-    private static final String NAME = "sname";
-    private static final String LOCATION = "slocation";
-    private static final String VALUE = "svalue";
-    private static final String IMGKEY = "iconfromraw";
+    private static final String NAME =     "name";
+    private static final String LOCATION = "location";
+    private static final String VALUE =    "value";
+    private static final String DISTANCE = "distance";
+    private static final String IMGKEY =   "iconfromraw";
     private final String TAG = "narodmon";
     private SimpleAdapter adapter = null;
 
+    public String md5(String s) {
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuffer hexString = new StringBuffer();
+            for (int i=0; i<messageDigest.length; i++)
+                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     class SensorListUpdater extends AsyncTask<String, String, String> {
 
@@ -82,6 +104,7 @@ public class MainActivity extends Activity {
                     JSONArray devicesArray = jObject.getJSONArray("devices");
                     for (int i = 0; i < devicesArray.length(); i++) {
                         String location = devicesArray.getJSONObject(i).getString("location");
+                        String distans = devicesArray.getJSONObject(i).getString("distance");
                         Log.d("narodmon", + i + ": " + location);
                         JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
                         for (int j = 0; j < sensorsArray.length(); j++) {
@@ -92,6 +115,7 @@ public class MainActivity extends Activity {
                             hm.put(VALUE, values);
                             hm.put(LOCATION, location);
                             hm.put(NAME,name);
+                            hm.put(DISTANCE,distans);
                             if (type.equals("1")) {
                                 hm.put(IMGKEY, android.R.drawable.ic_menu_compass);
                             } else if (type.equals("2")) {
@@ -105,6 +129,8 @@ public class MainActivity extends Activity {
                         }
                     }
                     adapter.notifyDataSetChanged();
+                    Toast toast = Toast.makeText(getApplicationContext(), listItem.size() + " sensors online", Toast.LENGTH_SHORT);
+                    toast.show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -124,12 +150,12 @@ public class MainActivity extends Activity {
 
         ListView listView = (ListView)findViewById(R.id.listView);
         listItem = new ArrayList<HashMap<String,Object>>();
-        HashMap<String, Object> hm;
+
 
         WifiManager wifiMan = (WifiManager) this.getSystemService(
                 Context.WIFI_SERVICE);
         WifiInfo wifiInf = wifiMan.getConnectionInfo();
-        String macAddr = wifiInf.getMacAddress();
+        String uid = md5(wifiInf.getMacAddress());
 
         adapter = new SimpleAdapter(this,
                 listItem,
@@ -146,7 +172,7 @@ public class MainActivity extends Activity {
 
         listView.setAdapter(adapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        new SensorListUpdater().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + macAddr + "\"}");
+        new SensorListUpdater().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
     }
 }
 
