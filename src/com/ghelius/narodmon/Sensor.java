@@ -14,16 +14,31 @@ public class Sensor {
     private String name;
     private String value;
     private String distance;
+    private Long time;
+    private boolean my;
+    private boolean pub;
     // constructor
-    Sensor (int id_, int type_, String location_, String name_, String value_, String distance_)
+    Sensor (int id,
+            int type,
+            String location,
+            String name,
+            String value,
+            String distance,
+            boolean my,
+            boolean pub,
+            Long time)
     {
-        id = id_;
-        type = type_;
-        location = location_;
-        name = name_;
-        value = value_;
-        distance = distance_;
+        this.id = id;
+        this.type = type;
+        this.location = location;
+        this.name = name;
+        this.value = value;
+        this.distance = distance;
+        this.my = my;
+        this.time = time;
+        this.pub = pub;
     }
+
     public void setValue (String val) {
         value = val;
     }
@@ -50,5 +65,9 @@ public class Sensor {
 
     public int getId() {
         return id;
+    }
+
+    public boolean getMy() {
+        return this.my;
     }
 }

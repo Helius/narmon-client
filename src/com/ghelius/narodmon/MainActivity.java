@@ -51,6 +51,7 @@ public class MainActivity extends Activity {
 
     class SensorListUpdater extends AsyncTask<String, String, String> {
 
+
         private String inputStreamToString(InputStream is) {
             String s = "";
             String line = "";
@@ -96,15 +97,18 @@ public class MainActivity extends Activity {
                     JSONArray devicesArray = jObject.getJSONArray("devices");
                     for (int i = 0; i < devicesArray.length(); i++) {
                         String location = devicesArray.getJSONObject(i).getString("location");
-                        String distans = devicesArray.getJSONObject(i).getString("distance");
+                        String distans  = devicesArray.getJSONObject(i).getString("distance");
+                        boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
                         Log.d(TAG, + i + ": " + location);
                         JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
                         for (int j = 0; j < sensorsArray.length(); j++) {
-                            String values =sensorsArray.getJSONObject(j).getString("value");
-                            String name =sensorsArray.getJSONObject(j).getString("name");
-                            int type =sensorsArray.getJSONObject(j).getInt("type");
-                            int id =sensorsArray.getJSONObject(j).getInt("id");
-                            sensorList.add(new Sensor(id, type, location, name, values, distans));
+                            String values = sensorsArray.getJSONObject(j).getString("value");
+                            String name   = sensorsArray.getJSONObject(j).getString("name");
+                            int type      = sensorsArray.getJSONObject(j).getInt("type");
+                            int id        = sensorsArray.getJSONObject(j).getInt("id");
+                            boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
+                            long times    = sensorsArray.getJSONObject(j).getLong("time");
+                            sensorList.add(new Sensor(id, type, location, name, values, distans, my, pub, times));
                         }
                     }
                     adapter.notifyDataSetChanged();
@@ -114,7 +118,6 @@ public class MainActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-
             }
         }
     }
@@ -143,5 +146,9 @@ public class MainActivity extends Activity {
     }
 }
 
+// request
+// http://narodmon.ru/client.php?json={"cmd":"sensorInfo","uuid":12345,"sensor":[115,125]}
+// answer
+// {"sensors":[{"id":115,"value":-7.75,"time":"1356060145"},{"id":125,"value":-16.75,"time":"1356059853"}]}
 
 
