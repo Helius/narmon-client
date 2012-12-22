@@ -40,10 +40,23 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
         ViewHolder holder = (ViewHolder)v.getTag();
         if (position < items.size()) {
-            holder.name.setText(items.get(position).getName());
-            holder.location.setText(items.get(position).getLocation());
-            holder.value.setText(items.get(position).getValue());
-            holder.icon.setImageResource(R.drawable.ic_launcher);
+            Sensor sensor = items.get(position);
+            holder.name.setText(sensor.getName());
+            holder.location.setText(sensor.getLocation());
+            holder.value.setText(sensor.getValue());
+            switch (sensor.getType()) {
+                case 1:
+                    holder.icon.setImageResource(R.drawable.termo_icon);
+                    break;
+                case 2:
+                    holder.icon.setImageResource(R.drawable.pressure_icon);
+                    break;
+                case 3:
+                    holder.icon.setImageResource(R.drawable.humid_icon);
+                    break;
+                default:
+                    holder.icon.setImageResource(R.drawable.unknown_icon);
+            }
         } else {
            e("PlaylistAdapter", "index out of bound items[]");
         }

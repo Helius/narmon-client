@@ -9,9 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,7 +38,6 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
         ListView listView = (ListView)findViewById(R.id.listView);
         sensorList = new ArrayList<Sensor>();
 
@@ -59,11 +56,25 @@ public class MainActivity extends Activity {
             }
         });
 
+        ImageButton btFavour = (ImageButton) findViewById(R.id.imageButton2);
+        btFavour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFavourites ();
+            }
+        });
         new SensorListUpdater().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
     }
 
+    private void showFavourites ()
+    {
+        // get file with faworites id
+        // get data
+        // make filtering
+        // change buttons name
+    }
 
-    public String md5(String s) {
+    private String md5(String s) {
         try {
             // Create MD5 Hash
             MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
@@ -160,6 +171,7 @@ public class MainActivity extends Activity {
                     adapter.notifyDataSetChanged();
                     Toast toast = Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT);
                     toast.show();
+                    setTitle(sensorList.size() + " sensors online");
 
                 } catch (JSONException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
