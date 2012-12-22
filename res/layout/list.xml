@@ -23,7 +23,7 @@
                       android:layout_height="wrap_content"
                       android:id="@+id/text1"
                       android:textSize="23dip"
-                      android:text="text1--------------------------"
+                      android:text="text1-----------------"
                       android:ellipsize="end" android:singleLine="true"/>
             <TextView android:layout_width="fill_parent"
                       android:layout_height="wrap_content"

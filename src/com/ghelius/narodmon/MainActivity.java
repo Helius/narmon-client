@@ -2,12 +2,14 @@ package com.ghelius.narodmon;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import org.json.JSONArray;
@@ -30,6 +32,37 @@ public class MainActivity extends Activity {
     private ArrayList<Sensor> sensorList;
     private  SensorItemAdapter adapter = null;
 
+
+    /**
+     * Called when the activity is first created.
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+
+        ListView listView = (ListView)findViewById(R.id.listView);
+        sensorList = new ArrayList<Sensor>();
+
+        WifiManager wifiMan = (WifiManager) this.getSystemService(
+                Context.WIFI_SERVICE);
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        String uid = md5(wifiInf.getMacAddress());
+
+        adapter = new SensorItemAdapter(getApplicationContext(), sensorList);
+        listView.setAdapter(adapter);
+        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                sensorItemClick (position);
+            }
+        });
+
+        new SensorListUpdater().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+    }
+
+
     public String md5(String s) {
         try {
             // Create MD5 Hash
@@ -49,8 +82,6 @@ public class MainActivity extends Activity {
         return "";
     }
 
-
-
     public class CustomComparator implements Comparator<Sensor> {
         @Override
         public int compare(Sensor o1, Sensor o2) {
@@ -59,7 +90,6 @@ public class MainActivity extends Activity {
     }
 
     class SensorListUpdater extends AsyncTask<String, String, String> {
-
 
         private String inputStreamToString(InputStream is) {
             String s = "";
@@ -73,6 +103,10 @@ public class MainActivity extends Activity {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
             return s;
+        }
+        @Override
+        protected void onPreExecute () {
+            super.onPreExecute();
         }
 
         @Override
@@ -134,34 +168,17 @@ public class MainActivity extends Activity {
         }
     }
 
-
-    /**
-     * Called when the activity is first created.
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.main);
-        //setContentView(R.layout.search_screen);
-
-        ListView listView = (ListView)findViewById(R.id.listView);
-        sensorList = new ArrayList<Sensor>();
-
-        WifiManager wifiMan = (WifiManager) this.getSystemService(
-                Context.WIFI_SERVICE);
-        WifiInfo wifiInf = wifiMan.getConnectionInfo();
-        String uid = md5(wifiInf.getMacAddress());
-
-        adapter = new SensorItemAdapter(getApplicationContext(), sensorList);
-        listView.setAdapter(adapter);
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        new SensorListUpdater().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+    private void sensorItemClick (int position)
+    {
+        Intent i = new Intent (this, SensorInfo.class);
+        i.putExtra("Sensor", sensorList.get(position));
+        startActivity(i);
     }
+
 }
 
 // request
-// http://narodmon.ru/client.php?json={"cmd":"sensorInfo","uuid":12345,"sensor":[115,125]}
+// http://narodmon.ru/client.php?json={"cmd":"sensorinfo","uuid":12345,"sensor":[115,125]}
 // answer
 // {"sensors":[{"id":115,"value":-7.75,"time":"1356060145"},{"id":125,"value":-16.75,"time":"1356059853"}]}
 

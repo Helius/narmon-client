@@ -1,5 +1,7 @@
 package com.ghelius.narodmon;
 
+import java.io.Serializable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: eugene
@@ -7,7 +9,7 @@ package com.ghelius.narodmon;
  * Time: 11:49 AM
  * To change this template use File | Settings | File Templates.
  */
-public class Sensor {
+public class Sensor implements Serializable {
     private int id;
     private int type;
     private String location;
@@ -69,5 +71,9 @@ public class Sensor {
 
     public boolean getMy() {
         return this.my;
+    }
+
+    public Long getTime() {
+        return time;
     }
 }
