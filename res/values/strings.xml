@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">narodmon</string>
+    <string name="type_termometr">Termometr</string>
+    <string name="type_pressure">Pressure</string>
+    <string name="type_humidity">Humidity</string>
+    <string name="type_unknown">unknown</string>
+    <string name="text_distance">Distance:</string>
+    <string name="text_km">km</string>
+    <string name="text_type">Type:</string>
+    <string name="text_lastupdate">Last update:</string>
 </resources>
