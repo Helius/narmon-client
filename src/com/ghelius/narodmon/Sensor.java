@@ -13,7 +13,7 @@ public class Sensor {
     private String location;
     private String name;
     private String value;
-    private String distance;
+    private Float distance;
     private Long time;
     private boolean my;
     private boolean pub;
@@ -23,7 +23,7 @@ public class Sensor {
             String location,
             String name,
             String value,
-            String distance,
+            float distance,
             boolean my,
             boolean pub,
             Long time)
@@ -43,7 +43,7 @@ public class Sensor {
         value = val;
     }
 
-    public String getDistance() {
+    public Float getDistance() {
         return distance;
     }
 

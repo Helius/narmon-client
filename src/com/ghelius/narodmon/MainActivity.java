@@ -7,6 +7,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
 import android.widget.ListView;
 import android.widget.Toast;
 import org.json.JSONArray;
@@ -20,6 +21,8 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MainActivity extends Activity {
 
@@ -48,6 +51,12 @@ public class MainActivity extends Activity {
 
 
 
+    public class CustomComparator implements Comparator<Sensor> {
+        @Override
+        public int compare(Sensor o1, Sensor o2) {
+            return o1.getDistance().compareTo(o2.getDistance());
+        }
+    }
 
     class SensorListUpdater extends AsyncTask<String, String, String> {
 
@@ -97,7 +106,7 @@ public class MainActivity extends Activity {
                     JSONArray devicesArray = jObject.getJSONArray("devices");
                     for (int i = 0; i < devicesArray.length(); i++) {
                         String location = devicesArray.getJSONObject(i).getString("location");
-                        String distans  = devicesArray.getJSONObject(i).getString("distance");
+                        float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
                         boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
                         Log.d(TAG, + i + ": " + location);
                         JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
@@ -108,9 +117,12 @@ public class MainActivity extends Activity {
                             int id        = sensorsArray.getJSONObject(j).getInt("id");
                             boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
                             long times    = sensorsArray.getJSONObject(j).getLong("time");
-                            sensorList.add(new Sensor(id, type, location, name, values, distans, my, pub, times));
+                            sensorList.add(new Sensor(id, type, location, name, values, distance, my, pub, times));
                         }
                     }
+                    // sort by distance
+                    Collections.sort(sensorList, new CustomComparator());
+
                     adapter.notifyDataSetChanged();
                     Toast toast = Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT);
                     toast.show();
@@ -129,7 +141,9 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main);
+        //setContentView(R.layout.search_screen);
 
         ListView listView = (ListView)findViewById(R.id.listView);
         sensorList = new ArrayList<Sensor>();
