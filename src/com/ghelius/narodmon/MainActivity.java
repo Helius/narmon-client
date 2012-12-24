@@ -188,7 +188,7 @@ public class MainActivity extends Activity {
     }
 
 }
-
+// get update for sensors value (may be needed for threshold-alarms)
 // request
 // http://narodmon.ru/client.php?json={"cmd":"sensorinfo","uuid":12345,"sensor":[115,125]}
 // answer

@@ -14,13 +14,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/info_sensor_icon" android:layout_gravity="center" android:src="@drawable/ic_launcher"
-                android:layout_weight="0.5" android:scaleType="fitStart"/>
+                android:scaleType="fitStart"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="140%"
                 android:id="@+id/text_value" android:textSize="30dp" android:layout_gravity="center_vertical"
-                />
+                android:layout_marginLeft="10dp" android:layout_weight="0.5"/>
+        <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/addMonitoring" android:src="@android:drawable/ic_menu_view"
+                android:layout_gravity="center_vertical" android:background="#122c5f"
+                android:layout_marginRight="20dp" android:clickable="true"/>
     </LinearLayout>
     <TextView
             android:layout_width="fill_parent"

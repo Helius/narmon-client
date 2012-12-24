@@ -2,6 +2,8 @@ package com.ghelius.narodmon;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -56,7 +58,19 @@ public class SensorInfo extends Activity {
             }
             type.setText(types);
             setTitle(types + " sensor");
-            value.setText(sensor.getValue());
+            String suffix = "";
+            switch (sensor.getType()) {
+                case 1:
+                    suffix = " C";
+                    break;
+                case 2:
+                    suffix = " mmHg";
+                    break;
+                case 3:
+                    suffix = " %";
+                    break;
+            }
+            value.setText(sensor.getValue()+suffix);
 
             long dv = Long.valueOf(sensor.getTime())*1000;// its need to be in milisecond
             Date df = new java.util.Date(dv);
@@ -67,5 +81,14 @@ public class SensorInfo extends Activity {
         } else {
             finish();
         }
+
+        final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
+        monitor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // save it sensor to monitor list
+                monitor.setBackgroundColor(0xFF0000);
+            }
+        });
     }
 }
