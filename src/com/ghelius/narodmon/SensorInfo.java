@@ -11,13 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-/**
- * Created with IntelliJ IDEA.
- * User: eugene
- * Date: 12/22/12
- * Time: 2:12 PM
- * To change this template use File | Settings | File Templates.
- */
+
 public class SensorInfo extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
