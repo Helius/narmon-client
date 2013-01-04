@@ -20,17 +20,17 @@
                 android:layout_weight="1"
                 android:src="@drawable/ic_launcher"/>
         <ImageButton
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageButton1"
                 android:layout_weight="1"
-                android:src="@drawable/ic_launcher"/>
+                android:src="@drawable/list_gray" android:layout_gravity="center" android:background="#000000FF"/>
         <ImageButton
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageButton2"
                 android:layout_weight="1"
-                android:src="@drawable/ic_launcher"/>
+                android:src="@drawable/yey_gray" android:background="#000000FF" android:layout_gravity="center"/>
         <ImageButton
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"

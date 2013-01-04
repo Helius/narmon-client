@@ -29,6 +29,8 @@ public class MainActivity extends Activity {
     private final String TAG = "narodmon";
     private ArrayList<Sensor> sensorList;
     private  SensorItemAdapter adapter = null;
+    private ImageButton btFavour = null;
+    private ImageButton btList = null;
 
 
     /**
@@ -56,11 +58,18 @@ public class MainActivity extends Activity {
             }
         });
 
-        ImageButton btFavour = (ImageButton) findViewById(R.id.imageButton2);
+        btFavour = (ImageButton) findViewById(R.id.imageButton2);
         btFavour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showFavourites ();
+            }
+        });
+        btList = (ImageButton) findViewById(R.id.imageButton1);
+        btList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showList ();
             }
         });
         new SensorListUpdater().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
@@ -68,10 +77,20 @@ public class MainActivity extends Activity {
 
     private void showFavourites ()
     {
-        // get file with faworites id
-        // get data
-        // make filtering
-        // change buttons name
+        Log.d(TAG,"switch to watched");
+        adapter.getFilter().filter("watch");
+        //adapter.notifyDataSetChanged();
+        btFavour.setImageResource(R.drawable.yey_blue);
+        btList.setImageResource(R.drawable.list_gray);
+    }
+
+    private void showList ()
+    {
+        Log.d(TAG,"switch to list " + sensorList.size());
+        adapter.getFilter().filter("");
+        adapter.notifyDataSetChanged();
+        btFavour.setImageResource(R.drawable.yey_gray);
+        btList.setImageResource(R.drawable.list_blue);
     }
 
     private String md5(String s) {
@@ -167,7 +186,7 @@ public class MainActivity extends Activity {
                     }
                     // sort by distance
                     Collections.sort(sensorList, new CustomComparator());
-
+                    adapter.addAll(sensorList);
                     adapter.notifyDataSetChanged();
                     Toast toast = Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT);
                     toast.show();

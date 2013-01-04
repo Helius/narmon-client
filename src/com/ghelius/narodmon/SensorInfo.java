@@ -2,6 +2,7 @@ package com.ghelius.narodmon;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -13,12 +14,14 @@ import java.util.TimeZone;
 
 
 public class SensorInfo extends Activity {
+    boolean checked = false;
+    private final String TAG = "narodmon-info";
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sensorinfo);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            Sensor sensor = (Sensor)extras.getSerializable("Sensor");
+            final Sensor sensor = (Sensor)extras.getSerializable("Sensor");
             TextView name = (TextView) findViewById(R.id.text_name);
             TextView location = (TextView) findViewById(R.id.text_location);
             TextView distance = (TextView) findViewById(R.id.text_distance);
@@ -72,17 +75,35 @@ public class SensorInfo extends Activity {
             sdf.setTimeZone(TimeZone.getDefault());
             String vv = sdf.format(df);
             time.setText(vv);
+
+            final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
+            final ConfigSaver config = ConfigSaver.getInstance(getApplicationContext());
+
+            if (config.isSensorWatched(sensor.getId())) {
+                monitor.setImageResource(R.drawable.yey_blue);
+            } else {
+                monitor.setImageResource(R.drawable.yey_gray);
+            }
+
+            monitor.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG,"monitoring onClick");
+                    if (config.isSensorWatched(sensor.getId())) {
+                        config.setSensorWatched(sensor.getId(),false);
+                    } else {
+                        config.setSensorWatched(sensor.getId(),true);
+                    }
+                    if (config.isSensorWatched(sensor.getId())) {
+                        monitor.setImageResource(R.drawable.yey_blue);
+                    } else {
+                        monitor.setImageResource(R.drawable.yey_gray);
+                    }
+                }
+            });
         } else {
             finish();
         }
 
-        final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
-        monitor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // save it sensor to monitor list
-                monitor.setBackgroundColor(0xFF0000);
-            }
-        });
     }
 }

@@ -22,11 +22,11 @@
                 android:id="@+id/text_value" android:textSize="30dp" android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp" android:layout_weight="0.5"/>
         <ImageButton
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:id="@+id/addMonitoring" android:src="@android:drawable/ic_menu_view"
-                android:layout_gravity="center_vertical" android:background="#122c5f"
-                android:layout_marginRight="20dp" android:clickable="true"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/addMonitoring" android:src="@drawable/yey_gray"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="5dp" android:clickable="true" android:background="#000000FF"/>
     </LinearLayout>
     <TextView
             android:layout_width="fill_parent"
