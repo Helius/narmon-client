@@ -42,11 +42,25 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
         ListView listView = (ListView)findViewById(R.id.listView);
         sensorList = new ArrayList<Sensor>();
-
-        WifiManager wifiMan = (WifiManager) this.getSystemService(
-                Context.WIFI_SERVICE);
+				// get wifi mac address for UUID
+        WifiManager wifiMan = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInf = wifiMan.getConnectionInfo();
         String uid = md5(wifiInf.getMacAddress());
+
+				//get location
+				lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+				locationListener = new MyLocationListener();
+  			Criteria criteria = new Criteria();
+  			criteria.setAccuracy(Criteria.ACCURACY_FINE);
+  			String provider = lm.getBestProvider(criteria, true);
+  			Location mostRecentLocation = lm.getLastKnownLocation(provider);
+
+  			if(mostRecentLocation!=null){
+  				latid=mostRecentLocation.getLatitude();
+  				longid=mostRecentLocation.getLongitude();
+					// use API to send location
+  			}
+
 
         adapter = new SensorItemAdapter(getApplicationContext(), sensorList);
         listView.setAdapter(adapter);
