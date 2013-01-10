@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,24 +17,15 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements FullSensorListUpdater.OnListChangeListener {
 
     private final String TAG = "narodmon";
-    private ArrayList<Sensor> sensorList;
+    private ArrayList<Sensor> sensorList = null;
     private  SensorItemAdapter adapter = null;
     private ImageButton btFavour = null;
     private ImageButton btList = null;
@@ -51,18 +40,26 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
         ListView listView = (ListView)findViewById(R.id.listView);
         sensorList = new ArrayList<Sensor>();
-				// get wifi mac address for UUID
-        WifiManager wifiMan = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInf = wifiMan.getConnectionInfo();
-        String uid = md5(wifiInf.getMacAddress());
 
-				//get location
+		// get wifi mac address for UUID
+        //WifiManager wifiMan = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+        //WifiInfo wifiInf;
+        String uid;
+        //if (wifiMan == null) {
+        uid = Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        Log.d(TAG,"my id is: " + uid);
+        //} else {
+        //    wifiInf = wifiMan.getConnectionInfo();
+        //    uid = md5(wifiInf.getMacAddress());
+       // }
+
+
+		//get location
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
   		Criteria criteria = new Criteria();
   		criteria.setAccuracy(Criteria.ACCURACY_FINE);
   		String provider = lm.getBestProvider(criteria, true);
   		Location mostRecentLocation = lm.getLastKnownLocation(provider);
-
   		if(mostRecentLocation != null){
   			double latid=mostRecentLocation.getLatitude();
   			double longid=mostRecentLocation.getLongitude();
@@ -70,7 +67,9 @@ public class MainActivity extends Activity {
             Log.d(TAG,"my location: " + latid +" "+longid);
   		}
 
-
+        FullSensorListUpdater updater = new FullSensorListUpdater();
+        updater.setOnListChangeListener(this);
+        sensorList = updater.getSensorList();
         adapter = new SensorItemAdapter(getApplicationContext(), sensorList);
         listView.setAdapter(adapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -95,7 +94,20 @@ public class MainActivity extends Activity {
                 showList ();
             }
         });
-        new SensorListUpdater().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+        //new SensorListUpdater().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+
+        updater.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+    }
+
+    @Override
+    public void onListChange() {
+        adapter.addAll(sensorList);
+        adapter.notifyDataSetChanged();
+        Toast toast = Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT);
+        toast.show();
+        setTitle(sensorList.size() + " sensors online");
+        //todo showList of showWatched depend of last user choise, if we are started from notification - show watched
+        showList();
     }
 
     @Override
@@ -154,94 +166,10 @@ public class MainActivity extends Activity {
         return "";
     }
 
-    public class CustomComparator implements Comparator<Sensor> {
-        @Override
-        public int compare(Sensor o1, Sensor o2) {
-            return o1.getDistance().compareTo(o2.getDistance());
-        }
-    }
 
-    class SensorListUpdater extends AsyncTask<String, String, String> {
 
-        private String inputStreamToString(InputStream is) {
-            String s = "";
-            String line = "";
-            // Wrap a BufferedReader around the InputStream
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            // Read response until the end
-            try {
-                while ((line = rd.readLine()) != null) { s += line; }
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-            return s;
-        }
-        @Override
-        protected void onPreExecute () {
-            super.onPreExecute();
-        }
 
-        @Override
-        protected String doInBackground(String... uri) {
-            String responseString = null;
-            URL url = null;
-            HttpURLConnection urlConnection = null;
-            try {
-                Log.d("narodmon",uri[0]);
-                url = new URL(uri[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                responseString = inputStreamToString(in);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                urlConnection.disconnect();
-            }
-            return responseString;
-        }
 
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if (result != null) {
-                sensorList.clear();
-                try {
-                    JSONObject jObject = new JSONObject(result);
-                    JSONArray devicesArray = jObject.getJSONArray("devices");
-                    for (int i = 0; i < devicesArray.length(); i++) {
-                        String location = devicesArray.getJSONObject(i).getString("location");
-                        float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
-                        boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
-                        Log.d(TAG, + i + ": " + location);
-                        JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
-                        for (int j = 0; j < sensorsArray.length(); j++) {
-                            String values = sensorsArray.getJSONObject(j).getString("value");
-                            String name   = sensorsArray.getJSONObject(j).getString("name");
-                            int type      = sensorsArray.getJSONObject(j).getInt("type");
-                            int id        = sensorsArray.getJSONObject(j).getInt("id");
-                            boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
-                            long times    = sensorsArray.getJSONObject(j).getLong("time");
-                            sensorList.add(new Sensor(id, type, location, name, values, distance, my, pub, times));
-                        }
-                    }
-                    // sort by distance
-                    Collections.sort(sensorList, new CustomComparator());
-                    adapter.addAll(sensorList);
-                    adapter.notifyDataSetChanged();
-                    Toast toast = Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT);
-                    toast.show();
-                    setTitle(sensorList.size() + " sensors online");
-                    //todo showList of showWatched depend of last user choise, if we are started from notification - show watched
-                    showList();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }
-        }
-    }
 
     private void sensorItemClick (int position)
     {
@@ -251,6 +179,7 @@ public class MainActivity extends Activity {
     }
 
 }
+
 // get update for sensors value (may be needed for threshold-alarms)
 // request
 // http://narodmon.ru/client.php?json={"cmd":"sensorinfo","uuid":12345,"sensor":[115,125]}
