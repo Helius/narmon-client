@@ -9,4 +9,6 @@
     <string name="text_km">km</string>
     <string name="text_type">Type:</string>
     <string name="text_lastupdate">Last update:</string>
+    <string name="menu_text_quit">quit</string>
+    <string name="menu_text_preference">Preference</string>
 </resources>

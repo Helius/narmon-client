@@ -3,13 +3,22 @@ package com.ghelius.narodmon;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,18 +57,18 @@ public class MainActivity extends Activity {
         String uid = md5(wifiInf.getMacAddress());
 
 				//get location
-				lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-				locationListener = new MyLocationListener();
-  			Criteria criteria = new Criteria();
-  			criteria.setAccuracy(Criteria.ACCURACY_FINE);
-  			String provider = lm.getBestProvider(criteria, true);
-  			Location mostRecentLocation = lm.getLastKnownLocation(provider);
+		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+  		Criteria criteria = new Criteria();
+  		criteria.setAccuracy(Criteria.ACCURACY_FINE);
+  		String provider = lm.getBestProvider(criteria, true);
+  		Location mostRecentLocation = lm.getLastKnownLocation(provider);
 
-  			if(mostRecentLocation!=null){
-  				latid=mostRecentLocation.getLatitude();
-  				longid=mostRecentLocation.getLongitude();
-					// use API to send location
-  			}
+  		if(mostRecentLocation != null){
+  			double latid=mostRecentLocation.getLatitude();
+  			double longid=mostRecentLocation.getLongitude();
+			// use API to send location
+            Log.d(TAG,"my location: " + latid +" "+longid);
+  		}
 
 
         adapter = new SensorItemAdapter(getApplicationContext(), sensorList);
@@ -89,9 +98,28 @@ public class MainActivity extends Activity {
         new SensorListUpdater().execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.icon_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.quit:
+                // blabla
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void showFavourites ()
     {
-        Log.d(TAG,"switch to watched");
+        Log.d(TAG, "switch to watched");
         adapter.getFilter().filter("watch");
         //adapter.notifyDataSetChanged();
         btFavour.setImageResource(R.drawable.yey_blue);
@@ -205,6 +233,8 @@ public class MainActivity extends Activity {
                     Toast toast = Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT);
                     toast.show();
                     setTitle(sensorList.size() + " sensors online");
+                    //todo showList of showWatched depend of last user choise, if we are started from notification - show watched
+                    showList();
 
                 } catch (JSONException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
