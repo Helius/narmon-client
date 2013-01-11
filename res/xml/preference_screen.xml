@@ -13,7 +13,7 @@
                 android:dialogTitle="Enter login" />
         <EditTextPreference
                 android:id="@+id/passwd_pref"
-                android:key="Password"
+                android:key="@string/pref_key_passwd"
                 android:title="Password"
                 android:summary=""
                 android:inputType="textPassword"

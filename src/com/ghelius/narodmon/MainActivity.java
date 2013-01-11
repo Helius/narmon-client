@@ -3,10 +3,12 @@ package com.ghelius.narodmon;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -26,9 +28,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class MainActivity extends Activity implements ServerDataGetter.OnResultListener {
+public class MainActivity extends Activity {
 
     private final String TAG = "narodmon";
+    private ListUpdater listUpdater;
     private ArrayList<Sensor> sensorList = null;
     private  SensorItemAdapter adapter = null;
     private ImageButton btFavour = null;
@@ -36,6 +39,63 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
     private ListView listView = null;
     private String uid;
 
+
+/*
+* Class for get full sensor list from server, parse it and put to sensorList and update adapter
+* */
+    private class ListUpdater implements ServerDataGetter.OnResultListener {
+        void updateList () {
+            ServerDataGetter getter = new ServerDataGetter ();
+            getter.setOnListChangeListener(this);
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+        }
+        @Override
+        public void onResultReceived(String result) {
+            try {
+                makeSensorListFromJson(result);
+                //todo: probably we could place gui updating in MainActivity class
+                adapter.addAll(sensorList);
+                adapter.notifyDataSetChanged();
+                Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT).show();
+                //todo switchList of showWatched depend of last user choise, if we are started from notification - show watched
+                switchList();
+            } catch (JSONException e) {
+                Toast.makeText(getApplicationContext(), "Wrong server respond, try later", Toast.LENGTH_SHORT).show();
+            }
+        }
+        @Override
+        public void onNoResult() {
+            Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class Loginer implements ServerDataGetter.OnResultListener {
+        void login (String userLogin, String userHash)
+        {
+            ServerDataGetter getter = new ServerDataGetter();
+            getter.setOnListChangeListener(this);
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"login\",\"uuid\":\"" + uid + "\",\"login\":\"" + userLogin +"\",\"hash\":\"" + userHash +"\"}");
+        }
+        @Override
+        public void onResultReceived(String result) {
+            //{"error":"auth error"}
+            Log.d(TAG,"Login result: " + result);
+            try {
+                JSONObject jObject = new JSONObject(result);
+                String error = jObject.getString("error");
+                if ((error != null) && (!error.equals("")) && error.equals("auth error")) {
+                    // do something
+                }
+                Toast.makeText(getApplicationContext(), "Login: " + result, Toast.LENGTH_SHORT).show();
+            } catch (JSONException e) {
+                Toast.makeText(getApplicationContext(), "Login failed (wrong answer)", Toast.LENGTH_SHORT).show();
+            }
+        }
+        @Override
+        public void onNoResult() {
+            Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
     @Override
@@ -47,10 +107,7 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
     @Override
     public void onResume ()
     {
-        // get full sensor list from server
-        ServerDataGetter updater = new ServerDataGetter();
-        updater.setOnListChangeListener(this);
-        updater.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+        listUpdater.updateList();
         super.onResume();
     }
 
@@ -65,7 +122,7 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
         sensorList = new ArrayList<Sensor>();
 
 		// get android UUID
-        uid = Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        uid = md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID));
         Log.d(TAG,"my id is: " + uid);
 
 		//get location
@@ -80,6 +137,20 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
 			// use API to send location
             Log.d(TAG,"my location: " + latid +" "+longid);
   		}
+
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String userLogin = prefs.getString(String.valueOf(getText(R.string.pref_key_login)),"");
+        Log.d(TAG,"my login is: " + userLogin);
+        if ((userLogin != null) && (!userLogin.equals(""))) {
+            String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
+            Log.d(TAG,"my password is: " + passwd);
+            Loginer loginer = new Loginer();
+            loginer.login("ghelius@gmail.com", md5(uid+md5(passwd)));
+        } else {
+            Log.w(TAG,"no login");
+        }
+
 
         adapter = new SensorItemAdapter(getApplicationContext(), sensorList);
         listView.setAdapter(adapter);
@@ -106,16 +177,13 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
             }
         });
 
-
+        listUpdater = new ListUpdater();
 
         ImageButton btRefresh = (ImageButton) findViewById(R.id.imageButton);
         btRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // update full sensor list from server
-                ServerDataGetter updater = new ServerDataGetter();
-                updater.setOnListChangeListener(MainActivity.this);
-                updater.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+                listUpdater.updateList();
             }
         });
 
@@ -151,26 +219,6 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
             // sort by distance
             Collections.sort(sensorList, new CustomComparator());
         }
-    }
-
-
-    @Override
-    public void onResultReceived(String result) {
-        try {
-            makeSensorListFromJson(result);
-            adapter.addAll(sensorList);
-            adapter.notifyDataSetChanged();
-            Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT).show();
-            //todo switchList of showWatched depend of last user choise, if we are started from notification - show watched
-            switchList();
-        } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(), "Wrong server respond, try later", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onNoResult() {
-        Toast.makeText(getApplicationContext(), "Server not responds, try later", Toast.LENGTH_SHORT).show();
     }
 
     private void switchFavourites()
@@ -238,9 +286,11 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
 }
+
+
+
+
 
 // get update for sensors value (may be needed for threshold-alarms)
 // request
@@ -250,5 +300,4 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
 
 // login
 //{"cmd":"login","uuid":"eb9bcf95cdfc87b52352a7fc4ebd4e2e","login":"ghelius@gmail.com","hash":"f1cc51b1b741b771eaf77723d0303640"}
-
-
+// http://narodmon.ru/client.php?json={"cmd":"login","uuid":"eb9bcf95cdfc87b52352a7fc4ebd4e2e","login":"ghelius@gmail.com","hash":"f1cc51b1b741b771eaf77723d0303640"}
