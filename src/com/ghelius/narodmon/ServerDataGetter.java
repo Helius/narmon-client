@@ -13,7 +13,8 @@ import java.net.URL;
 class ServerDataGetter extends AsyncTask<String, String, String> {
 
     interface OnResultListener {
-       void onResultReceived(String result);
+        void onResultReceived(String result);
+        void onNoResult ();
     }
 
     OnResultListener listener;
@@ -65,7 +66,11 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        listener.onResultReceived(result);
+        if ((result == null)) {
+            listener.onNoResult();
+        } else {
+            listener.onResultReceived(result);
+        }
     }
 
 }

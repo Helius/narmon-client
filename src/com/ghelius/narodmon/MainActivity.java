@@ -37,6 +37,23 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
     private String uid;
 
 
+
+    @Override
+    public void onPause ()
+    {
+        super.onPause();
+    }
+
+    @Override
+    public void onResume ()
+    {
+        // get full sensor list from server
+        ServerDataGetter updater = new ServerDataGetter();
+        updater.setOnListChangeListener(this);
+        updater.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+        super.onResume();
+    }
+
     /**
      * Called when the activity is first created.
      */
@@ -102,10 +119,6 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
             }
         });
 
-        // get full sensor list from server
-        ServerDataGetter updater = new ServerDataGetter();
-        updater.setOnListChangeListener(this);
-        updater.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
     }
 
     class CustomComparator implements Comparator<Sensor> {
@@ -114,68 +127,50 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
             return o1.getDistance().compareTo(o2.getDistance());
         }
     }
-    void makeSensorListFromJson (String result) {
+    void makeSensorListFromJson (String result) throws JSONException {
         if (result != null) {
             sensorList.clear();
-            try {
-                JSONObject jObject = new JSONObject(result);
-                JSONArray devicesArray = jObject.getJSONArray("devices");
-                for (int i = 0; i < devicesArray.length(); i++) {
-                    String location = devicesArray.getJSONObject(i).getString("location");
-                    float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
-                    boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
-                    //Log.d(TAG, + i + ": " + location);
-                    JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
-                    for (int j = 0; j < sensorsArray.length(); j++) {
-                        String values = sensorsArray.getJSONObject(j).getString("value");
-                        String name   = sensorsArray.getJSONObject(j).getString("name");
-                        int type      = sensorsArray.getJSONObject(j).getInt("type");
-                        int id        = sensorsArray.getJSONObject(j).getInt("id");
-                        boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
-                        long times    = sensorsArray.getJSONObject(j).getLong("time");
-                        sensorList.add(new Sensor(id, type, location, name, values, distance, my, pub, times));
-                    }
+            JSONObject jObject = new JSONObject(result);
+            JSONArray devicesArray = jObject.getJSONArray("devices");
+            for (int i = 0; i < devicesArray.length(); i++) {
+                String location = devicesArray.getJSONObject(i).getString("location");
+                float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
+                boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
+                //Log.d(TAG, + i + ": " + location);
+                JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
+                for (int j = 0; j < sensorsArray.length(); j++) {
+                    String values = sensorsArray.getJSONObject(j).getString("value");
+                    String name   = sensorsArray.getJSONObject(j).getString("name");
+                    int type      = sensorsArray.getJSONObject(j).getInt("type");
+                    int id        = sensorsArray.getJSONObject(j).getInt("id");
+                    boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
+                    long times    = sensorsArray.getJSONObject(j).getLong("time");
+                    sensorList.add(new Sensor(id, type, location, name, values, distance, my, pub, times));
                 }
-                // sort by distance
-                Collections.sort(sensorList, new CustomComparator());
-
-            } catch (JSONException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
+            // sort by distance
+            Collections.sort(sensorList, new CustomComparator());
         }
     }
 
 
     @Override
     public void onResultReceived(String result) {
-        makeSensorListFromJson(result);
-        adapter.addAll(sensorList);
-        adapter.notifyDataSetChanged();
-        Toast toast = Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT);
-        toast.show();
-        //todo switchList of showWatched depend of last user choise, if we are started from notification - show watched
-        switchList();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        //MenuInflater inflater = getMenuInflater();
-        //inflater.inflate(R.menu.icon_menu, menu);
-        MenuItem mi = menu.add(0, 1, 0, "Preferences");
-        mi.setIntent(new Intent(this, PreferActivity.class));
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.preference:
-                
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        try {
+            makeSensorListFromJson(result);
+            adapter.addAll(sensorList);
+            adapter.notifyDataSetChanged();
+            Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT).show();
+            //todo switchList of showWatched depend of last user choise, if we are started from notification - show watched
+            switchList();
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), "Wrong server respond, try later", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onNoResult() {
+        Toast.makeText(getApplicationContext(), "Server not responds, try later", Toast.LENGTH_SHORT).show();
     }
 
     private void switchFavourites()
@@ -216,17 +211,34 @@ public class MainActivity extends Activity implements ServerDataGetter.OnResultL
         return "";
     }
 
-
-
-
-
-
     private void sensorItemClick (int position)
     {
         Intent i = new Intent (this, SensorInfo.class);
         i.putExtra("Sensor", sensorList.get(position));
         startActivity(i);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //MenuInflater inflater = getMenuInflater();
+        //inflater.inflate(R.menu.icon_menu, menu);
+        MenuItem mi = menu.add(0, 1, 0, "Preferences");
+        mi.setIntent(new Intent(this, PreferActivity.class));
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.preference:
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
 }
 
