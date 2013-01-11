@@ -16,6 +16,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".SensorInfo"/>
-        <activity android:name=".PreferenceActivity"/>
+        <activity android:name=".PreferActivity"/>
     </application>
 </manifest>

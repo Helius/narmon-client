@@ -11,4 +11,6 @@
     <string name="text_lastupdate">Last update:</string>
     <string name="menu_text_quit">quit</string>
     <string name="menu_text_preference">Preference</string>
+    <string name="pref_user_settings">User settings</string>
+    <string name="pref_key_login">key_login</string>
 </resources>

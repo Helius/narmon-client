@@ -4,7 +4,4 @@
     <item android:id="@+id/preference"
           android:icon="@android:drawable/ic_menu_preferences"
           android:title="@string/menu_text_preference" />
-    <item android:id="@+id/quit"
-          android:icon="@android:drawable/ic_menu_preferences"
-          android:title="@string/menu_text_preference" />
 </menu>

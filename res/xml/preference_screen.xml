@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+            android:title="@string/pref_user_settings">
+        <EditTextPreference
+                android:id="@+id/login_pref"
+                android:key="@string/pref_key_login"
+                android:title="Login (or email)"
+                android:summary="login or email on narodmon.ru"
+                android:dialogTitle="Enter login" />
+        <EditTextPreference
+                android:id="@+id/passwd_pref"
+                android:key="Password"
+                android:title="Password"
+                android:summary=""
+                android:inputType="textPassword"
+                android:dialogTitle="Enter password" />
+
+        <!--CheckBoxPreference
+                android:key="checkbox_preference"
+                android:title="titel2"
+                android:summary="summary2" /-->
+
+    </PreferenceCategory>
+
+    <!--PreferenceCategory
+            android:title="Application">
+
+        <EditTextPreference
+                android:key=""
+                android:title="title4"
+                android:summary="summary4"
+                android:dialogTitle="dialogTitle4" />
+
+    </PreferenceCategory-->
+
+</PreferenceScreen>
