@@ -29,6 +29,7 @@ public class MainActivity extends Activity implements FullSensorListUpdater.OnLi
     private  SensorItemAdapter adapter = null;
     private ImageButton btFavour = null;
     private ImageButton btList = null;
+    private ListView listView = null;
 
 
     /**
@@ -38,20 +39,13 @@ public class MainActivity extends Activity implements FullSensorListUpdater.OnLi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        ListView listView = (ListView)findViewById(R.id.listView);
+         listView = (ListView)findViewById(R.id.listView);
         sensorList = new ArrayList<Sensor>();
 
-		// get wifi mac address for UUID
-        //WifiManager wifiMan = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-        //WifiInfo wifiInf;
+		// get android UUID
         String uid;
-        //if (wifiMan == null) {
         uid = Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         Log.d(TAG,"my id is: " + uid);
-        //} else {
-        //    wifiInf = wifiMan.getConnectionInfo();
-        //    uid = md5(wifiInf.getMacAddress());
-       // }
 
 
 		//get location
@@ -105,7 +99,6 @@ public class MainActivity extends Activity implements FullSensorListUpdater.OnLi
         adapter.notifyDataSetChanged();
         Toast toast = Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT);
         toast.show();
-        setTitle(sensorList.size() + " sensors online");
         //todo showList of showWatched depend of last user choise, if we are started from notification - show watched
         showList();
     }
@@ -133,9 +126,9 @@ public class MainActivity extends Activity implements FullSensorListUpdater.OnLi
     {
         Log.d(TAG, "switch to watched");
         adapter.getFilter().filter("watch");
-        //adapter.notifyDataSetChanged();
         btFavour.setImageResource(R.drawable.yey_blue);
         btList.setImageResource(R.drawable.list_gray);
+        setTitle(listView.getCount() + " watched sensors");
     }
 
     private void showList ()
@@ -145,6 +138,7 @@ public class MainActivity extends Activity implements FullSensorListUpdater.OnLi
         adapter.notifyDataSetChanged();
         btFavour.setImageResource(R.drawable.yey_gray);
         btList.setImageResource(R.drawable.list_blue);
+        setTitle(sensorList.size() + " sensors online");
     }
 
     private String md5(String s) {
