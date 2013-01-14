@@ -54,6 +54,7 @@ public class MainActivity extends Activity {
         }
         @Override
         public void onResultReceived(String result) {
+            Log.d(TAG,"result: " + result);
             try {
                 makeSensorListFromJson(result);
                 //todo: probably we could place gui updating in MainActivity class
@@ -209,12 +210,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        startWatcher(new ArrayList<Integer>());
-    }
-
-    void startWatcher (ArrayList<Integer> watchID) {
         Intent i = new Intent(this, OnBootReceiver.class);
-        //i.putIntegerArrayListExtra("watched", watchID);
         sendBroadcast(i);
     }
 

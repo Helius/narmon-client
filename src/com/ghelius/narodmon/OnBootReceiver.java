@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.SystemClock;
 
 public class OnBootReceiver extends BroadcastReceiver {
-    private static final int PERIOD=30000;   // 5 minutes
+    private static final int PERIOD=30000;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -19,7 +19,7 @@ public class OnBootReceiver extends BroadcastReceiver {
                 i, 0);
 
         mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime()+30000,
+                SystemClock.elapsedRealtime()+30000,//(5*60000), // 3 minute
                 PERIOD,
                 pi);
     }
