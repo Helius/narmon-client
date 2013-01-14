@@ -27,6 +27,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class MainActivity extends Activity {
 
@@ -70,9 +73,10 @@ public class MainActivity extends Activity {
     }
 
     private class Loginer implements ServerDataGetter.OnResultListener {
+        ServerDataGetter getter;
         void login (String userLogin, String userHash)
         {
-            ServerDataGetter getter = new ServerDataGetter();
+            getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"login\",\"uuid\":\"" + uid + "\",\"login\":\"" + userLogin +"\",\"hash\":\"" + userHash +"\"}");
         }
@@ -94,6 +98,19 @@ public class MainActivity extends Activity {
         @Override
         public void onNoResult() {
             Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
+        }
+
+        boolean waitLogin () {
+            try {
+                getter.get(2000, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                return false;
+            } catch (ExecutionException e) {
+                return false;
+            } catch (TimeoutException e) {
+                return false;
+            }
+            return true;
         }
     }
 
@@ -138,7 +155,7 @@ public class MainActivity extends Activity {
             Log.d(TAG,"my location: " + latid +" "+longid);
   		}
 
-
+        Log.d(TAG,"START LOGIN");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String userLogin = prefs.getString(String.valueOf(getText(R.string.pref_key_login)),"");
         Log.d(TAG,"my login is: " + userLogin);
@@ -147,9 +164,14 @@ public class MainActivity extends Activity {
             Log.d(TAG,"my password is: " + passwd);
             Loginer loginer = new Loginer();
             loginer.login("ghelius@gmail.com", md5(uid+md5(passwd)));
+            if (!loginer.waitLogin()) {
+                Log.e(TAG,"Error while waiting login");
+            }
         } else {
             Log.w(TAG,"no login");
         }
+        Log.d(TAG,"LOGIN DONE");
+
 
 
         adapter = new SensorItemAdapter(getApplicationContext(), sensorList);
@@ -187,6 +209,9 @@ public class MainActivity extends Activity {
             }
         });
 
+
+         sendBroadcast(new Intent(this, OnBootReceiver.class));
+         Toast.makeText(this, "Service Activated", Toast.LENGTH_LONG).show();
     }
 
     class CustomComparator implements Comparator<Sensor> {
