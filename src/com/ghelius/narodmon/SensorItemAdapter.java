@@ -50,7 +50,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
                 Log.d(TAG,"make watch list");
                 //setWatchedFilter(true);
                 for (int i = 0; i < originItems.size(); i++) {
-                    if (ConfigSaver.getInstance(context).isSensorWatched(originItems.get(i).getId())) {
+                    if (ConfigHolder.getInstance(context).isSensorWatched(originItems.get(i).getId())) {
                         filteredItems.add(originItems.get(i));
                     }
                 }

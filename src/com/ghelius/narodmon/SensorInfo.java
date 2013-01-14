@@ -34,7 +34,7 @@ public class SensorInfo extends Activity {
             location.setText(sensor.getLocation());
             distance.setText(sensor.getDistance().toString());
 
-            String types = getString(R.string.type_unknown);
+            String types;
             switch (sensor.getType()) {
                 case 1:
                     types = getString(R.string.type_termometr);
@@ -77,7 +77,7 @@ public class SensorInfo extends Activity {
             time.setText(vv);
 
             final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
-            final ConfigSaver config = ConfigSaver.getInstance(getApplicationContext());
+            final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
 
             if (config.isSensorWatched(sensor.getId())) {
                 monitor.setImageResource(R.drawable.yey_blue);

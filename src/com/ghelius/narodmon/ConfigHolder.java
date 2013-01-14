@@ -4,55 +4,49 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.*;
-import java.util.ArrayList;
 
 
-public class ConfigSaver {
+public class ConfigHolder {
 
     final private String TAG="narodmon-config";
     final private String fileName = "internal.data";
-    private static ConfigSaver ourInstance = null;
-    private Config config = null;
+    private static ConfigHolder ourInstance = null;
+    private Configuration config = null;
     private Context context = null;
 
-    private class Config implements Serializable {
-        ArrayList <Integer> watchedID;
-        Config ()
-        {
-            watchedID = new ArrayList<Integer>();
-        }
-    }
-
-    public static ConfigSaver getInstance (Context context)
+    public static ConfigHolder getInstance (Context context)
     {
         //Log.d("narodmon-config","get instance");
         if (ourInstance == null) {
           //  Log.d("narodmon-config","no instance, create now...");
-            ourInstance = new ConfigSaver(context);
+            ourInstance = new ConfigHolder(context);
         }
         return ourInstance;
     }
 
-    private ConfigSaver (Context context) { // load data at constructor
+    private ConfigHolder(Context context) { // load data at constructor
         this.context = context;
         try {
             FileInputStream fis = context.openFileInput(fileName);
             ObjectInputStream is = new ObjectInputStream(fis);
-            config = (Config) is.readObject();
+            config = (Configuration) is.readObject();
             is.close();
             fis.close();
         } catch (Exception e) {
+            e.printStackTrace();
+            e.getMessage();
             // file was not found, class not found, etc, first start?
-            Log.d(TAG,"config file not found, create new configuration");
-            config = new Config();
+            Log.w(TAG,"config file not found, create new configuration");
+            config = new Configuration();
         }
     }
 
     private void saveConfig ()
     {
+        if (config == null) {
+            Log.e(TAG,"Config is null!!!");
+        }
         try {
-            //FileOutputStream fos = context.openFileOutput(fileName, 0);
-            //ObjectOutputStream os = new ObjectOutputStream(fos);
             FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             ObjectOutputStream os = null;
             try {
@@ -61,6 +55,7 @@ public class ConfigSaver {
               e.printStackTrace();
               e.getMessage();
               Log.e(TAG,"can't create objectOutputStream");
+              return;
             }
             try {
                 os.writeObject(config);
@@ -79,7 +74,7 @@ public class ConfigSaver {
             }
 
 
-            } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             Log.e(TAG,"Can't open config file");
         }
 
@@ -87,8 +82,8 @@ public class ConfigSaver {
 
     public boolean isSensorWatched (int id)
     {
-        for (int i = 0; i < config.watchedID.size(); i++) {
-            if (config.watchedID.get(i) == id)
+        for (int i = 0; i < config.watchedId.size(); i++) {
+            if (config.watchedId.get(i).id == id)
                 return true;
         }
         return false;
@@ -97,18 +92,23 @@ public class ConfigSaver {
     // add ID to list or remove from list, depends of 'watch'
     public void setSensorWatched (int id, boolean watch) {
         if (!watch) {
-            for (int i = 0; i < config.watchedID.size(); i++) {
-                if (config.watchedID.get(i) == id)
-                    config.watchedID.remove(i);
+            for (int i = 0; i < config.watchedId.size(); i++) {
+                if (config.watchedId.get(i).id == id)
+                    config.watchedId.remove(i);
             }
         } else {
-            for (int i = 0; i < config.watchedID.size(); i++) {
-                if (config.watchedID.get(i) == id)
+            for (int i = 0; i < config.watchedId.size(); i++) {
+                if (config.watchedId.get(i).id == id)
                     return;
             }
-            config.watchedID.add(id);
+            config.insert(id);
         }
         saveConfig();
+    }
+
+    public Configuration getConfig ()
+    {
+        return config;
     }
 
 }

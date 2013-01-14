@@ -209,9 +209,13 @@ public class MainActivity extends Activity {
             }
         });
 
+        startWatcher(new ArrayList<Integer>());
+    }
 
-         sendBroadcast(new Intent(this, OnBootReceiver.class));
-         Toast.makeText(this, "Service Activated", Toast.LENGTH_LONG).show();
+    void startWatcher (ArrayList<Integer> watchID) {
+        Intent i = new Intent(this, OnBootReceiver.class);
+        //i.putIntegerArrayListExtra("watched", watchID);
+        sendBroadcast(i);
     }
 
     class CustomComparator implements Comparator<Sensor> {
@@ -289,6 +293,9 @@ public class MainActivity extends Activity {
         Intent i = new Intent (this, SensorInfo.class);
         i.putExtra("Sensor", sensorList.get(position));
         startActivity(i);
+        Intent m = new Intent(this, OnAlarmReceiver.class);
+        i.putExtra("msg","bla-bla-string");
+        sendBroadcast(m);
     }
 
     @Override
