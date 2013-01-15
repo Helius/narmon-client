@@ -11,7 +11,7 @@ import java.net.URL;
 
 
 class ServerDataGetter extends AsyncTask<String, String, String> {
-
+    private final static String TAG = "narodmon-getter";
     interface OnResultListener {
         void onResultReceived(String result);
         void onNoResult ();
@@ -48,7 +48,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         URL url = null;
         HttpURLConnection urlConnection = null;
         try {
-            Log.d("narodmon", uri[0]);
+            Log.d(TAG, uri[0]);
             url = new URL(uri[0]);
             urlConnection = (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());

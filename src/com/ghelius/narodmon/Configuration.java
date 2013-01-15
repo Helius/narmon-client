@@ -8,6 +8,7 @@ public class Configuration implements Serializable{
     final Integer NOTHING      = 0;
     final Integer LEVEL        = 1;
     final Integer LEVEL_INVERT = 2;
+    public String uid;
 
     public class SensorTask implements Serializable {
         SensorTask (Integer id) {

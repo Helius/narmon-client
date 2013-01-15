@@ -140,7 +140,12 @@ public class MainActivity extends Activity {
         sensorList = new ArrayList<Sensor>();
 
 		// get android UUID
-        uid = md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
+        if ((config.getUid() == null) || (config.getUid().length() < 2)) {
+            config.setUid (md5(Settings.Secure.getString(getBaseContext().getContentResolver(),
+                    Settings.Secure.ANDROID_ID)));
+        }
+        uid = config.getUid();
         Log.d(TAG,"my id is: " + uid);
 
 		//get location

@@ -111,4 +111,11 @@ public class ConfigHolder {
         return config;
     }
 
+    public String getUid () {
+        return config.uid;
+    }
+    public void setUid (String uid) {
+        config.uid = uid;
+    }
+
 }

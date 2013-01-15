@@ -12,9 +12,12 @@ import java.util.ArrayList;
 public class WatchService extends WakefulIntentService {
     private final static String TAG = "narodmon-service";
     private int NOTIFICATION = R.string.local_service_started;
+    private ArrayList<Integer> ids;
     SensorDataUpdater updater;
+
     public WatchService() {
         super("Narodmon watcher");
+        ids = new ArrayList<Integer>();
     }
 
     class SensorDataUpdater implements ServerDataGetter.OnResultListener {
@@ -22,13 +25,22 @@ public class WatchService extends WakefulIntentService {
         void updateData (ArrayList<Integer> ids) {
             ServerDataGetter getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorInfo\",\"uuid\":\"38c07002121a4fc852d8d8251c18cfb\",\"sensor\":[551,115,47]}");
+            String queryId = "";
+            for (int i = 0; i < ids.size(); i++) {
+                if (i != 0) {
+                    queryId += ",";
+                }
+                queryId += ids.get(i);
+            }
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorInfo\",\"uuid\":\""+
+                    ConfigHolder.getInstance(WatchService.this).getUid() +"\",\"sensor\":["+ queryId +"]}");
         }
 
         @Override
         public void onResultReceived(String result) {
             Log.d(TAG,"ResultReceived: " + result);
-            //parse json, check alarm - buzzz and show notification
+            //{"sensors":[{"id":115,"value":-2,"time":"1358220969"},{"id":551,"value":-6.88,"time":"1358207098"}]}
+
             showNotification(1);
         }
 
@@ -44,9 +56,17 @@ public class WatchService extends WakefulIntentService {
         Configuration config = ConfigHolder.getInstance(this).getConfig();
         Log.d(TAG,"config size: "+ config.watchedId.size());
         updater = new SensorDataUpdater();
-        Log.d(TAG,"start update");
-        updater.updateData(new ArrayList<Integer>());
-        Log.d(TAG, "endWakefulWork");
+        Log.d(TAG, "start update");
+        ids.clear();
+        for (int i = 0; i < config.watchedId.size(); i++) {
+            ids.add(config.watchedId.get(i).id);
+        }
+        if (!ids.isEmpty()) {
+            Log.d(TAG, "start watched with " + ids.size() + " sensors");
+            updater.updateData(ids);
+        } else {
+            Log.d(TAG, "no watched id, just exit");
+        }
     }
 
 
