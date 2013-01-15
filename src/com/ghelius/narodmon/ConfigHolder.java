@@ -117,5 +117,27 @@ public class ConfigHolder {
     public void setUid (String uid) {
         config.uid = uid;
     }
-
+    /*
+    * return true if limit are exceeded , false otherwise*/
+    public boolean checkLimits(Integer id, Integer value, Long timeStamp) {
+        for (int i = 0; i < config.watchedId.size(); i++) {
+            if (config.watchedId.get(i).id.equals(id)) {
+                if (config.watchedId.get(i).job.equals(config.NOTHING)) {
+                    // just save value if it's needed
+                    config.watchedId.get(i).lastValue = value;
+                    config.watchedId.get(i).timestamp = timeStamp;
+                    return false;
+                }
+                if (config.watchedId.get(i).job.equals(config.LEVEL)) {
+                    if ((value > config.watchedId.get(i).hi) || (value < config.watchedId.get(i).lo))
+                        return true;
+                }
+                if (config.watchedId.get(i).job.equals(config.LEVEL_INVERT)) {
+                    if ((value < config.watchedId.get(i).hi) || (value > config.watchedId.get(i).lo))
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
 }

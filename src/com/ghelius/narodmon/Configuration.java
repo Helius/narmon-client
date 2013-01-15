@@ -19,6 +19,8 @@ public class Configuration implements Serializable{
         Integer hi;
         Integer lo;
         Integer job;
+        Integer lastValue;
+        Long timestamp;
     }
 
     ArrayList<SensorTask> watchedId;

@@ -6,6 +6,9 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.util.Log;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -18,6 +21,10 @@ public class WatchService extends WakefulIntentService {
     public WatchService() {
         super("Narodmon watcher");
         ids = new ArrayList<Integer>();
+    }
+
+    private boolean checkLimits(Integer id, Integer value, Long timeStamp) {
+        return ConfigHolder.getInstance(this).checkLimits(id, value, timeStamp);
     }
 
     class SensorDataUpdater implements ServerDataGetter.OnResultListener {
@@ -38,9 +45,27 @@ public class WatchService extends WakefulIntentService {
 
         @Override
         public void onResultReceived(String result) {
-            Log.d(TAG,"ResultReceived: " + result);
+            //Log.d(TAG,"ResultReceived: " + result);
+            // response:
             //{"sensors":[{"id":115,"value":-2,"time":"1358220969"},{"id":551,"value":-6.88,"time":"1358207098"}]}
+            if (result != null) {
+                try {
+                    JSONObject JObject = new JSONObject(result);
+                    JSONArray sensArray = JObject.getJSONArray("sensors");
+                    for (int i = 0; i < sensArray.length(); i++) {
+                        String id = sensArray.getJSONObject(i).getString("id");
+                        String value = sensArray.getJSONObject(i).getString("value");
+                        String time = sensArray.getJSONObject(i).getString("time");
+                        Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
+                        checkLimits(Integer.valueOf(id), Integer.valueOf(value), Long.valueOf(time));
+                    }
+                } catch (JSONException e) {
+                    // todo: replace it
+                    Log.e(TAG,"Wrong JSON");
+                    e.printStackTrace();
 
+                }
+            }
             showNotification(1);
         }
 
@@ -54,7 +79,7 @@ public class WatchService extends WakefulIntentService {
     protected void doWakefulWork(Intent intent) {
         Log.d(TAG,"nmWatcher work...");
         Configuration config = ConfigHolder.getInstance(this).getConfig();
-        Log.d(TAG,"config size: "+ config.watchedId.size());
+        //Log.d(TAG,"config size: "+ config.watchedId.size());
         updater = new SensorDataUpdater();
         Log.d(TAG, "start update");
         ids.clear();
