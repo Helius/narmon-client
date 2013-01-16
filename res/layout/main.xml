@@ -1,42 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-        >
-    <ListView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/listView" />
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/viewFlipper"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" android:layout_weight="1"/>
     <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
         <ImageButton
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButton"
-                android:layout_weight="1"
-                android:src="@drawable/ic_launcher"/>
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton"
+            android:layout_weight="1"
+            android:src="@drawable/ic_launcher"/>
         <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButton1"
-                android:layout_weight="1"
-                android:src="@drawable/list_gray" android:layout_gravity="center" android:background="#000000FF"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton1"
+            android:layout_weight="1"
+            android:src="@drawable/list_gray" android:layout_gravity="center" android:background="#000000FF"/>
         <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageButton2"
-                android:layout_weight="1"
-                android:src="@drawable/yey_gray" android:background="#000000FF" android:layout_gravity="center"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton2"
+            android:layout_weight="1"
+            android:src="@drawable/yey_gray" android:background="#000000FF" android:layout_gravity="center"/>
         <ImageButton
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/imageButton3"
-                android:src="@drawable/ic_launcher"/>
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/imageButton3"
+            android:src="@drawable/ic_launcher"/>
     </LinearLayout>
 </LinearLayout>
 

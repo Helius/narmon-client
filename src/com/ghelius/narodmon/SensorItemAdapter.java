@@ -23,7 +23,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     private final String TAG = "narodmon-adapter";
 
     public SensorItemAdapter(Context context, ArrayList<Sensor> values) {
-        super(context, R.layout.list);
+        super(context, R.layout.general_list_item);
         this.context = context;
         this.originItems = values;
         this.sensorItems = new ArrayList<Sensor>();
@@ -93,7 +93,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
         if(v == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            v = inflater.inflate(R.layout.list, null);
+            v = inflater.inflate(R.layout.general_list_item, null);
             ViewHolder holder = new ViewHolder();
             holder.name = (TextView)v.findViewById(R.id.text1);
             holder.location = (TextView)v.findViewById(R.id.text2);

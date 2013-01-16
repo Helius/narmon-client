@@ -11,13 +11,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.view.*;
+import android.view.animation.AnimationUtils;
+import android.widget.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,11 +23,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-public class MainActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends Activity implements View.OnTouchListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private final String TAG = "narodmon";
     private ListUpdater listUpdater;
@@ -39,8 +32,11 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
     private  SensorItemAdapter adapter = null;
     private ImageButton btFavour = null;
     private ImageButton btList = null;
-    private ListView listView = null;
+    private ListView fullListView = null;
+    private ListView watchedListView = null;
     private String uid;
+    private ViewFlipper flipper;
+    private float fromPosition;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -108,21 +104,35 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
         public void onNoResult() {
             Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
         }
-
-        boolean waitLogin () {
-            try {
-                getter.get(2000, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                return false;
-            } catch (ExecutionException e) {
-                return false;
-            } catch (TimeoutException e) {
-                return false;
-            }
-            return true;
-        }
     }
 
+
+    public boolean onTouch(View view, MotionEvent event)
+    {
+        switch (event.getAction())
+        {
+            case MotionEvent.ACTION_DOWN:
+                fromPosition = event.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                float toPosition = event.getX();
+                if (fromPosition > toPosition)
+                {
+                    flipper.setInAnimation(AnimationUtils.loadAnimation(this,R.anim.go_next_in));
+                    flipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.go_next_out));
+                    flipper.showNext();
+                }
+                else if (fromPosition < toPosition)
+                {
+                    flipper.setInAnimation(AnimationUtils.loadAnimation(this,R.anim.go_prev_in));
+                    flipper.setOutAnimation(AnimationUtils.loadAnimation(this,R.anim.go_prev_out));
+                    flipper.showPrevious();
+                }
+            default:
+                break;
+        }
+        return true;
+    }
 
     @Override
     public void onPause ()
@@ -148,8 +158,17 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        listView = (ListView)findViewById(R.id.listView);
+
+        flipper = (ViewFlipper) findViewById( R.id.viewFlipper);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        int layouts[] = new int[]{ R.layout.full_list_view, R.layout.watched_list_view};
+        for (int layout : layouts)
+            flipper.addView(inflater.inflate(layout, null));
+
+        fullListView = (ListView)findViewById(R.id.fullListView);
+        watchedListView = (ListView)findViewById(R.id.watchedListView);
         sensorList = new ArrayList<Sensor>();
+
 
 		// get android UUID
         final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
@@ -175,7 +194,7 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
 
         Log.d(TAG,"START LOGIN");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String userLogin = prefs.getString(String.valueOf(getText(R.string.pref_key_login)),"");
+        String userLogin = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
         Log.d(TAG,"my login is: " + userLogin);
         if ((userLogin != null) && (!userLogin.equals(""))) {
             String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
@@ -193,12 +212,21 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
 
 
         adapter = new SensorItemAdapter(getApplicationContext(), sensorList);
-        listView.setAdapter(adapter);
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        fullListView.setAdapter(adapter);
+        fullListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        fullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                sensorItemClick (position);
+                sensorItemClick(position);
+            }
+        });
+
+        watchedListView.setAdapter(adapter);
+        watchedListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        watchedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                sensorItemClick(position);
             }
         });
 
@@ -206,14 +234,20 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
         btFavour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switchFavourites();
+                //switchFavourites();
+                flipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.go_next_in));
+                flipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.go_next_out));
+                flipper.showNext();
             }
         });
         btList = (ImageButton) findViewById(R.id.imageButton1);
         btList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switchList();
+                //switchList();
+                flipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.go_prev_in));
+                flipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.go_prev_out));
+                flipper.showPrevious();
             }
         });
 
@@ -269,7 +303,7 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
         adapter.getFilter().filter("watch");
         btFavour.setImageResource(R.drawable.yey_blue);
         btList.setImageResource(R.drawable.list_gray);
-        setTitle(listView.getCount() + " watched sensors");
+        setTitle(fullListView.getCount() + " watched sensors");
     }
 
     private void switchList()
@@ -290,7 +324,7 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
             byte messageDigest[] = digest.digest();
 
             // Create Hex String
-            StringBuffer hexString = new StringBuffer();
+            StringBuilder hexString = new StringBuilder();
             for (int i=0; i<messageDigest.length; i++)
                 hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
             return hexString.toString();
@@ -306,9 +340,6 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
         Intent i = new Intent (this, SensorInfo.class);
         i.putExtra("Sensor", sensorList.get(position));
         startActivity(i);
-        Intent m = new Intent(this, OnAlarmReceiver.class);
-        i.putExtra("msg","bla-bla-string");
-        sendBroadcast(m);
     }
 
     @Override
