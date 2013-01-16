@@ -301,8 +301,6 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //MenuInflater inflater = getMenuInflater();
-        //inflater.inflate(R.menu.icon_menu, menu);
         MenuItem mi = menu.add(0, 1, 0, "Preferences");
         mi.setIntent(new Intent(this, PreferActivity.class));
         return super.onCreateOptionsMenu(menu);
@@ -321,16 +319,3 @@ public class MainActivity extends Activity {
     }
 }
 
-
-
-
-
-// get update for sensors value (may be needed for threshold-alarms)
-// request
-// http://narodmon.ru/client.php?json={"cmd":"sensorInfo","uuid":12345,"sensor":[115,125]}
-// answer
-// {"sensors":[{"id":115,"value":-7.75,"time":"1356060145"},{"id":125,"value":-16.75,"time":"1356059853"}]}
-
-// login
-//{"cmd":"login","uuid":"eb9bcf95cdfc87b52352a7fc4ebd4e2e","login":"ghelius@gmail.com","hash":"f1cc51b1b741b771eaf77723d0303640"}
-// http://narodmon.ru/client.php?json={"cmd":"login","uuid":"eb9bcf95cdfc87b52352a7fc4ebd4e2e","login":"ghelius@gmail.com","hash":"f1cc51b1b741b771eaf77723d0303640"}

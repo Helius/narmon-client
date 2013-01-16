@@ -2,13 +2,7 @@ package com.ghelius.narodmon;
 
 import java.io.Serializable;
 
-/**
- * Created with IntelliJ IDEA.
- * User: eugene
- * Date: 12/20/12
- * Time: 11:49 AM
- * To change this template use File | Settings | File Templates.
- */
+
 public class Sensor implements Serializable {
     private int id;
     private int type;

@@ -19,7 +19,7 @@ public class Configuration implements Serializable{
         Integer hi;
         Integer lo;
         Integer job;
-        Integer lastValue;
+        Float lastValue;
         Long timestamp;
     }
 

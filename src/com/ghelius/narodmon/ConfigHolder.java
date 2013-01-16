@@ -119,7 +119,7 @@ public class ConfigHolder {
     }
     /*
     * return true if limit are exceeded , false otherwise*/
-    public boolean checkLimits(Integer id, Integer value, Long timeStamp) {
+    public boolean checkLimits(Integer id, Float value, Long timeStamp) {
         for (int i = 0; i < config.watchedId.size(); i++) {
             if (config.watchedId.get(i).id.equals(id)) {
                 if (config.watchedId.get(i).job.equals(config.NOTHING)) {

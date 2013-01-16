@@ -13,7 +13,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.util.Log.d;
 import static android.util.Log.e;
 
 public class SensorItemAdapter extends ArrayAdapter<Sensor> {
@@ -38,17 +37,14 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     }
 
     private class SensorFilter extends Filter {
-
+        // NOTE: this function is *always* called from a background thread, and not the UI thread.
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             Log.d(TAG,"performFiltering with: " + constraint);
-            // NOTE: this function is *always* called from a background thread, and
-            // not the UI thread.
             FilterResults filteredResult = new FilterResults();
             ArrayList<Sensor> filteredItems= new ArrayList<Sensor>();
             if (constraint == "watch") {
                 Log.d(TAG,"make watch list");
-                //setWatchedFilter(true);
                 for (int i = 0; i < originItems.size(); i++) {
                     if (ConfigHolder.getInstance(context).isSensorWatched(originItems.get(i).getId())) {
                         filteredItems.add(originItems.get(i));
@@ -58,7 +54,6 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
                 filteredResult.count = filteredItems.size();
             } else {
                 Log.d(TAG,"return originIems.size = " + originItems.size());
-    //            setWatchedFilter(false);
                 filteredResult.values = originItems;
                 filteredResult.count = originItems.size();
             }
@@ -85,7 +80,6 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
     @Override
     public int getCount() {
-        //Log.d(TAG,"sensorItems.size = " + sensorItems.size());
         return sensorItems.size();
     }
 

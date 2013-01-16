@@ -23,7 +23,7 @@ public class WatchService extends WakefulIntentService {
         ids = new ArrayList<Integer>();
     }
 
-    private boolean checkLimits(Integer id, Integer value, Long timeStamp) {
+    private boolean checkLimits(Integer id, Float value, Long timeStamp) {
         return ConfigHolder.getInstance(this).checkLimits(id, value, timeStamp);
     }
 
@@ -57,7 +57,7 @@ public class WatchService extends WakefulIntentService {
                         String value = sensArray.getJSONObject(i).getString("value");
                         String time = sensArray.getJSONObject(i).getString("time");
                         Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
-                        checkLimits(Integer.valueOf(id), Integer.valueOf(value), Long.valueOf(time));
+                        checkLimits(Integer.valueOf(id), Float.valueOf(value), Long.valueOf(time));
                     }
                 } catch (JSONException e) {
                     // todo: replace it
