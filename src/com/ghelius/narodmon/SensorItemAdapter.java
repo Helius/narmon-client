@@ -1,6 +1,7 @@
 package com.ghelius.narodmon;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,12 +22,14 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     private List<Sensor> sensorItems = null;
     private SensorFilter filter = null;
     private final String TAG = "narodmon-adapter";
+    ConfigHolder config;
 
     public SensorItemAdapter(Context context, ArrayList<Sensor> values) {
         super(context, R.layout.general_list_item);
         this.context = context;
         this.originItems = values;
         this.sensorItems = new ArrayList<Sensor>();
+        config = ConfigHolder.getInstance(context);
    }
 
     @Override
@@ -69,9 +72,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             clear();
 
             for (int i = 0; i < sensorItems.size(); i++)
-                //add(originItems.get(i));
                 add(sensorItems.get(i));
-            //notifyDataSetChanged();
             notifyDataSetInvalidated();
         }
 
@@ -108,6 +109,11 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             holder.name.setText(sensor.getName());
             holder.location.setText(sensor.getLocation());
             holder.value.setText(sensor.getValue());
+            if (config.isSensorWatched(sensor.getId())) {
+                holder.value.setTypeface(null, Typeface.BOLD);
+            } else {
+                //holder.value.setVisibility(View.INVISIBLE);
+            }
             switch (sensor.getType()) {
                 case 1:
                     holder.icon.setImageResource(R.drawable.termo_icon);

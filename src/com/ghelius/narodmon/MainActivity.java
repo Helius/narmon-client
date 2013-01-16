@@ -29,7 +29,8 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     private final String TAG = "narodmon";
     private ListUpdater listUpdater;
     private ArrayList<Sensor> sensorList = null;
-    private  SensorItemAdapter adapter = null;
+    private SensorItemAdapter listAdapter = null;
+    private SensorItemAdapter watchAdapter = null;
     private ImageButton btFavour = null;
     private ImageButton btList = null;
     private ListView fullListView = null;
@@ -44,7 +45,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     }
 
     /*
-    * Class for get full sensor list from server, parse it and put to sensorList and update adapter
+    * Class for get full sensor list from server, parse it and put to sensorList and update listAdapter
     * */
     private class ListUpdater implements ServerDataGetter.OnResultListener {
         void updateList () {
@@ -58,8 +59,11 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             try {
                 makeSensorListFromJson(result);
                 //todo: probably we could place gui updating in MainActivity class
-                adapter.addAll(sensorList);
-                adapter.notifyDataSetChanged();
+                listAdapter.addAll(sensorList);
+                listAdapter.notifyDataSetChanged();
+                watchAdapter.addAll(sensorList);
+                watchAdapter.notifyDataSetChanged();
+                watchAdapter.getFilter().filter("watch");
                 //Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT).show();
                 //todo switchList of showWatched depend of last user choise, if we are started from notification - show watched
                 switchList();
@@ -211,8 +215,8 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
 
 
 
-        adapter = new SensorItemAdapter(getApplicationContext(), sensorList);
-        fullListView.setAdapter(adapter);
+        listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
+        fullListView.setAdapter(listAdapter);
         fullListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         fullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -221,7 +225,8 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             }
         });
 
-        watchedListView.setAdapter(adapter);
+        watchAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
+        watchedListView.setAdapter(watchAdapter);
         watchedListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         watchedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -300,7 +305,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     private void switchFavourites()
     {
         Log.d(TAG, "switch to watched");
-        adapter.getFilter().filter("watch");
+        listAdapter.getFilter().filter("watch");
         btFavour.setImageResource(R.drawable.yey_blue);
         btList.setImageResource(R.drawable.list_gray);
         setTitle(fullListView.getCount() + " watched sensors");
@@ -309,8 +314,8 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     private void switchList()
     {
         Log.d(TAG,"switch to list " + sensorList.size());
-        adapter.getFilter().filter("");
-        adapter.notifyDataSetChanged();
+        listAdapter.getFilter().filter("");
+        listAdapter.notifyDataSetChanged();
         btFavour.setImageResource(R.drawable.yey_gray);
         btList.setImageResource(R.drawable.list_blue);
         setTitle(sensorList.size() + " sensors online");
