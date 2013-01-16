@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private final String TAG = "narodmon";
     private ListUpdater listUpdater;
@@ -42,10 +42,15 @@ public class MainActivity extends Activity {
     private ListView listView = null;
     private String uid;
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(TAG,"onSharedPreferenceChanged " + key);
+    }
 
-/*
-* Class for get full sensor list from server, parse it and put to sensorList and update adapter
-* */
+
+    /*
+    * Class for get full sensor list from server, parse it and put to sensorList and update adapter
+    * */
     private class ListUpdater implements ServerDataGetter.OnResultListener {
         void updateList () {
             ServerDataGetter getter = new ServerDataGetter ();
@@ -119,12 +124,16 @@ public class MainActivity extends Activity {
     @Override
     public void onPause ()
     {
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        // todo: stop update timer
         super.onPause();
     }
 
     @Override
     public void onResume ()
     {
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+        // todo: setup update timer for get full list
         listUpdater.updateList();
         super.onResume();
     }

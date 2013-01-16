@@ -18,6 +18,13 @@
                 android:summary=""
                 android:inputType="textPassword"
                 android:dialogTitle="Enter password" />
+        <ListPreference
+                android:title="Sensor update interval"
+                android:key="@string/pref_key_interval"
+                android:summary="Select the sensor value update interval"
+                android:defaultValue="5"
+                android:entries="@array/listArray"
+                android:entryValues="@array/listValues" />
 
         <!--CheckBoxPreference
                 android:key="checkbox_preference"

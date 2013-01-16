@@ -3,10 +3,12 @@ package com.ghelius.narodmon;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.*;
+import android.util.Log;
 
 public class PreferActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
 
     final MyPreferenceFragment settingsFragment = new MyPreferenceFragment();
+    private static final String TAG = "narodmon-pref";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState)
@@ -49,6 +51,7 @@ public class PreferActivity extends PreferenceActivity implements SharedPreferen
 
     public void onSharedPreferenceChanged (SharedPreferences sharedPreferences, String key) {
         // Let's do something a preference value changes
+        Log.d(TAG,"onSharedPreferenceChanged: " + key);
         settingsFragment.updateSummary();
     }
 
