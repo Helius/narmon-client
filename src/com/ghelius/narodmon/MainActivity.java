@@ -47,7 +47,6 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
         Log.d(TAG,"onSharedPreferenceChanged " + key);
     }
 
-
     /*
     * Class for get full sensor list from server, parse it and put to sensorList and update adapter
     * */
@@ -65,7 +64,7 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
                 //todo: probably we could place gui updating in MainActivity class
                 adapter.addAll(sensorList);
                 adapter.notifyDataSetChanged();
-                Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT).show();
                 //todo switchList of showWatched depend of last user choise, if we are started from notification - show watched
                 switchList();
             } catch (JSONException e) {
@@ -78,6 +77,9 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
         }
     }
 
+    /*
+    * Class for login procedure
+    * */
     private class Loginer implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
         void login (String userLogin, String userHash)
@@ -100,6 +102,7 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Login failed (wrong answer)", Toast.LENGTH_SHORT).show();
             }
+            listUpdater.updateList();
         }
         @Override
         public void onNoResult() {
@@ -179,9 +182,9 @@ public class MainActivity extends Activity implements SharedPreferences.OnShared
             Log.d(TAG,"my password is: " + passwd);
             Loginer loginer = new Loginer();
             loginer.login("ghelius@gmail.com", md5(uid+md5(passwd)));
-            if (!loginer.waitLogin()) {
-                Log.e(TAG,"Error while waiting login");
-            }
+//            if (!loginer.waitLogin()) {
+//                Log.e(TAG,"Error while waiting login");
+//            }
         } else {
             Log.w(TAG,"no login");
         }
