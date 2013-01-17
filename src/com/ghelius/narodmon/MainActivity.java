@@ -61,6 +61,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     * */
     private class ListUpdater implements ServerDataGetter.OnResultListener {
         void updateList () {
+            findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
             ServerDataGetter getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
@@ -80,10 +81,12 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Wrong server respond, try later", Toast.LENGTH_SHORT).show();
             }
+            findViewById(R.id.marker_progress).setVisibility(View.GONE);
         }
         @Override
         public void onNoResult() {
             Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
+            findViewById(R.id.marker_progress).setVisibility(View.GONE);
         }
     }
 
@@ -170,7 +173,9 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
 
     @Override
     public void onDestroy () {
+        stopTimer();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        super.onDestroy();
     }
 
     /**

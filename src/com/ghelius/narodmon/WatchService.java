@@ -47,9 +47,6 @@ public class WatchService extends WakefulIntentService {
 
         @Override
         public void onResultReceived(String result) {
-            //Log.d(TAG,"ResultReceived: " + result);
-            // response:
-            //{"sensors":[{"id":115,"value":-2,"time":"1358220969"},{"id":551,"value":-6.88,"time":"1358207098"}]}
             if (result != null) {
                 try {
                     JSONObject JObject = new JSONObject(result);
@@ -59,21 +56,19 @@ public class WatchService extends WakefulIntentService {
                         String value = sensArray.getJSONObject(i).getString("value");
                         String time = sensArray.getJSONObject(i).getString("time");
                         Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
-                        checkLimits(Integer.valueOf(id), Float.valueOf(value), Long.valueOf(time));
+                        if (checkLimits(Integer.valueOf(id), Float.valueOf(value), Long.valueOf(time))) {
+                            showNotification(1);
+                        }
                     }
                 } catch (JSONException e) {
-                    // todo: replace it
                     Log.e(TAG,"Wrong JSON");
-                    e.printStackTrace();
-
                 }
             }
-            showNotification(1);
         }
 
         @Override
         public void onNoResult() {
-            Log.d(TAG,"noResult!!!!");
+            Log.w(TAG,"noResult!!!!");
         }
     }
 
