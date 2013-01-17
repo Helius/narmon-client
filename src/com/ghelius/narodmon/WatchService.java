@@ -3,7 +3,9 @@ package com.ghelius.narodmon;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Vibrator;
 import android.util.Log;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 import org.json.JSONArray;
@@ -99,6 +101,13 @@ public class WatchService extends WakefulIntentService {
      * Show a notification while this service is running.
      */
     private void showNotification(int nmb) {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        int dash = 500;     // Length of a Morse Code "dash" in milliseconds
+        int gap = 200;    // Length of Gap Between dots/dashes
+        long[] pattern = {
+                0, dash, gap, dash, gap, dash
+        };
+        v.vibrate(pattern,-1);
         // In this sample, we'll use the same text for the ticker and the expanded notification
         //CharSequence text = getText(R.string.local_service_started);
         NotificationManager mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
