@@ -28,6 +28,7 @@ public class SensorInfo extends Activity {
             TextView time = (TextView) findViewById(R.id.text_time);
             TextView value = (TextView) findViewById(R.id.text_value);
             TextView type = (TextView) findViewById(R.id.text_type);
+            TextView id = (TextView) findViewById(R.id.text_id);
             ImageView icon = (ImageView) findViewById(R.id.info_sensor_icon);
 
             name.setText(sensor.getName());
@@ -68,6 +69,8 @@ public class SensorInfo extends Activity {
                     break;
             }
             value.setText(sensor.getValue()+suffix);
+
+            id.setText(String.valueOf(sensor.getId()));
 
             long dv = Long.valueOf(sensor.getTime())*1000;// its need to be in milisecond
             Date df = new java.util.Date(dv);
