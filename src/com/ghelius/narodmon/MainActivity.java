@@ -1,6 +1,8 @@
 package com.ghelius.narodmon;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +10,9 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -20,9 +25,7 @@ import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 
 public class MainActivity extends Activity implements View.OnTouchListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -38,10 +41,19 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     private String uid;
     private ViewFlipper flipper;
     private float fromPosition;
+    private Loginer loginer;
+    private Timer updateTimer = null;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d(TAG,"onSharedPreferenceChanged " + key);
+        if (key.equals(getString(R.string.pref_key_interval))) { // update interval changed
+            scheduleAlarmWatcher();
+            startTimer();
+        } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
+            loginer.login(sharedPreferences.getString(getString(R.string.pref_key_login),""),
+                          sharedPreferences.getString(getString(R.string.pref_key_passwd),""));
+        }
     }
 
     /*
@@ -55,7 +67,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         }
         @Override
         public void onResultReceived(String result) {
-            Log.d(TAG,"result: " + result);
+            //Log.d(TAG,"result: " + result);
             try {
                 makeSensorListFromJson(result);
                 //todo: probably we could place gui updating in MainActivity class
@@ -64,8 +76,6 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
                 watchAdapter.addAll(sensorList);
                 watchAdapter.notifyDataSetChanged();
                 watchAdapter.getFilter().filter("watch");
-                //Toast.makeText(getApplicationContext(), sensorList.size() + " sensors online", Toast.LENGTH_SHORT).show();
-                //todo switchList of showWatched depend of last user choise, if we are started from notification - show watched
                 switchList();
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Wrong server respond, try later", Toast.LENGTH_SHORT).show();
@@ -77,16 +87,21 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         }
     }
 
+
     /*
     * Class for login procedure
     * */
     private class Loginer implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
-        void login (String userLogin, String userHash)
+        void login (String userLogin, String passwd)
         {
+            if (userLogin.equals("")) {// don't try if login is empty
+                Log.d(TAG,"Loginer: login is empty, don't try");
+                return;
+            }
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"login\",\"uuid\":\"" + uid + "\",\"login\":\"" + userLogin +"\",\"hash\":\"" + userHash +"\"}");
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"login\",\"uuid\":\"" + uid + "\",\"login\":\"" + userLogin +"\",\"hash\":\"" + md5(uid+md5(passwd)) +"\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -141,18 +156,21 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     @Override
     public void onPause ()
     {
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-        // todo: stop update timer
+        stopTimer();
         super.onPause();
     }
 
     @Override
-    public void onResume ()
-    {
+    public void onResume () {
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-        // todo: setup update timer for get full list
+        startTimer();
         listUpdater.updateList();
         super.onResume();
+    }
+
+    @Override
+    public void onDestroy () {
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -200,18 +218,10 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String userLogin = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
         Log.d(TAG,"my login is: " + userLogin);
-        if ((userLogin != null) && (!userLogin.equals(""))) {
-            String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
-            Log.d(TAG,"my password is: " + passwd);
-            Loginer loginer = new Loginer();
-            loginer.login("ghelius@gmail.com", md5(uid+md5(passwd)));
-//            if (!loginer.waitLogin()) {
-//                Log.e(TAG,"Error while waiting login");
-//            }
-        } else {
-            Log.w(TAG,"no login");
-        }
-        Log.d(TAG,"LOGIN DONE");
+        String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
+        Log.d(TAG,"my password is: " + passwd);
+        loginer = new Loginer();
+        loginer.login(userLogin, passwd);
 
 
 
@@ -268,6 +278,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
 
         Intent i = new Intent(this, OnBootReceiver.class);
         sendBroadcast(i);
+        scheduleAlarmWatcher();
     }
 
     class CustomComparator implements Comparator<Sensor> {
@@ -365,5 +376,57 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    final Handler h = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            Log.d(TAG," ---- updateTimer fired! ----");
+            listUpdater.updateList();
+            return false;
+        }
+    });
+    void startTimer () {
+        stopTimer();
+        updateTimer = new Timer("updateTimer",true);
+        updateTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                h.sendEmptyMessage(0);
+            }
+        }, 30000, 60000*Integer.valueOf(PreferenceManager.
+                getDefaultSharedPreferences(this).
+                getString(getString(R.string.pref_key_interval),"5")));
+    }
+    void stopTimer () {
+        if (updateTimer != null) {
+            updateTimer.cancel();
+            updateTimer.purge();
+            updateTimer = null;
+        }
+    }
+
+    void scheduleAlarmWatcher () {
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(this, OnAlarmReceiver.class);
+        PendingIntent pi=PendingIntent.getBroadcast(this, 0, i, 0);
+        try {
+            am.cancel(pi);
+        } catch (Exception e) {
+            Log.e(TAG,"cancel pending intent of AlarmManager failed");
+            e.getMessage();
+        }
+
+        Log.d(TAG,"Alarm watcher new updateInterval " + Integer.valueOf(PreferenceManager.
+                        getDefaultSharedPreferences(this).
+                        getString(getString(R.string.pref_key_interval),"5")));
+
+        am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + (1 * 60000), // 1 minute
+                (60000 * Integer.valueOf(PreferenceManager.
+                        getDefaultSharedPreferences(this).
+                        getString(getString(R.string.pref_key_interval),"5"))),
+                pi);
+    }
+
 }
 

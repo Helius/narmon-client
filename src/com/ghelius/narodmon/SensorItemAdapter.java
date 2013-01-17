@@ -112,6 +112,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             if (config.isSensorWatched(sensor.getId())) {
                 holder.value.setTypeface(null, Typeface.BOLD);
             } else {
+                holder.value.setTypeface(null, Typeface.NORMAL);
                 //holder.value.setVisibility(View.INVISIBLE);
             }
             switch (sensor.getType()) {

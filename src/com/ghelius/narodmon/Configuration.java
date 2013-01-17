@@ -30,6 +30,7 @@ public class Configuration implements Serializable{
     public void insert (Integer id) {
         watchedId.add(new SensorTask(id));
     }
+
     public ArrayList<SensorTask> getWatchedId () {
         return watchedId;
     }
