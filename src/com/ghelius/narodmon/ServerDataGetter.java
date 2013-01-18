@@ -51,11 +51,13 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
             Log.d(TAG, uri[0]);
             url = new URL(uri[0]);
             urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(10000);
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             responseString = inputStreamToString(in);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Log.e(TAG,"MalformedURLException:" + e.getMessage());
         } catch (IOException e) {
+            Log.e(TAG,"IOException:" + e.getMessage());
             e.printStackTrace();
         } finally {
             urlConnection.disconnect();
@@ -66,6 +68,10 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
+        Log.d(TAG,"---------getter finished------");
+        if (isCancelled()) {
+            Log.d(TAG,"task was cancelled");
+        }
         if ((result == null)) {
             listener.onNoResult();
         } else {

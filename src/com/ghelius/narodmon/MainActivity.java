@@ -60,15 +60,20 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     * Class for get full sensor list from server, parse it and put to sensorList and update listAdapter
     * */
     private class ListUpdater implements ServerDataGetter.OnResultListener {
+        ServerDataGetter getter;
         void updateList () {
             findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
-            ServerDataGetter getter = new ServerDataGetter ();
+            if (getter != null)
+                getter.cancel(true);
+            getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+            setTitle("Connecting...");
         }
         @Override
         public void onResultReceived(String result) {
-            //Log.d(TAG,"result: " + result);
+            Log.d(TAG,"result resived " + result);
+            getter = null;
             try {
                 makeSensorListFromJson(result);
                 //todo: probably we could place gui updating in MainActivity class
@@ -77,6 +82,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
                 watchAdapter.addAll(sensorList);
                 watchAdapter.notifyDataSetChanged();
                 watchAdapter.getFilter().filter("watch");
+                fullListView.setVisibility(View.VISIBLE);
                 switchList();
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Wrong server respond, try later", Toast.LENGTH_SHORT).show();
@@ -85,7 +91,11 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         }
         @Override
         public void onNoResult() {
+            getter = null;
+            Log.w(TAG,"Server not responds");
             Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
+            setTitle("Server not responds");
+            fullListView.setVisibility(View.INVISIBLE);
             findViewById(R.id.marker_progress).setVisibility(View.GONE);
         }
     }
@@ -104,6 +114,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             }
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
+            Log.d(TAG,"password: " + passwd + " md5: " + md5(passwd));
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"login\",\"uuid\":\"" + uid + "\",\"login\":\"" + userLogin +"\",\"hash\":\"" + md5(uid+md5(passwd)) +"\"}");
         }
         @Override
@@ -125,6 +136,28 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         @Override
         public void onNoResult() {
             Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /*
+    * Class for login procedure
+    * */
+    private class LocationSender implements ServerDataGetter.OnResultListener {
+        ServerDataGetter getter;
+        void sendLocation (Double l1, Double l2)
+        {
+            getter = new ServerDataGetter();
+            getter.setOnListChangeListener(this);
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + l1 +" "+ l2 + "\"}");
+        }
+        @Override
+        public void onResultReceived(String result) {
+            Log.d(TAG, "Login result: " + result);
+            listUpdater.updateList();
+        }
+        @Override
+        public void onNoResult() {
+            //Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -206,18 +239,6 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         uid = config.getUid();
         Log.d(TAG,"my id is: " + uid);
 
-		//get location
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-  		Criteria criteria = new Criteria();
-  		criteria.setAccuracy(Criteria.ACCURACY_FINE);
-  		String provider = lm.getBestProvider(criteria, true);
-  		Location mostRecentLocation = lm.getLastKnownLocation(provider);
-  		if(mostRecentLocation != null){
-  			double latid=mostRecentLocation.getLatitude();
-  			double longid=mostRecentLocation.getLongitude();
-			// use API to send location
-            Log.d(TAG,"my location: " + latid +" "+longid);
-  		}
 
         Log.d(TAG,"START LOGIN");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -272,6 +293,22 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         });
 
         listUpdater = new ListUpdater();
+        listUpdater.updateList();
+
+        //send location
+        LocationSender locationSender = new LocationSender();
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        String provider = lm.getBestProvider(criteria, true);
+        Location mostRecentLocation = lm.getLastKnownLocation(provider);
+        if(mostRecentLocation != null){
+            double latid=mostRecentLocation.getLatitude();
+            double longid=mostRecentLocation.getLongitude();
+            // use API to send location
+            Log.d(TAG,"my location: " + latid +" "+longid);
+            locationSender.sendLocation(latid, longid);
+        }
 
         ImageButton btRefresh = (ImageButton) findViewById(R.id.imageButton);
         btRefresh.setOnClickListener(new View.OnClickListener() {

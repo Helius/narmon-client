@@ -30,9 +30,12 @@ public class WatchService extends WakefulIntentService {
     }
 
     class SensorDataUpdater implements ServerDataGetter.OnResultListener {
-
+        ServerDataGetter getter;
         void updateData (ArrayList<Integer> ids) {
-            ServerDataGetter getter = new ServerDataGetter();
+            if (getter!=null) {
+                getter.cancel(true);
+            }
+            getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             String queryId = "";
             for (int i = 0; i < ids.size(); i++) {
@@ -47,6 +50,7 @@ public class WatchService extends WakefulIntentService {
 
         @Override
         public void onResultReceived(String result) {
+            getter = null;
             if (result != null) {
                 try {
                     JSONObject JObject = new JSONObject(result);
@@ -68,6 +72,7 @@ public class WatchService extends WakefulIntentService {
 
         @Override
         public void onNoResult() {
+            getter = null;
             Log.w(TAG,"noResult!!!!");
         }
     }
