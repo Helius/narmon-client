@@ -29,6 +29,7 @@ import java.util.*;
 
 public class MainActivity extends Activity implements View.OnTouchListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String AppApiVersion = "Av1.1a";
     private final String TAG = "narodmon";
     private ListUpdater listUpdater;
     private ArrayList<Sensor> sensorList = null;
@@ -51,8 +52,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             scheduleAlarmWatcher();
             startTimer();
         } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
-            loginer.login(sharedPreferences.getString(getString(R.string.pref_key_login),""),
-                          sharedPreferences.getString(getString(R.string.pref_key_passwd),""));
+            loginer.login();
         }
     }
 
@@ -106,8 +106,12 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     * */
     private class Loginer implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
-        void login (String userLogin, String passwd)
+        void login ()
         {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            String userLogin = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
+            String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
+            Log.d(TAG,"my id is: " + uid + ", login: " + userLogin + ", passwd: " + passwd);
             if (userLogin.equals("")) {// don't try if login is empty
                 Log.d(TAG,"Loginer: login is empty, don't try");
                 return;
@@ -135,12 +139,12 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         }
         @Override
         public void onNoResult() {
-            Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
+            Log.e(TAG,"Server not responds");
         }
     }
 
     /*
-    * Class for login procedure
+    * Class for location send procedure
     * */
     private class LocationSender implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
@@ -148,16 +152,38 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + l1 +" "+ l2 + "\"}");
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + Math.round(l1*1000000) +" "+ Math.round(l2*1000000) + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
-            Log.d(TAG, "Login result: " + result);
+            Log.d(TAG, "Location result: " + result);
             listUpdater.updateList();
         }
         @Override
         public void onNoResult() {
             //Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /*
+    * Class for AppApiVersion send procedure
+    * */
+    private class VersionSender implements ServerDataGetter.OnResultListener {
+        ServerDataGetter getter;
+        void sendVersion ()
+        {
+            getter = new ServerDataGetter();
+            getter.setOnListChangeListener(this);
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"version\",\"uuid\":\"" + uid + "\",\"version\":\"" + AppApiVersion + "\"}");
+        }
+        @Override
+        public void onResultReceived(String result) {
+            Log.d(TAG, "Version result: " + result);
+            listUpdater.updateList();
+        }
+        @Override
+        public void onNoResult() {
+            Log.e(TAG,"No result while send AppApiVersion");
         }
     }
 
@@ -237,17 +263,8 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
                     Settings.Secure.ANDROID_ID)));
         }
         uid = config.getUid();
-        Log.d(TAG,"my id is: " + uid);
 
 
-        Log.d(TAG,"START LOGIN");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String userLogin = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
-        Log.d(TAG,"my login is: " + userLogin);
-        String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
-        Log.d(TAG,"my password is: " + passwd);
-        loginer = new Loginer();
-        loginer.login(userLogin, passwd);
 
 
 
@@ -292,9 +309,13 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             }
         });
 
+        VersionSender versionSender = new VersionSender();
         listUpdater = new ListUpdater();
-        listUpdater.updateList();
+        loginer = new Loginer();
 
+        versionSender.sendVersion();
+        loginer.login();
+        listUpdater.updateList();
         //send location
         LocationSender locationSender = new LocationSender();
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -374,17 +395,22 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         setTitle(sensorList.size() + " sensors online");
     }
 
-    private String md5(String s) {
+    public static final String md5(final String s) {
         try {
             // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance("MD5");
             digest.update(s.getBytes());
             byte messageDigest[] = digest.digest();
 
             // Create Hex String
-            StringBuilder hexString = new StringBuilder();
-            for (int i=0; i<messageDigest.length; i++)
-                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+            StringBuffer hexString = new StringBuffer();
+            for (int i = 0; i < messageDigest.length; i++) {
+                String h = Integer.toHexString(0xFF & messageDigest[i]);
+                while (h.length() < 2)
+                    h = "0" + h;
+                hexString.append(h);
+            }
             return hexString.toString();
 
         } catch (NoSuchAlgorithmException e) {
@@ -392,6 +418,25 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         }
         return "";
     }
+
+//    private String md5(String s) {
+//        try {
+//            // Create MD5 Hash
+//            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+//            digest.update(s.getBytes());
+//            byte messageDigest[] = digest.digest();
+//
+//            // Create Hex String
+//            StringBuilder hexString = new StringBuilder();
+//            for (int i=0; i<messageDigest.length; i++)
+//                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+//            return hexString.toString();
+//
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+//        return "";
+//    }
 
     private void sensorItemClick (int position)
     {
