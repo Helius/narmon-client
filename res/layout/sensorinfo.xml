@@ -97,5 +97,15 @@
                   android:id="@+id/textView" android:layout_marginRight="10dp"/>
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="time"
                   android:id="@+id/text_time"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="agoTime"
+                android:id="@+id/text_ago" android:layout_marginLeft="10dp"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ago"
+                android:id="@+id/textView6" android:layout_marginLeft="5dp"/>
     </LinearLayout>
 </LinearLayout>

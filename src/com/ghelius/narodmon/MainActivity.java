@@ -87,7 +87,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Wrong server respond, try later", Toast.LENGTH_SHORT).show();
             }
-            findViewById(R.id.marker_progress).setVisibility(View.GONE);
+            findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
         }
         @Override
         public void onNoResult() {
@@ -96,7 +96,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
             setTitle("Server not responds");
             fullListView.setVisibility(View.INVISIBLE);
-            findViewById(R.id.marker_progress).setVisibility(View.GONE);
+            findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -124,14 +124,12 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         @Override
         public void onResultReceived(String result) {
             //{"error":"auth error"}
+            //{"login":"mylogin"}
             Log.d(TAG,"Login result: " + result);
             try {
                 JSONObject jObject = new JSONObject(result);
-                String error = jObject.getString("error");
-                if ((error != null) && (!error.equals("")) && error.equals("auth error")) {
-                    // do something
-                }
-                Toast.makeText(getApplicationContext(), "Login: " + result, Toast.LENGTH_SHORT).show();
+                String login = jObject.getString("login");
+                Log.d(TAG,"Login result: " + login);
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Login failed (wrong answer)", Toast.LENGTH_SHORT).show();
             }
@@ -226,7 +224,6 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     public void onResume () {
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         startTimer();
-        listUpdater.updateList();
         super.onResume();
     }
 
@@ -419,25 +416,6 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         return "";
     }
 
-//    private String md5(String s) {
-//        try {
-//            // Create MD5 Hash
-//            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-//            digest.update(s.getBytes());
-//            byte messageDigest[] = digest.digest();
-//
-//            // Create Hex String
-//            StringBuilder hexString = new StringBuilder();
-//            for (int i=0; i<messageDigest.length; i++)
-//                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
-//            return hexString.toString();
-//
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
-//        return "";
-//    }
-
     private void sensorItemClick (int position)
     {
         Intent i = new Intent (this, SensorInfo.class);
@@ -480,7 +458,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             public void run() {
                 h.sendEmptyMessage(0);
             }
-        }, 30000, 60000*Integer.valueOf(PreferenceManager.
+        }, 1000, 60000*Integer.valueOf(PreferenceManager.
                 getDefaultSharedPreferences(this).
                 getString(getString(R.string.pref_key_interval),"5")));
     }

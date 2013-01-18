@@ -29,6 +29,7 @@ public class SensorInfo extends Activity {
             TextView value = (TextView) findViewById(R.id.text_value);
             TextView type = (TextView) findViewById(R.id.text_type);
             TextView id = (TextView) findViewById(R.id.text_id);
+            TextView ago = (TextView) findViewById(R.id.text_ago);
             ImageView icon = (ImageView) findViewById(R.id.info_sensor_icon);
 
             name.setText(sensor.getName());
@@ -72,12 +73,26 @@ public class SensorInfo extends Activity {
 
             id.setText(String.valueOf(sensor.getId()));
 
-            long dv = Long.valueOf(sensor.getTime())*1000;// its need to be in milisecond
+            long dv = Long.valueOf(sensor.time)*1000;// its need to be in milisecond
             Date df = new java.util.Date(dv);
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
             sdf.setTimeZone(TimeZone.getDefault());
             String vv = sdf.format(df);
             time.setText(vv);
+
+            long diftime = (System.currentTimeMillis() - sensor.time*1000)/1000;
+            String agoText;
+            if (diftime < 60) {
+                agoText = String.valueOf(diftime) + " sec";
+            } else if (diftime/60 < 60) {
+                agoText = String.valueOf(diftime/60) + " min";
+            } else if (diftime/3600 < 24) {
+                agoText = String.valueOf(diftime/3600) + " hr";
+            } else {
+                agoText = String.valueOf(diftime/(3600*24)) + " days";
+            }
+
+            ago.setText(agoText);
 
             final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
             final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());

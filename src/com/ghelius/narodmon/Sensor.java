@@ -5,14 +5,15 @@ import java.io.Serializable;
 
 public class Sensor implements Serializable {
     private int id;
-    private int type;
+    public int type;
     private String location;
     private String name;
     private String value;
     private Float distance;
-    private Long time;
+    public Long time;
     private boolean my;
     private boolean pub;
+
     // constructor
     Sensor (int id,
             int type,
@@ -33,10 +34,6 @@ public class Sensor implements Serializable {
         this.my = my;
         this.time = time;
         this.pub = pub;
-    }
-
-    public void setValue (String val) {
-        value = val;
     }
 
     public Float getDistance() {
@@ -61,13 +58,5 @@ public class Sensor implements Serializable {
 
     public int getId() {
         return id;
-    }
-
-    public boolean getMy() {
-        return this.my;
-    }
-
-    public Long getTime() {
-        return time;
     }
 }
