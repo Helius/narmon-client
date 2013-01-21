@@ -1,5 +1,6 @@
 package com.ghelius.narodmon;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -44,6 +45,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     private float fromPosition;
     private Loginer loginer;
     private Timer updateTimer = null;
+    private ImageButton btFiltering;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -306,6 +308,19 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             }
         });
 
+        btFiltering = (ImageButton) findViewById(R.id.imageButton3);
+        btFiltering.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listAdapter.getFilter().filter("temperature");
+            }
+        });
+
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.action_list,
+                android.R.layout.simple_spinner_dropdown_item);
+
         VersionSender versionSender = new VersionSender();
         listUpdater = new ListUpdater();
         loginer = new Loginer();
@@ -494,4 +509,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     }
 
 }
+
+// android vector icons
+//http://www.yay.se/resources/android-native-icons
 

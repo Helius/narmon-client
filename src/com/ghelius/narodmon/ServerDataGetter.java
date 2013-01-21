@@ -51,7 +51,8 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
             Log.d(TAG, uri[0]);
             url = new URL(uri[0]);
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setConnectTimeout(10000);
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(10000);
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             responseString = inputStreamToString(in);
         } catch (MalformedURLException e) {

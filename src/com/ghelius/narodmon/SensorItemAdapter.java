@@ -46,11 +46,43 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             Log.d(TAG,"performFiltering with: " + constraint);
             FilterResults filteredResult = new FilterResults();
             ArrayList<Sensor> filteredItems= new ArrayList<Sensor>();
-            if (constraint == "watch") {
+            if (String.valueOf(constraint).equals("watch")) {
                 Log.d(TAG,"make watch list");
                 for (int i = 0; i < originItems.size(); i++) {
                     if (ConfigHolder.getInstance(context).isSensorWatched(originItems.get(i).getId())) {
                         filteredItems.add(originItems.get(i));
+                    }
+                }
+                filteredResult.values = filteredItems;
+                filteredResult.count = filteredItems.size();
+            } else if (String.valueOf(constraint).equals("temperature")) {
+                for (Sensor originItem : originItems) {
+                    if (originItem.type == Sensor.TYPE_TEMPERATURE) {
+                        filteredItems.add(originItem);
+                    }
+                }
+                filteredResult.values = filteredItems;
+                filteredResult.count = filteredItems.size();
+            } else if (String.valueOf(constraint).equals("pressure")) {
+                for (Sensor originItem : originItems) {
+                    if (originItem.type == Sensor.TYPE_PRESSURE) {
+                        filteredItems.add(originItem);
+                    }
+                }
+                filteredResult.values = filteredItems;
+                filteredResult.count = filteredItems.size();
+            } else if (String.valueOf(constraint).equals("humidity")) {
+                for (Sensor originItem : originItems) {
+                    if (originItem.type == Sensor.TYPE_HUMIDITY) {
+                        filteredItems.add(originItem);
+                    }
+                }
+                filteredResult.values = filteredItems;
+                filteredResult.count = filteredItems.size();
+            } else if (String.valueOf(constraint).equals("unknown")) {
+                for (Sensor originItem : originItems) {
+                    if (originItem.type == Sensor.TYPE_UNKNOWN) {
+                        filteredItems.add(originItem);
                     }
                 }
                 filteredResult.values = filteredItems;
