@@ -1,9 +1,6 @@
 package com.ghelius.narodmon;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,7 +25,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-public class MainActivity extends Activity implements View.OnTouchListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends Activity implements View.OnTouchListener, SharedPreferences.OnSharedPreferenceChangeListener, ActionBar.TabListener {
 
     private static final String AppApiVersion = "Av1.1a";
     private final String TAG = "narodmon";
@@ -56,6 +53,21 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
             loginer.login();
         }
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /*
@@ -224,6 +236,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
 
     @Override
     public void onResume () {
+        Log.i(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         startTimer();
         super.onResume();
@@ -316,10 +329,13 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             }
         });
 
+
         ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.action_list,
-                android.R.layout.simple_spinner_dropdown_item);
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.actionbar_top); //load your layout
+
+
 
         VersionSender versionSender = new VersionSender();
         listUpdater = new ListUpdater();
@@ -438,10 +454,18 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         startActivity(i);
     }
 
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuItem mi = menu.add(0, 1, 0, "Preferences");
+//        mi.setIntent(new Intent(this, PreferActivity.class));
+//        return super.onCreateOptionsMenu(menu);
+//    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem mi = menu.add(0, 1, 0, "Preferences");
-        mi.setIntent(new Intent(this, PreferActivity.class));
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.icon_menu, menu);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -449,9 +473,9 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.preference:
-
-                return true;
+//            case R.id.preference:
+//
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -466,6 +490,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         }
     });
     void startTimer () {
+        Log.d(TAG,"start timer");
         stopTimer();
         updateTimer = new Timer("updateTimer",true);
         updateTimer.schedule(new TimerTask() {
@@ -473,7 +498,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             public void run() {
                 h.sendEmptyMessage(0);
             }
-        }, 1000, 60000*Integer.valueOf(PreferenceManager.
+        }, 500, 60000*Integer.valueOf(PreferenceManager.
                 getDefaultSharedPreferences(this).
                 getString(getString(R.string.pref_key_interval),"5")));
     }

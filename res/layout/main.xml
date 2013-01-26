@@ -21,7 +21,7 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" android:layout_weight="0">
+        android:layout_height="wrap_content" android:layout_weight="0" android:visibility="gone">
         <ImageButton
             android:layout_width="80dp"
             android:layout_height="wrap_content"
