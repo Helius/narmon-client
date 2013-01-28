@@ -4,19 +4,21 @@
               android:layout_height="wrap_content"
               android:gravity="right" >
     <ImageButton
-            android:id="@+id/action_starred"
+            android:id="@+id/btn_sort"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="?android:attr/actionButtonStyle"
             android:src="@android:drawable/ic_menu_sort_by_size"
             android:contentDescription="wtf"
-            android:onClick="FakeMenu"/>
+            android:onClick="actionBtnClick"
+            />
     <ImageButton
-            android:id="@+id/action_starred"
+            android:id="@+id/btn_settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="?android:attr/actionButtonStyle"
             android:src="@android:drawable/ic_menu_preferences"
             android:contentDescription="wtf"
-            android:onClick="FakeMenu"/>
+            android:onClick="actionBtnClick"
+            />
 </LinearLayout>

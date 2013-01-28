@@ -1,6 +1,9 @@
 package com.ghelius.narodmon;
 
-import android.app.*;
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,10 +18,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +28,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class MainActivity extends Activity implements
-        SharedPreferences.OnSharedPreferenceChangeListener, ActionBar.TabListener {
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String AppApiVersion = "Av1.1a";
     private final String TAG = "narodmon";
@@ -58,20 +58,6 @@ public class MainActivity extends Activity implements
         }
     }
 
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 
     /*
     * Class for get full sensor list from server, parse it and put to sensorList and update listAdapter
@@ -268,6 +254,7 @@ public class MainActivity extends Activity implements
             }
         });
 
+
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -387,6 +374,25 @@ public class MainActivity extends Activity implements
         i.putExtra("Sensor", sensorList.get(position));
         startActivity(i);
     }
+
+
+    public void actionBtnClick (View view)
+    {
+        if (view == findViewById(R.id.btn_sort)) {
+            
+        } else if (view == findViewById(R.id.btn_settings)) {
+            startActivity(new Intent(MainActivity.this, PreferActivity.class));
+        }
+    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        Log.d(TAG, "onOptionMenuItemSelected " + item);
+//        switch (item.getItemId()) {
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
 // TODO: for future, if i need more icons - use this menu, it's splitted action bar what use space effective
 //    @Override
