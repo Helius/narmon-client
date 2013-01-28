@@ -2,13 +2,13 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="wrap_content"
+              android:layout_width="fill_parent"
               android:layout_height="wrap_content">
 
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content" android:layout_marginLeft="10dp" android:layout_marginBottom="10dp">
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="All"
-                    android:id="@+id/radioButton" android:layout_marginLeft="30dp"/>
+                    android:id="@+id/radioButton" android:layout_marginLeft="20dp"/>
             <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content" android:layout_marginLeft="10dp" android:layout_marginBottom="10dp">
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -66,16 +66,16 @@
         </LinearLayout>
     </LinearLayout>
     <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content"
-                  android:layout_height="wrap_content" android:id="@+id/linearLayout">
+                  android:layout_height="wrap_content" android:id="@+id/linearLayout" android:layout_marginLeft="10dp">
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sort by:"
                   android:id="@+id/textView1" android:layout_gravity="center_vertical" android:textSize="20dp"
                   android:textStyle="bold"/>
         <RadioGroup android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:orientation="horizontal">
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Distance"
-                         android:id="@+id/radioButton2" android:layout_marginLeft="30dp"/>
             <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Name"
-                         android:id="@+id/radioButton3" android:layout_marginLeft="10dp"/>
+                         android:id="@+id/radioButton3" android:layout_marginLeft="20dp"/>
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Distance"
+                         android:id="@+id/radioButton2" android:layout_marginLeft="10dp"/>
         </RadioGroup>
     </LinearLayout>
 </LinearLayout>
