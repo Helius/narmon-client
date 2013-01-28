@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:uiOptions="splitActionBarWhenNarrow">
+    <ProgressBar android:indeterminate="true"
+                 android:layout_width="60dp"
+                 android:layout_height="60dp"
+                 android:id="@+id/marker_progress"
+                 style="?android:attr/progressBarStyle"
+                 android:indeterminateBehavior="cycle"
+                 android:layout_centerInParent="true"/>
     <com.ghelius.narodmon.HorizontalPager
             android:id="@+id/horizontal_pager"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1">
+            android:layout_height="fill_parent">
         <ListView
                 android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
@@ -19,5 +25,5 @@
                 android:layout_weight = "1"
                 android:id="@+id/watchedListView" />
     </com.ghelius.narodmon.HorizontalPager>
-</LinearLayout>
+</RelativeLayout>
 

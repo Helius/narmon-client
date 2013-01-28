@@ -229,6 +229,12 @@ public class MainActivity extends Activity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mPager = (HorizontalPager) findViewById(R.id.horizontal_pager);
+        mPager.setOnScreenSwitchListener(new HorizontalPager.OnScreenSwitchListener() {
+            @Override
+            public void onScreenSwitched(int screen) {
+                getActionBar().setSelectedNavigationItem(screen);
+            }
+        });
 
         fullListView = (ListView)findViewById(R.id.fullListView);
         watchedListView = (ListView)findViewById(R.id.watchedListView);
@@ -241,10 +247,6 @@ public class MainActivity extends Activity implements
                     Settings.Secure.ANDROID_ID)));
         }
         uid = config.getUid();
-
-
-
-
 
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
         fullListView.setAdapter(listAdapter);
@@ -271,10 +273,11 @@ public class MainActivity extends Activity implements
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.actionbar_top); //load your layout
         actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
-                android.R.layout.simple_spinner_dropdown_item),new ActionBar.OnNavigationListener() {
+                android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-                return false;
+                mPager.setCurrentScreen(itemPosition, true);
+                return true;
             }
         });
 
@@ -337,14 +340,14 @@ public class MainActivity extends Activity implements
         }
     }
 
-    private void switchFavourites()
-    {
-        Log.d(TAG, "switch to watched");
-        listAdapter.getFilter().filter("watch");
-        //btFavour.setImageResource(R.drawable.yey_blue);
-        //btList.setImageResource(R.drawable.list_gray);
-        setTitle(fullListView.getCount() + " watched sensors");
-    }
+//    private void switchFavourites()
+//    {
+//        Log.d(TAG, "switch to watched");
+//        listAdapter.getFilter().filter("watch");
+//        //btFavour.setImageResource(R.drawable.yey_blue);
+//        //btList.setImageResource(R.drawable.list_gray);
+//        setTitle(fullListView.getCount() + " watched sensors");
+//    }
 
     private void switchList()
     {
@@ -385,31 +388,13 @@ public class MainActivity extends Activity implements
         startActivity(i);
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuItem mi = menu.add(0, 1, 0, "Preferences");
-//        mi.setIntent(new Intent(this, PreferActivity.class));
-//        return super.onCreateOptionsMenu(menu);
-//    }
-
+// TODO: for future, if i need more icons - use this menu, it's splitted action bar what use space effective
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        MenuInflater menuInflater = getMenuInflater();
 //        menuInflater.inflate(R.menu.icon_menu, menu);
 //
 //        return super.onCreateOptionsMenu(menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle item selection
-//        switch (item.getItemId()) {
-////            case R.id.preference:
-////
-////                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
 //    }
 
     final Handler h = new Handler(new Handler.Callback() {
