@@ -14,9 +14,11 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.*;
-import android.view.animation.AnimationUtils;
-import android.widget.*;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +27,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-public class MainActivity extends Activity implements View.OnTouchListener, SharedPreferences.OnSharedPreferenceChangeListener, ActionBar.TabListener {
+public class MainActivity extends Activity implements
+        SharedPreferences.OnSharedPreferenceChangeListener, ActionBar.TabListener {
 
     private static final String AppApiVersion = "Av1.1a";
     private final String TAG = "narodmon";
@@ -33,16 +36,16 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     private ArrayList<Sensor> sensorList = null;
     private SensorItemAdapter listAdapter = null;
     private SensorItemAdapter watchAdapter = null;
-    private ImageButton btFavour = null;
-    private ImageButton btList = null;
+    //private ImageButton btFavour = null;
+    //private ImageButton btList = null;
     private ListView fullListView = null;
     private ListView watchedListView = null;
     private String uid;
-    private ViewFlipper flipper;
     private float fromPosition;
     private Loginer loginer;
     private Timer updateTimer = null;
-    private ImageButton btFiltering;
+    //private ImageButton btFiltering;
+    private HorizontalPager mPager;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -114,7 +117,6 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         }
     }
 
-
     /*
     * Class for login procedure
     * */
@@ -137,8 +139,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         }
         @Override
         public void onResultReceived(String result) {
-            //{"error":"auth error"}
-            //{"login":"mylogin"}
+            //{"error":"auth error"} or {"login":"mylogin"}
             Log.d(TAG,"Login result: " + result);
             try {
                 JSONObject jObject = new JSONObject(result);
@@ -160,8 +161,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     * */
     private class LocationSender implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
-        void sendLocation (Double l1, Double l2)
-        {
+        void sendLocation (Double l1, Double l2) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + Math.round(l1*1000000) +" "+ Math.round(l2*1000000) + "\"}");
@@ -182,8 +182,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     * */
     private class VersionSender implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
-        void sendVersion ()
-        {
+        void sendVersion () {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"version\",\"uuid\":\"" + uid + "\",\"version\":\"" + AppApiVersion + "\"}");
@@ -199,33 +198,6 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         }
     }
 
-
-    public boolean onTouch(View view, MotionEvent event)
-    {
-        switch (event.getAction())
-        {
-            case MotionEvent.ACTION_DOWN:
-                fromPosition = event.getX();
-                break;
-            case MotionEvent.ACTION_UP:
-                float toPosition = event.getX();
-                if (fromPosition > toPosition)
-                {
-                    flipper.setInAnimation(AnimationUtils.loadAnimation(this,R.anim.go_next_in));
-                    flipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.go_next_out));
-                    flipper.showNext();
-                }
-                else if (fromPosition < toPosition)
-                {
-                    flipper.setInAnimation(AnimationUtils.loadAnimation(this,R.anim.go_prev_in));
-                    flipper.setOutAnimation(AnimationUtils.loadAnimation(this,R.anim.go_prev_out));
-                    flipper.showPrevious();
-                }
-            default:
-                break;
-        }
-        return true;
-    }
 
     @Override
     public void onPause ()
@@ -256,17 +228,11 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        flipper = (ViewFlipper) findViewById( R.id.viewFlipper);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        int layouts[] = new int[]{ R.layout.full_list_view, R.layout.watched_list_view};
-        for (int layout : layouts)
-            flipper.addView(inflater.inflate(layout, null));
+        mPager = (HorizontalPager) findViewById(R.id.horizontal_pager);
 
         fullListView = (ListView)findViewById(R.id.fullListView);
         watchedListView = (ListView)findViewById(R.id.watchedListView);
         sensorList = new ArrayList<Sensor>();
-
 
 		// get android UUID
         final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
@@ -300,36 +266,6 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             }
         });
 
-        btFavour = (ImageButton) findViewById(R.id.imageButton2);
-        btFavour.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //switchFavourites();
-                flipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.go_next_in));
-                flipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.go_next_out));
-                flipper.showNext();
-            }
-        });
-        btList = (ImageButton) findViewById(R.id.imageButton1);
-        btList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //switchList();
-                flipper.setInAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.go_prev_in));
-                flipper.setOutAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.go_prev_out));
-                flipper.showPrevious();
-            }
-        });
-
-        btFiltering = (ImageButton) findViewById(R.id.imageButton3);
-        btFiltering.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listAdapter.getFilter().filter("temperature");
-            }
-        });
-
-
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -341,8 +277,6 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
                 return false;
             }
         });
-
-
 
         VersionSender versionSender = new VersionSender();
         listUpdater = new ListUpdater();
@@ -365,14 +299,6 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
             Log.d(TAG,"my location: " + latid +" "+longid);
             locationSender.sendLocation(latid, longid);
         }
-
-        ImageButton btRefresh = (ImageButton) findViewById(R.id.imageButton);
-        btRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listUpdater.updateList();
-            }
-        });
 
         Intent i = new Intent(this, OnBootReceiver.class);
         sendBroadcast(i);
@@ -415,8 +341,8 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
     {
         Log.d(TAG, "switch to watched");
         listAdapter.getFilter().filter("watch");
-        btFavour.setImageResource(R.drawable.yey_blue);
-        btList.setImageResource(R.drawable.list_gray);
+        //btFavour.setImageResource(R.drawable.yey_blue);
+        //btList.setImageResource(R.drawable.list_gray);
         setTitle(fullListView.getCount() + " watched sensors");
     }
 
@@ -425,8 +351,6 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
         Log.d(TAG,"switch to list " + sensorList.size());
         listAdapter.getFilter().filter("");
         listAdapter.notifyDataSetChanged();
-        btFavour.setImageResource(R.drawable.yey_gray);
-        btList.setImageResource(R.drawable.list_blue);
         setTitle(sensorList.size() + " sensors online");
     }
 

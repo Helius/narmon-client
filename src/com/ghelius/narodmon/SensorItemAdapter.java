@@ -25,7 +25,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     ConfigHolder config;
 
     public SensorItemAdapter(Context context, ArrayList<Sensor> values) {
-        super(context, R.layout.general_list_item);
+        super(context, R.layout.sensor_list_item);
         this.context = context;
         this.originItems = values;
         this.sensorItems = new ArrayList<Sensor>();
@@ -126,7 +126,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
         if(v == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            v = inflater.inflate(R.layout.general_list_item, null);
+            v = inflater.inflate(R.layout.sensor_list_item, null);
             ViewHolder holder = new ViewHolder();
             holder.name = (TextView)v.findViewById(R.id.text1);
             holder.location = (TextView)v.findViewById(R.id.text2);
