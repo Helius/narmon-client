@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:gravity="right" >
+    <ImageButton
+            android:id="@+id/action_starred"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/actionButtonStyle"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            android:contentDescription="wtf"
+            android:onClick="FakeMenu"/>
+    <ImageButton
+            android:id="@+id/action_starred"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/actionButtonStyle"
+            android:src="@android:drawable/ic_menu_preferences"
+            android:contentDescription="wtf"
+            android:onClick="FakeMenu"/>
+    <ProgressBar android:indeterminate="true"
+                 android:layout_width="40dp"
+                 android:layout_height="40dp"
+                 android:id="@+id/marker_progress"
+                 style="?android:attr/progressBarStyle"
+                 android:indeterminateBehavior="cycle"/>
+</LinearLayout>
