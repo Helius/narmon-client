@@ -331,9 +331,16 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
 
 
         ActionBar actionBar = getActionBar();
-//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.actionbar_top); //load your layout
+        actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
+                android.R.layout.simple_spinner_dropdown_item),new ActionBar.OnNavigationListener() {
+            @Override
+            public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+                return false;
+            }
+        });
 
 
 
@@ -461,25 +468,25 @@ public class MainActivity extends Activity implements View.OnTouchListener, Shar
 //        return super.onCreateOptionsMenu(menu);
 //    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.icon_menu, menu);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-//            case R.id.preference:
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater menuInflater = getMenuInflater();
+//        menuInflater.inflate(R.menu.icon_menu, menu);
 //
-//                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+//        return super.onCreateOptionsMenu(menu);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle item selection
+//        switch (item.getItemId()) {
+////            case R.id.preference:
+////
+////                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     final Handler h = new Handler(new Handler.Callback() {
         @Override
