@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show:"
+                android:id="@+id/textView" android:layout_gravity="center_vertical" android:textSize="20dp"
+                android:textStyle="bold"/>
+        <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:orientation="horizontal">
+            <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All"
+                    android:id="@+id/radioButton" android:layout_marginLeft="30dp"/>
+            <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="My only"
+                    android:id="@+id/radioButton1" android:layout_marginLeft="10dp"/>
+        </RadioGroup>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Type:"
+                android:id="@+id/textView2" android:textSize="20dp" android:textStyle="bold"/>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Temperature"
+                    android:id="@+id/checkBox1"/>
+            <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pressure"
+                    android:id="@+id/checkBox"/>
+            <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Humidity"
+                    android:id="@+id/checkBox2"/>
+            <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Other type"
+                    android:id="@+id/checkBox3"/>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content"
+                  android:layout_height="wrap_content" android:id="@+id/linearLayout">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sort by:"
+                  android:id="@+id/textView1" android:layout_gravity="center_vertical" android:textSize="20dp"
+                  android:textStyle="bold"/>
+        <RadioGroup android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Distance"
+                         android:id="@+id/radioButton2" android:layout_marginLeft="30dp"/>
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Name"
+                         android:id="@+id/radioButton3" android:layout_marginLeft="10dp"/>
+        </RadioGroup>
+    </LinearLayout>
+</LinearLayout>

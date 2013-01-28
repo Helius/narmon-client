@@ -46,6 +46,7 @@ public class MainActivity extends Activity implements
     private Timer updateTimer = null;
     //private ImageButton btFiltering;
     private HorizontalPager mPager;
+    private FilterDialog filterDialog;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -268,6 +269,8 @@ public class MainActivity extends Activity implements
             }
         });
 
+        filterDialog = new FilterDialog();
+
         VersionSender versionSender = new VersionSender();
         listUpdater = new ListUpdater();
         loginer = new Loginer();
@@ -379,7 +382,7 @@ public class MainActivity extends Activity implements
     public void actionBtnClick (View view)
     {
         if (view == findViewById(R.id.btn_sort)) {
-            
+            filterDialog.show(getFragmentManager(), "dlg1");
         } else if (view == findViewById(R.id.btn_settings)) {
             startActivity(new Intent(MainActivity.this, PreferActivity.class));
         }
