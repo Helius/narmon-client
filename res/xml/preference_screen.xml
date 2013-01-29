@@ -28,12 +28,20 @@
                 android:defaultValue="5"
                 android:entries="@array/listArray"
                 android:entryValues="@array/listValues" />
+        <CheckBoxPreference
+                android:title="@string/text_dont_use_navigation_checkbox"
+                android:id="@+id/use_geoloc"
+                android:key="@string/pref_key_use_geocode"
+                android:summary="@string/text_dont_use_navig_summary"
+                android:defaultValue="false"
+                />
         <EditTextPreference
                 android:id="@+id/geolocation_pref"
                 android:key="@string/pref_key_geoloc"
                 android:title="@string/text_Place"
                 android:summary="@string/text_Russia_novosibirsk"
                 android:dialogTitle="@string/text_Enter_your_place" />
+
 
         <!--CheckBoxPreference
                 android:key="checkbox_preference"

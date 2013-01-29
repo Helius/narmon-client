@@ -78,7 +78,6 @@ public class MainActivity extends Activity implements
             getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
-            setTitle("Connecting...");
         }
         @Override
         public void onResultReceived(String result) {
@@ -87,13 +86,7 @@ public class MainActivity extends Activity implements
             try {
                 makeSensorListFromJson(result);
                 //todo: probably we could place gui updating in MainActivity class
-                listAdapter.addAll(sensorList);
-                listAdapter.notifyDataSetChanged();
-                watchAdapter.addAll(sensorList);
-                watchAdapter.notifyDataSetChanged();
-                watchAdapter.getFilter().filter("watch");
-                fullListView.setVisibility(View.VISIBLE);
-                switchList();
+                listAdapter.update();
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Wrong server respond, try later", Toast.LENGTH_SHORT).show();
             }
@@ -104,7 +97,6 @@ public class MainActivity extends Activity implements
             getter = null;
             Log.w(TAG,"Server not responds");
             Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
-            setTitle("Server not responds");
             fullListView.setVisibility(View.INVISIBLE);
             findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
         }
@@ -158,6 +150,11 @@ public class MainActivity extends Activity implements
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + Math.round(l1*1000000) +" "+ Math.round(l2*1000000) + "\"}");
+        }
+        void sendLocation (String geoCode) {
+            getter = new ServerDataGetter();
+            getter.setOnListChangeListener(this);
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" +geoCode+ "\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -289,25 +286,40 @@ public class MainActivity extends Activity implements
         versionSender.sendVersion();
         loginer.login();
         listUpdater.updateList();
-        //send location
-        LocationSender locationSender = new LocationSender();
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        String provider = lm.getBestProvider(criteria, true);
-        Location mostRecentLocation = lm.getLastKnownLocation(provider);
-        if(mostRecentLocation != null){
-            double latid=mostRecentLocation.getLatitude();
-            double longid=mostRecentLocation.getLongitude();
-            // use API to send location
-            Log.d(TAG,"my location: " + latid +" "+longid);
-            locationSender.sendLocation(latid, longid);
-        }
+
+        sendLocation();
 
         Intent i = new Intent(this, OnBootReceiver.class);
         sendBroadcast(i);
         scheduleAlarmWatcher();
     }
+
+    void sendLocation () {
+        LocationSender locationSender = new LocationSender();
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_use_geocode),false)) {
+            // use address
+            locationSender.sendLocation(PreferenceManager.getDefaultSharedPreferences(this).
+                    getString(getString(R.string.pref_key_geoloc),getString(R.string.text_Russia_novosibirsk)));
+        } else {
+            // use gps
+            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            String provider = lm.getBestProvider(criteria, true);
+            Location mostRecentLocation = lm.getLastKnownLocation(provider);
+            if(mostRecentLocation != null){
+                double latid=mostRecentLocation.getLatitude();
+                double longid=mostRecentLocation.getLongitude();
+                // use API to send location
+                Log.d(TAG,"my location: " + latid +" "+longid);
+                locationSender.sendLocation(latid, longid);
+            } else {
+                locationSender.sendLocation(PreferenceManager.getDefaultSharedPreferences(this).
+                        getString(getString(R.string.pref_key_geoloc),getString(R.string.text_Russia_novosibirsk)));
+            }
+        }
+    }
+
 
     void makeSensorListFromJson (String result) throws JSONException {
         if (result != null) {
@@ -331,14 +343,6 @@ public class MainActivity extends Activity implements
                 }
             }
         }
-    }
-
-    private void switchList()
-    {
-        Log.d(TAG,"switch to list " + sensorList.size());
-        listAdapter.getFilter().filter("");
-        listAdapter.notifyDataSetChanged();
-        setTitle(sensorList.size() + " sensors online");
     }
 
     public static final String md5(final String s) {

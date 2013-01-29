@@ -30,6 +30,12 @@ public class PreferActivity extends PreferenceActivity implements SharedPreferen
             Preference loginPref =  findPreference(this.getText(R.string.pref_key_login));
             EditTextPreference el = (EditTextPreference) loginPref;
             el.setSummary(el.getText());
+            Preference useGeoCode = findPreference(this.getText(R.string.pref_key_use_geocode));
+            CheckBoxPreference cb = (CheckBoxPreference) useGeoCode;
+            if (cb.isChecked())
+                findPreference(this.getText(R.string.pref_key_geoloc)).setEnabled(true);
+            else
+                findPreference(this.getText(R.string.pref_key_geoloc)).setEnabled(false);
         }
     }
 
