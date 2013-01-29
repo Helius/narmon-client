@@ -19,18 +19,115 @@ import static android.util.Log.e;
 public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     private final Context context;
     private final List<Sensor> originItems;
-    private List<Sensor> sensorItems = null;
+    private ArrayList<Sensor> localItems = null;
     private SensorFilter filter = null;
     private final String TAG = "narodmon-adapter";
     ConfigHolder config;
+    private FilterFlags filterFlags;
 
     public SensorItemAdapter(Context context, ArrayList<Sensor> values) {
         super(context, R.layout.sensor_list_item);
         this.context = context;
         this.originItems = values;
-        this.sensorItems = new ArrayList<Sensor>();
+        this.localItems = new ArrayList<Sensor>();
         config = ConfigHolder.getInstance(context);
-   }
+    }
+
+    public void setFilterFlags (FilterFlags filterFlags) {
+        this.filterFlags = filterFlags;
+    }
+
+
+    private class SensorFilter extends Filter {
+        // NOTE: this function is *always* called from a background thread, and not the UI thread.
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            Log.d(TAG,"performFiltering with: " + constraint);
+            FilterResults filteredResult = new FilterResults();
+            ArrayList<Sensor> tempFilteredItems= new ArrayList<Sensor>();
+
+            for (Sensor originItem : originItems) {
+                boolean my_match = filterFlags.showingMyOnly && originItem.my || !filterFlags.showingMyOnly;
+                boolean type_match =
+                        filterFlags.types[FilterFlags.type_temperature] && (originItem.type == Sensor.TYPE_TEMPERATURE) ||
+                        filterFlags.types[FilterFlags.type_humidity] && (originItem.type == Sensor.TYPE_HUMIDITY) ||
+                        filterFlags.types[FilterFlags.type_pressure] && (originItem.type == Sensor.TYPE_PRESSURE) ||
+                        filterFlags.types[FilterFlags.type_unknown] && (originItem.type == Sensor.TYPE_UNKNOWN);
+
+                if (my_match && type_match) {
+                    tempFilteredItems.add(originItem);
+ //                   Log.d(TAG,"filter: add item " + originItem.getName());
+                }
+            }
+            filteredResult.values = tempFilteredItems;
+            filteredResult.count = tempFilteredItems.size();
+            Log.d(TAG, "set to filteredResult (size =) " + ((ArrayList<Sensor>)filteredResult.values).size());
+
+
+//            if (String.valueOf(constraint).equals("watch")) {
+//                Log.d(TAG,"make watch list");
+//                for (int i = 0; i < originItems.size(); i++) {
+//                    if (ConfigHolder.getInstance(context).isSensorWatched(originItems.get(i).getId())) {
+//                        tempFilteredItems.add(originItems.get(i));
+//                    }
+//                }
+//                filteredResult.values = tempFilteredItems;
+//                filteredResult.count = tempFilteredItems.size();
+//            } else if (String.valueOf(constraint).equals("temperature")) {
+//                for (Sensor originItem : originItems) {
+//                    if (originItem.type == Sensor.TYPE_TEMPERATURE) {
+//                        tempFilteredItems.add(originItem);
+//                    }
+//                }
+//                filteredResult.values = tempFilteredItems;
+//                filteredResult.count = tempFilteredItems.size();
+//            } else if (String.valueOf(constraint).equals("pressure")) {
+//                for (Sensor originItem : originItems) {
+//                    if (originItem.type == Sensor.TYPE_PRESSURE) {
+//                        tempFilteredItems.add(originItem);
+//                    }
+//                }
+//                filteredResult.values = tempFilteredItems;
+//                filteredResult.count = tempFilteredItems.size();
+//            } else if (String.valueOf(constraint).equals("humidity")) {
+//                for (Sensor originItem : originItems) {
+//                    if (originItem.type == Sensor.TYPE_HUMIDITY) {
+//                        tempFilteredItems.add(originItem);
+//                    }
+//                }
+//                filteredResult.values = tempFilteredItems;
+//                filteredResult.count = tempFilteredItems.size();
+//            } else if (String.valueOf(constraint).equals("unknown")) {
+//                for (Sensor originItem : originItems) {
+//                    if (originItem.type == Sensor.TYPE_UNKNOWN) {
+//                        tempFilteredItems.add(originItem);
+//                    }
+//                }
+//                filteredResult.values = tempFilteredItems;
+//                filteredResult.count = tempFilteredItems.size();
+//            } else {
+//                Log.d(TAG,"return originIems.size = " + originItems.size());
+//                filteredResult.values = originItems;
+//                filteredResult.count = originItems.size();
+//            }
+            return filteredResult;
+        }
+
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            ArrayList <Sensor> res = (ArrayList<Sensor>)(filterResults.values);
+            if (res == null) {
+                return;
+            }
+            localItems.clear();
+            for (int i = 0; i < res.size(); i++) {
+//                Log.d(TAG,"** filterResult add item: " + res.get(i).getName());
+                localItems.add (res.get(i));
+            }
+            notifyDataSetChanged();
+        }
+    }
 
     @Override
     public Filter getFilter() {
@@ -39,86 +136,14 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         return filter;
     }
 
-    private class SensorFilter extends Filter {
-        // NOTE: this function is *always* called from a background thread, and not the UI thread.
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            Log.d(TAG,"performFiltering with: " + constraint);
-            FilterResults filteredResult = new FilterResults();
-            ArrayList<Sensor> filteredItems= new ArrayList<Sensor>();
-            if (String.valueOf(constraint).equals("watch")) {
-                Log.d(TAG,"make watch list");
-                for (int i = 0; i < originItems.size(); i++) {
-                    if (ConfigHolder.getInstance(context).isSensorWatched(originItems.get(i).getId())) {
-                        filteredItems.add(originItems.get(i));
-                    }
-                }
-                filteredResult.values = filteredItems;
-                filteredResult.count = filteredItems.size();
-            } else if (String.valueOf(constraint).equals("temperature")) {
-                for (Sensor originItem : originItems) {
-                    if (originItem.type == Sensor.TYPE_TEMPERATURE) {
-                        filteredItems.add(originItem);
-                    }
-                }
-                filteredResult.values = filteredItems;
-                filteredResult.count = filteredItems.size();
-            } else if (String.valueOf(constraint).equals("pressure")) {
-                for (Sensor originItem : originItems) {
-                    if (originItem.type == Sensor.TYPE_PRESSURE) {
-                        filteredItems.add(originItem);
-                    }
-                }
-                filteredResult.values = filteredItems;
-                filteredResult.count = filteredItems.size();
-            } else if (String.valueOf(constraint).equals("humidity")) {
-                for (Sensor originItem : originItems) {
-                    if (originItem.type == Sensor.TYPE_HUMIDITY) {
-                        filteredItems.add(originItem);
-                    }
-                }
-                filteredResult.values = filteredItems;
-                filteredResult.count = filteredItems.size();
-            } else if (String.valueOf(constraint).equals("unknown")) {
-                for (Sensor originItem : originItems) {
-                    if (originItem.type == Sensor.TYPE_UNKNOWN) {
-                        filteredItems.add(originItem);
-                    }
-                }
-                filteredResult.values = filteredItems;
-                filteredResult.count = filteredItems.size();
-            } else {
-                Log.d(TAG,"return originIems.size = " + originItems.size());
-                filteredResult.values = originItems;
-                filteredResult.count = originItems.size();
-            }
-            return filteredResult;
-        }
-
-
-        @Override
-        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            Log.d(TAG, "publishResults: filterResults.size = " + ((List<Sensor>) filterResults.values).size());
-            sensorItems = (ArrayList<Sensor>)filterResults.values;
-            notifyDataSetChanged();
-            clear();
-
-            for (int i = 0; i < sensorItems.size(); i++)
-                add(sensorItems.get(i));
-            notifyDataSetInvalidated();
-        }
-
-
-    }
-
     @Override
     public int getCount() {
-        return sensorItems.size();
+        return localItems.size();
     }
 
     @Override
     public Sensor getItem(int position) {
-        return sensorItems.get(position);
+        return localItems.get(position);
     }
 
     @Override
@@ -136,8 +161,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         }
 
         ViewHolder holder = (ViewHolder)v.getTag();
-        if (position < sensorItems.size()) {
-            Sensor sensor = sensorItems.get(position);
+        if (position < localItems.size()) {
+            Sensor sensor = localItems.get(position);
             holder.name.setText(sensor.getName());
             holder.location.setText(sensor.getLocation());
             holder.value.setText(sensor.getValue());

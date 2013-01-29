@@ -15,8 +15,8 @@ public class Sensor implements Serializable {
     private String value;
     private Float distance;
     public Long time;
-    private boolean my;
-    private boolean pub;
+    public boolean my;
+    public boolean pub;
 
 
     // constructor

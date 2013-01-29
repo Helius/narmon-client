@@ -28,7 +28,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class MainActivity extends Activity implements
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener {
 
     private static final String AppApiVersion = "Av1.1a";
     private final String TAG = "narodmon";
@@ -47,6 +47,7 @@ public class MainActivity extends Activity implements
     //private ImageButton btFiltering;
     private HorizontalPager mPager;
     private FilterDialog filterDialog;
+    private FilterFlags filterFlags;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -57,6 +58,11 @@ public class MainActivity extends Activity implements
         } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
             loginer.login();
         }
+    }
+
+    @Override
+    public void onFilterChange() {
+        listAdapter.getFilter().filter("");
     }
 
 
@@ -223,6 +229,8 @@ public class MainActivity extends Activity implements
             }
         });
 
+        filterFlags = new FilterFlags();
+
         fullListView = (ListView)findViewById(R.id.fullListView);
         watchedListView = (ListView)findViewById(R.id.watchedListView);
         sensorList = new ArrayList<Sensor>();
@@ -236,6 +244,7 @@ public class MainActivity extends Activity implements
         uid = config.getUid();
 
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
+        listAdapter.setFilterFlags(filterFlags);
         fullListView.setAdapter(listAdapter);
         fullListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         fullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -269,7 +278,8 @@ public class MainActivity extends Activity implements
             }
         });
 
-        filterDialog = new FilterDialog();
+        filterDialog = new FilterDialog(filterFlags);
+        filterDialog.setOnChangeListener(this);
 
         VersionSender versionSender = new VersionSender();
         listUpdater = new ListUpdater();
@@ -330,6 +340,9 @@ public class MainActivity extends Activity implements
         }
     }
 
+    private void applyFiltering () {
+
+    }
 //    private void switchFavourites()
 //    {
 //        Log.d(TAG, "switch to watched");

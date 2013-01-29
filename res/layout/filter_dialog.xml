@@ -17,17 +17,18 @@
                 android:textStyle="bold"/>
         <RadioGroup
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:orientation="horizontal">
+                android:layout_height="wrap_content" android:orientation="horizontal"
+                android:id="@+id/radiogroupe_All_My" >
             <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="All"
-                    android:id="@+id/radioButton" android:layout_marginLeft="20dp"/>
+                    android:id="@+id/radioButtonAll" android:layout_marginLeft="20dp"/>
             <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="My only"
-                    android:id="@+id/radioButton1" android:layout_marginLeft="10dp"/>
+                    android:id="@+id/radioButtonMyOnly" android:layout_marginLeft="10dp"/>
         </RadioGroup>
     </LinearLayout>
     <LinearLayout
@@ -47,22 +48,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Temperature"
-                    android:id="@+id/checkBox1"/>
+                    android:id="@+id/checkBoxTemperature"/>
             <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Pressure"
-                    android:id="@+id/checkBox"/>
+                    android:id="@+id/checkBoxPressure"/>
             <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Humidity"
-                    android:id="@+id/checkBox2"/>
+                    android:id="@+id/checkBoxHumidity"/>
             <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Other type"
-                    android:id="@+id/checkBox3"/>
+                    android:id="@+id/checkBoxOtherType"/>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content"
@@ -71,11 +72,12 @@
                   android:id="@+id/textView1" android:layout_gravity="center_vertical" android:textSize="20dp"
                   android:textStyle="bold"/>
         <RadioGroup android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:id="@+id/radiogroupe_sort">
             <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Name"
-                         android:id="@+id/radioButton3" android:layout_marginLeft="20dp"/>
+                         android:id="@+id/radioButtonSortName" android:layout_marginLeft="20dp"/>
             <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Distance"
-                         android:id="@+id/radioButton2" android:layout_marginLeft="10dp"/>
+                         android:id="@+id/radioButtonSortDistance" android:layout_marginLeft="10dp"/>
         </RadioGroup>
     </LinearLayout>
 </LinearLayout>
