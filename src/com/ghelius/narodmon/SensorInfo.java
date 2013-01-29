@@ -32,12 +32,12 @@ public class SensorInfo extends Activity {
             TextView ago = (TextView) findViewById(R.id.text_ago);
             ImageView icon = (ImageView) findViewById(R.id.info_sensor_icon);
 
-            name.setText(sensor.getName());
-            location.setText(sensor.getLocation());
-            distance.setText(sensor.getDistance().toString());
+            name.setText(sensor.name);
+            location.setText(sensor.location);
+            distance.setText(sensor.distance.toString());
 
             String types;
-            switch (sensor.getType()) {
+            switch (sensor.type) {
                 case 1:
                     types = getString(R.string.type_termometr);
                     icon.setImageResource(R.drawable.termo_icon);
@@ -58,7 +58,7 @@ public class SensorInfo extends Activity {
             type.setText(types);
             setTitle(types + " sensor");
             String suffix = "";
-            switch (sensor.getType()) {
+            switch (sensor.type) {
                 case 1:
                     suffix = " C";
                     break;
@@ -69,9 +69,9 @@ public class SensorInfo extends Activity {
                     suffix = " %";
                     break;
             }
-            value.setText(sensor.getValue()+suffix);
+            value.setText(sensor.value+suffix);
 
-            id.setText(String.valueOf(sensor.getId()));
+            id.setText(String.valueOf(sensor.id));
 
             long dv = Long.valueOf(sensor.time)*1000;// its need to be in milisecond
             Date df = new java.util.Date(dv);
@@ -97,7 +97,7 @@ public class SensorInfo extends Activity {
             final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
             final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
 
-            if (config.isSensorWatched(sensor.getId())) {
+            if (config.isSensorWatched(sensor.id)) {
                 monitor.setImageResource(R.drawable.yey_blue);
             } else {
                 monitor.setImageResource(R.drawable.yey_gray);
@@ -107,12 +107,12 @@ public class SensorInfo extends Activity {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG,"monitoring onClick");
-                    if (config.isSensorWatched(sensor.getId())) {
-                        config.setSensorWatched(sensor.getId(),false);
+                    if (config.isSensorWatched(sensor.id)) {
+                        config.setSensorWatched(sensor.id,false);
                     } else {
-                        config.setSensorWatched(sensor.getId(),true);
+                        config.setSensorWatched(sensor.id,true);
                     }
-                    if (config.isSensorWatched(sensor.getId())) {
+                    if (config.isSensorWatched(sensor.id)) {
                         monitor.setImageResource(R.drawable.yey_blue);
                     } else {
                         monitor.setImageResource(R.drawable.yey_gray);

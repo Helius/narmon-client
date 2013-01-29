@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 
 public class Sensor implements Serializable {
-    private int id;
+    public int id;
     public int type;
     final static int TYPE_UNKNOWN     = 0;
     final static int TYPE_TEMPERATURE = 1;
@@ -39,29 +39,5 @@ public class Sensor implements Serializable {
         this.my = my;
         this.time = time;
         this.pub = pub;
-    }
-
-    public Float getDistance() {
-        return distance;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public int getId() {
-        return id;
     }
 }

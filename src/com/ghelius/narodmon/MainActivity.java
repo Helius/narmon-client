@@ -65,7 +65,6 @@ public class MainActivity extends Activity implements
         listAdapter.getFilter().filter("");
     }
 
-
     /*
     * Class for get full sensor list from server, parse it and put to sensorList and update listAdapter
     * */

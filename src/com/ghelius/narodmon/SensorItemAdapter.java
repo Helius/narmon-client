@@ -142,16 +142,16 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         ViewHolder holder = (ViewHolder)v.getTag();
         if (position < localItems.size()) {
             Sensor sensor = localItems.get(position);
-            holder.name.setText(sensor.getName());
-            holder.location.setText(sensor.getLocation());
-            holder.value.setText(sensor.getValue());
-            if (config.isSensorWatched(sensor.getId())) {
+            holder.name.setText(sensor.name);
+            holder.location.setText(sensor.location);
+            holder.value.setText(sensor.value);
+            if (config.isSensorWatched(sensor.id)) {
                 holder.value.setTypeface(null, Typeface.BOLD);
             } else {
                 holder.value.setTypeface(null, Typeface.NORMAL);
                 //holder.value.setVisibility(View.INVISIBLE);
             }
-            switch (sensor.getType()) {
+            switch (sensor.type) {
                 case 1:
                     holder.icon.setImageResource(R.drawable.termo_icon);
                     break;
