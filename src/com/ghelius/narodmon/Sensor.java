@@ -10,10 +10,10 @@ public class Sensor implements Serializable {
     final static int TYPE_TEMPERATURE = 1;
     final static int TYPE_PRESSURE    = 2;
     final static int TYPE_HUMIDITY    = 3;
-    private String location;
-    private String name;
-    private String value;
-    private Float distance;
+    public String location;
+    public String name;
+    public String value;
+    public Float distance;
     public Long time;
     public boolean my;
     public boolean pub;

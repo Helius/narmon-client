@@ -23,12 +23,6 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
     }
 
     interface OnChangeListener {
-//        void onSelectMyOnly(boolean my);
-//        void onSortDistance(boolean distance);
-//        void onSelectedTypeTemperature (boolean checked);
-//        void onSelectedTypePressure(boolean checked);
-//        void onSelectedTypeHumidity(boolean checked);
-//        void onSelectedTypeOther(boolean checked);
         void onFilterChange ();
     }
 

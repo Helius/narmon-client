@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static android.util.Log.e;
@@ -37,12 +39,27 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         this.filterFlags = filterFlags;
     }
 
+    class SensorNameComparator implements Comparator<Sensor> {
+        @Override
+        public int compare(Sensor o1, Sensor o2) {
+            return o1.name.compareToIgnoreCase(o2.name);
+        }
+    }
+
+    class SensorDistanceComparator implements Comparator<Sensor> {
+        @Override
+        public int compare(Sensor o1, Sensor o2) {
+            return o1.distance.compareTo(o2.distance);
+        }
+    }
 
     private class SensorFilter extends Filter {
+        private boolean prevSortByDistance = false;
+
         // NOTE: this function is *always* called from a background thread, and not the UI thread.
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            Log.d(TAG,"performFiltering with: " + constraint);
+            Log.d(TAG,"performFiltering");
             FilterResults filteredResult = new FilterResults();
             ArrayList<Sensor> tempFilteredItems= new ArrayList<Sensor>();
 
@@ -56,60 +73,19 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
                 if (my_match && type_match) {
                     tempFilteredItems.add(originItem);
- //                   Log.d(TAG,"filter: add item " + originItem.getName());
                 }
+            }
+            // avoid superfluous sorting
+            if (prevSortByDistance != filterFlags.sortingDistance) {
+                if (filterFlags.sortingDistance) {
+                    Collections.sort(tempFilteredItems, new SensorNameComparator());
+                } else {
+                    Collections.sort(tempFilteredItems, new SensorDistanceComparator());
+                }
+                prevSortByDistance = filterFlags.sortingDistance;
             }
             filteredResult.values = tempFilteredItems;
             filteredResult.count = tempFilteredItems.size();
-            Log.d(TAG, "set to filteredResult (size =) " + ((ArrayList<Sensor>)filteredResult.values).size());
-
-
-//            if (String.valueOf(constraint).equals("watch")) {
-//                Log.d(TAG,"make watch list");
-//                for (int i = 0; i < originItems.size(); i++) {
-//                    if (ConfigHolder.getInstance(context).isSensorWatched(originItems.get(i).getId())) {
-//                        tempFilteredItems.add(originItems.get(i));
-//                    }
-//                }
-//                filteredResult.values = tempFilteredItems;
-//                filteredResult.count = tempFilteredItems.size();
-//            } else if (String.valueOf(constraint).equals("temperature")) {
-//                for (Sensor originItem : originItems) {
-//                    if (originItem.type == Sensor.TYPE_TEMPERATURE) {
-//                        tempFilteredItems.add(originItem);
-//                    }
-//                }
-//                filteredResult.values = tempFilteredItems;
-//                filteredResult.count = tempFilteredItems.size();
-//            } else if (String.valueOf(constraint).equals("pressure")) {
-//                for (Sensor originItem : originItems) {
-//                    if (originItem.type == Sensor.TYPE_PRESSURE) {
-//                        tempFilteredItems.add(originItem);
-//                    }
-//                }
-//                filteredResult.values = tempFilteredItems;
-//                filteredResult.count = tempFilteredItems.size();
-//            } else if (String.valueOf(constraint).equals("humidity")) {
-//                for (Sensor originItem : originItems) {
-//                    if (originItem.type == Sensor.TYPE_HUMIDITY) {
-//                        tempFilteredItems.add(originItem);
-//                    }
-//                }
-//                filteredResult.values = tempFilteredItems;
-//                filteredResult.count = tempFilteredItems.size();
-//            } else if (String.valueOf(constraint).equals("unknown")) {
-//                for (Sensor originItem : originItems) {
-//                    if (originItem.type == Sensor.TYPE_UNKNOWN) {
-//                        tempFilteredItems.add(originItem);
-//                    }
-//                }
-//                filteredResult.values = tempFilteredItems;
-//                filteredResult.count = tempFilteredItems.size();
-//            } else {
-//                Log.d(TAG,"return originIems.size = " + originItems.size());
-//                filteredResult.values = originItems;
-//                filteredResult.count = originItems.size();
-//            }
             return filteredResult;
         }
 
@@ -122,7 +98,6 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             }
             localItems.clear();
             for (int i = 0; i < res.size(); i++) {
-//                Log.d(TAG,"** filterResult add item: " + res.get(i).getName());
                 localItems.add (res.get(i));
             }
             notifyDataSetChanged();
@@ -197,3 +172,4 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         ImageView icon;
     }
 }
+
