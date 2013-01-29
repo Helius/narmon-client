@@ -8,23 +8,32 @@
         <EditTextPreference
                 android:id="@+id/login_pref"
                 android:key="@string/pref_key_login"
-                android:title="Login (or email)"
-                android:summary="login or email on narodmon.ru"
-                android:dialogTitle="Enter login" />
+                android:title="@string/text_Login_or_email"
+                android:summary="@string/text_login_or_email_summ"
+                android:dialogTitle="@string/text_Enter_Login" />
         <EditTextPreference
                 android:id="@+id/passwd_pref"
                 android:key="@string/pref_key_passwd"
-                android:title="Password"
+                android:title="@string/text_password"
                 android:summary=""
                 android:inputType="textPassword"
-                android:dialogTitle="Enter password" />
+                android:dialogTitle="@string/text_Enter_password" />
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="@string/text_Options">
         <ListPreference
-                android:title="Sensor update interval"
+                android:title="@string/text_Sensor_update_interval"
                 android:key="@string/pref_key_interval"
-                android:summary="Select the sensor value update interval"
+                android:summary="@string/text_Select_update_interval"
                 android:defaultValue="5"
                 android:entries="@array/listArray"
                 android:entryValues="@array/listValues" />
+        <EditTextPreference
+                android:id="@+id/geolocation_pref"
+                android:key="@string/pref_key_geoloc"
+                android:title="@string/text_Place"
+                android:summary="@string/text_Russia_novosibirsk"
+                android:dialogTitle="@string/text_Enter_your_place" />
 
         <!--CheckBoxPreference
                 android:key="checkbox_preference"

@@ -12,9 +12,9 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Show:"
-                android:id="@+id/textView" android:layout_gravity="center_vertical" android:textSize="20dp"
-                android:textStyle="bold"/>
+                android:text="@string/text_show"
+                android:id="@+id/textView" android:layout_gravity="center_vertical"
+                />
         <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:orientation="horizontal"
@@ -22,12 +22,12 @@
             <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="All"
+                    android:text="@string/text_all"
                     android:id="@+id/radioButtonAll" android:layout_marginLeft="20dp"/>
             <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="My only"
+                    android:text="@string/text_my"
                     android:id="@+id/radioButtonMyOnly" android:layout_marginLeft="10dp"/>
         </RadioGroup>
     </LinearLayout>
@@ -38,12 +38,12 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Type:"
-                android:id="@+id/textView2" android:textSize="20dp" android:textStyle="bold"/>
+                android:text="@string/text_filte_type"
+                android:id="@+id/textView2"/>
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content" android:layout_marginLeft="20dp">
             <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -68,15 +68,15 @@
     </LinearLayout>
     <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content"
                   android:layout_height="wrap_content" android:id="@+id/linearLayout" android:layout_marginLeft="10dp">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sort by:"
-                  android:id="@+id/textView1" android:layout_gravity="center_vertical" android:textSize="20dp"
-                  android:textStyle="bold"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_sort_by"
+                  android:id="@+id/textView1" android:layout_gravity="center_vertical"
+                />
         <RadioGroup android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:id="@+id/radiogroupe_sort">
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Name"
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_by_name"
                          android:id="@+id/radioButtonSortName" android:layout_marginLeft="20dp"/>
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Distance"
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_by_distance"
                          android:id="@+id/radioButtonSortDistance" android:layout_marginLeft="10dp"/>
         </RadioGroup>
     </LinearLayout>

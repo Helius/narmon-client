@@ -112,7 +112,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ago"
+                android:text="@string/text_ago"
                 android:id="@+id/textView6" android:layout_marginLeft="5dp"/>
     </LinearLayout>
 </LinearLayout>

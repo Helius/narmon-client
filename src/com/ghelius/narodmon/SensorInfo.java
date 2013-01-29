@@ -83,13 +83,13 @@ public class SensorInfo extends Activity {
             long diftime = (System.currentTimeMillis() - sensor.time*1000)/1000;
             String agoText;
             if (diftime < 60) {
-                agoText = String.valueOf(diftime) + " sec";
+                agoText = String.valueOf(diftime) + getString(R.string.text_sec);
             } else if (diftime/60 < 60) {
-                agoText = String.valueOf(diftime/60) + " min";
+                agoText = String.valueOf(diftime/60) + getString(R.string.text_min);
             } else if (diftime/3600 < 24) {
-                agoText = String.valueOf(diftime/3600) + " hr";
+                agoText = String.valueOf(diftime/3600) + getString(R.string.text_hr);
             } else {
-                agoText = String.valueOf(diftime/(3600*24)) + " days";
+                agoText = String.valueOf(diftime/(3600*24)) + getString(R.string.text_days);
             }
 
             ago.setText(agoText);

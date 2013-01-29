@@ -196,6 +196,7 @@ public class MainActivity extends Activity implements
     public void onPause ()
     {
         stopTimer();
+        filterFlags.save(this);
         super.onPause();
     }
 
@@ -229,7 +230,7 @@ public class MainActivity extends Activity implements
             }
         });
 
-        filterFlags = new FilterFlags();
+        filterFlags = FilterFlags.load(this);
 
         fullListView = (ListView)findViewById(R.id.fullListView);
         watchedListView = (ListView)findViewById(R.id.watchedListView);
@@ -308,12 +309,6 @@ public class MainActivity extends Activity implements
         scheduleAlarmWatcher();
     }
 
-    class CustomComparator implements Comparator<Sensor> {
-        @Override
-        public int compare(Sensor o1, Sensor o2) {
-            return o1.getDistance().compareTo(o2.getDistance());
-        }
-    }
     void makeSensorListFromJson (String result) throws JSONException {
         if (result != null) {
             sensorList.clear();
@@ -335,22 +330,8 @@ public class MainActivity extends Activity implements
                     sensorList.add(new Sensor(id, type, location, name, values, distance, my, pub, times));
                 }
             }
-            // sort by distance
-            Collections.sort(sensorList, new CustomComparator());
         }
     }
-
-    private void applyFiltering () {
-
-    }
-//    private void switchFavourites()
-//    {
-//        Log.d(TAG, "switch to watched");
-//        listAdapter.getFilter().filter("watch");
-//        //btFavour.setImageResource(R.drawable.yey_blue);
-//        //btList.setImageResource(R.drawable.list_gray);
-//        setTitle(fullListView.getCount() + " watched sensors");
-//    }
 
     private void switchList()
     {
@@ -401,23 +382,6 @@ public class MainActivity extends Activity implements
         }
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        Log.d(TAG, "onOptionMenuItemSelected " + item);
-//        switch (item.getItemId()) {
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
-
-// TODO: for future, if i need more icons - use this menu, it's splitted action bar what use space effective
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater menuInflater = getMenuInflater();
-//        menuInflater.inflate(R.menu.icon_menu, menu);
-//
-//        return super.onCreateOptionsMenu(menu);
-//    }
 
     final Handler h = new Handler(new Handler.Callback() {
         @Override
@@ -473,6 +437,20 @@ public class MainActivity extends Activity implements
 
 }
 
-// android vector icons
-//http://www.yay.se/resources/android-native-icons
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        Log.d(TAG, "onOptionMenuItemSelected " + item);
+//        switch (item.getItemId()) {
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
+// TODO: for future, if i need more icons - use this menu, it's splitted action bar what use space effective
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater menuInflater = getMenuInflater();
+//        menuInflater.inflate(R.menu.icon_menu, menu);
+//
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
