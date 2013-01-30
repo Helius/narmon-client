@@ -33,13 +33,13 @@
     <string name="text_hr"> ч</string>
     <string name="text_days"> дней</string>
     <string name="text_ago">назад</string>
-    <string name="text_show">Показывать:</string>
+    <string name="text_show">Отображать:</string>
     <string name="text_all">все</string>
     <string name="text_my">мои</string>
-    <string name="text_filte_type">Тип:</string>
+    <string name="text_filte_type">Фильтр типов:</string>
     <string name="text_sort_by">Порядок:</string>
     <string name="text_by_name">Имя</string>
-    <string name="text_by_distance">Удаленность</string>
+    <string name="text_by_distance">Дистанция</string>
     <string name="text_dont_use_navig_summary">Использовать строку с адресом (ниже) вместо координат.</string>
     <string name="text_dont_use_navigation_checkbox">Не использовать навигацию</string>
 </resources>

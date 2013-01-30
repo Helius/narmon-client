@@ -16,10 +16,13 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
 
     final static String LOG_TAG = "narodmon-dialog";
     private OnChangeListener listener;
-    private final FilterFlags filterFlags;
+    private static UiFlags uiFlags = null;
 
-    FilterDialog (FilterFlags filterFlags) {
-        this.filterFlags = filterFlags;
+    public FilterDialog () {
+    }
+
+    public static void setUiFlags(UiFlags filterF) {
+        uiFlags = filterF;
     }
 
     interface OnChangeListener {
@@ -35,14 +38,14 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
         View v = inflater.inflate(R.layout.filter_dialog, null);
 
         RadioGroup radioGroup = (RadioGroup) v.findViewById(R.id.radiogroupe_All_My);
-        if (filterFlags.showingMyOnly)
+        if (uiFlags.showingMyOnly)
             radioGroup.check(R.id.radioButtonMyOnly);
         else
             radioGroup.check(R.id.radioButtonAll);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                filterFlags.showingMyOnly = checkedId == R.id.radioButtonMyOnly;
+                uiFlags.showingMyOnly = checkedId == R.id.radioButtonMyOnly;
 
                 if (listener!=null)
                     listener.onFilterChange();
@@ -50,55 +53,55 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
         });
 
         CheckBox cb1 = (CheckBox) v.findViewById(R.id.checkBoxTemperature);
-        cb1.setChecked(filterFlags.types[FilterFlags.type_temperature]);
+        cb1.setChecked(uiFlags.types[UiFlags.type_temperature]);
         cb1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                filterFlags.types[FilterFlags.type_temperature] = isChecked;
+                uiFlags.types[UiFlags.type_temperature] = isChecked;
                 if (listener!=null)
                     listener.onFilterChange();
             }
         });
         CheckBox cb2 = (CheckBox) v.findViewById(R.id.checkBoxPressure);
-        cb2.setChecked(filterFlags.types[FilterFlags.type_pressure]);
+        cb2.setChecked(uiFlags.types[UiFlags.type_pressure]);
         cb2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                filterFlags.types[FilterFlags.type_pressure] = isChecked;
+                uiFlags.types[UiFlags.type_pressure] = isChecked;
                 if (listener!=null)
                     listener.onFilterChange();
             }
         });
         CheckBox cb3 = (CheckBox) v.findViewById(R.id.checkBoxHumidity);
-        cb3.setChecked(filterFlags.types[FilterFlags.type_humidity]);
+        cb3.setChecked(uiFlags.types[UiFlags.type_humidity]);
         cb3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                filterFlags.types[FilterFlags.type_humidity] = isChecked;
+                uiFlags.types[UiFlags.type_humidity] = isChecked;
                 if (listener!=null)
                     listener.onFilterChange();
             }
         });
         CheckBox cb4 = (CheckBox) v.findViewById(R.id.checkBoxOtherType);
-        cb4.setChecked(filterFlags.types[FilterFlags.type_unknown]);
+        cb4.setChecked(uiFlags.types[UiFlags.type_unknown]);
         cb4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                filterFlags.types[FilterFlags.type_unknown] = isChecked;
+                uiFlags.types[UiFlags.type_unknown] = isChecked;
                 if (listener!=null)
                     listener.onFilterChange();
             }
         });
 
         RadioGroup radioGroup1 = (RadioGroup) v.findViewById(R.id.radiogroupe_sort);
-        if (filterFlags.sortingDistance)
+        if (uiFlags.sortingDistance)
             radioGroup1.check(R.id.radioButtonSortDistance);
         else
             radioGroup1.check(R.id.radioButtonSortName);
         radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                filterFlags.sortingDistance = checkedId == R.id.radioButtonSortDistance;
+                uiFlags.sortingDistance = checkedId == R.id.radioButtonSortDistance;
                 if (listener!=null)
                     listener.onFilterChange();
             }

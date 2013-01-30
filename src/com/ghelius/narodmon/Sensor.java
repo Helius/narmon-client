@@ -17,6 +17,7 @@ public class Sensor implements Serializable {
     public Long time;
     public boolean my;
     public boolean pub;
+    public boolean online;
 
 
     // constructor
@@ -39,5 +40,13 @@ public class Sensor implements Serializable {
         this.my = my;
         this.time = time;
         this.pub = pub;
+    }
+
+    public Sensor(Configuration.SensorTask storedItem) {
+        this.id = storedItem.id;
+        this.name = storedItem.name;
+        this.value = String.valueOf(storedItem.lastValue);
+        this.time = storedItem.timestamp;
+        this.online = false;
     }
 }

@@ -80,27 +80,23 @@ public class SensorInfo extends Activity {
             String vv = sdf.format(df);
             time.setText(vv);
 
-            long diftime = (System.currentTimeMillis() - sensor.time*1000)/1000;
-            String agoText;
-            if (diftime < 60) {
-                agoText = String.valueOf(diftime) + getString(R.string.text_sec);
-            } else if (diftime/60 < 60) {
-                agoText = String.valueOf(diftime/60) + getString(R.string.text_min);
-            } else if (diftime/3600 < 24) {
-                agoText = String.valueOf(diftime/3600) + getString(R.string.text_hr);
-            } else {
-                agoText = String.valueOf(diftime/(3600*24)) + getString(R.string.text_days);
-            }
-
-            ago.setText(agoText);
+            ago.setText(getTimeSince(sensor.time));
 
             final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
+            final ImageButton alarm = (ImageButton) findViewById(R.id.alarmSetup);
             final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
 
             if (config.isSensorWatched(sensor.id)) {
                 monitor.setImageResource(R.drawable.yey_blue);
+                alarm.setVisibility(View.VISIBLE);
+                if (config.isSensorWatchJob(sensor.id)) {
+                    alarm.setImageResource(R.drawable.alarm_blue);
+                } else {
+                    alarm.setImageResource(R.drawable.alarm_gray);
+                }
             } else {
                 monitor.setImageResource(R.drawable.yey_gray);
+                alarm.setVisibility(View.INVISIBLE);
             }
 
             monitor.setOnClickListener(new View.OnClickListener() {
@@ -108,20 +104,52 @@ public class SensorInfo extends Activity {
                 public void onClick(View v) {
                     Log.d(TAG,"monitoring onClick");
                     if (config.isSensorWatched(sensor.id)) {
-                        config.setSensorWatched(sensor.id,false);
+                        config.setSensorWatched(sensor,false);
+                        alarm.setVisibility(View.INVISIBLE);
                     } else {
-                        config.setSensorWatched(sensor.id,true);
+                        config.setSensorWatched(sensor,true);
+                        alarm.setVisibility(View.VISIBLE);
                     }
                     if (config.isSensorWatched(sensor.id)) {
                         monitor.setImageResource(R.drawable.yey_blue);
                     } else {
                         monitor.setImageResource(R.drawable.yey_gray);
                     }
+                    if (config.isSensorWatchJob(sensor.id)) {
+                        alarm.setImageResource(R.drawable.alarm_blue);
+                    } else {
+                        alarm.setImageResource(R.drawable.alarm_gray);
+                    }
+                }
+            });
+            alarm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    if (config.isSensorWatchJob(sensor.id)) {
+//                        alarm.setImageResource(R.drawable.alarm_blue);
+//                    } else {
+//                        alarm.setImageResource(R.drawable.alarm_gray);
+//                    }
                 }
             });
         } else {
             finish();
         }
 
+    }
+
+    public String getTimeSince (Long time) {
+        long difftime = (System.currentTimeMillis() - time*1000)/1000;
+        String agoText;
+        if (difftime < 60) {
+            agoText = String.valueOf(difftime) + getString(R.string.text_sec);
+        } else if (difftime/60 < 60) {
+            agoText = String.valueOf(difftime/60) + getString(R.string.text_min);
+        } else if (difftime/3600 < 24) {
+            agoText = String.valueOf(difftime/3600) + getString(R.string.text_hr);
+        } else {
+            agoText = String.valueOf(difftime/(3600*24)) + getString(R.string.text_days);
+        }
+        return agoText;
     }
 }

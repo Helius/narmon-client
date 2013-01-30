@@ -25,7 +25,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     private SensorFilter filter = null;
     private final String TAG = "narodmon-adapter";
     ConfigHolder config;
-    private FilterFlags filterFlags;
+    private UiFlags uiFlags;
 
     public SensorItemAdapter(Context context, ArrayList<Sensor> values) {
         super(context, R.layout.sensor_list_item);
@@ -35,8 +35,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         config = ConfigHolder.getInstance(context);
     }
 
-    public void setFilterFlags (FilterFlags filterFlags) {
-        this.filterFlags = filterFlags;
+    public void setUiFlags(UiFlags uiFlags) {
+        this.uiFlags = uiFlags;
     }
 
     public void update() {
@@ -58,8 +58,6 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     }
 
     private class SensorFilter extends Filter {
-        private boolean prevSortByDistance = false;
-
         // NOTE: this function is *always* called from a background thread, and not the UI thread.
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
@@ -68,25 +66,20 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             ArrayList<Sensor> tempFilteredItems= new ArrayList<Sensor>();
 
             for (Sensor originItem : originItems) {
-                boolean my_match = filterFlags.showingMyOnly && originItem.my || !filterFlags.showingMyOnly;
+                boolean my_match = uiFlags.showingMyOnly && originItem.my || !uiFlags.showingMyOnly;
                 boolean type_match =
-                        filterFlags.types[FilterFlags.type_temperature] && (originItem.type == Sensor.TYPE_TEMPERATURE) ||
-                        filterFlags.types[FilterFlags.type_humidity] && (originItem.type == Sensor.TYPE_HUMIDITY) ||
-                        filterFlags.types[FilterFlags.type_pressure] && (originItem.type == Sensor.TYPE_PRESSURE) ||
-                        filterFlags.types[FilterFlags.type_unknown] && (originItem.type == Sensor.TYPE_UNKNOWN);
-
+                        uiFlags.types[UiFlags.type_temperature] && (originItem.type == Sensor.TYPE_TEMPERATURE) ||
+                        uiFlags.types[UiFlags.type_humidity] && (originItem.type == Sensor.TYPE_HUMIDITY) ||
+                        uiFlags.types[UiFlags.type_pressure] && (originItem.type == Sensor.TYPE_PRESSURE) ||
+                        uiFlags.types[UiFlags.type_unknown] && (originItem.type == Sensor.TYPE_UNKNOWN);
                 if (my_match && type_match) {
                     tempFilteredItems.add(originItem);
                 }
             }
-            // avoid superfluous sorting
-            if (prevSortByDistance != filterFlags.sortingDistance) {
-                if (filterFlags.sortingDistance) {
-                    Collections.sort(tempFilteredItems, new SensorNameComparator());
-                } else {
-                    Collections.sort(tempFilteredItems, new SensorDistanceComparator());
-                }
-                prevSortByDistance = filterFlags.sortingDistance;
+            if (uiFlags.sortingDistance) {
+                Collections.sort(tempFilteredItems, new SensorDistanceComparator());
+            } else {
+                Collections.sort(tempFilteredItems, new SensorNameComparator());
             }
             filteredResult.values = tempFilteredItems;
             filteredResult.count = tempFilteredItems.size();

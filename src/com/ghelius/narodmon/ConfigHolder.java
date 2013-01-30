@@ -89,19 +89,28 @@ public class ConfigHolder {
         return false;
     }
 
+    public boolean isSensorWatchJob (int id)
+    {
+        for (int i = 0; i < config.watchedId.size(); i++) {
+            if (config.watchedId.get(i).id == id)
+                return (!config.watchedId.get(i).job.equals(Configuration.NOTHING));
+        }
+        return false;
+    }
+
     // add ID to list or remove from list, depends of 'watch'
-    public void setSensorWatched (int id, boolean watch) {
+    public void setSensorWatched (Sensor sensor, boolean watch) {
         if (!watch) {
             for (int i = 0; i < config.watchedId.size(); i++) {
-                if (config.watchedId.get(i).id == id)
+                if (config.watchedId.get(i).id == sensor.id)
                     config.watchedId.remove(i);
             }
         } else {
             for (int i = 0; i < config.watchedId.size(); i++) {
-                if (config.watchedId.get(i).id == id)
+                if (config.watchedId.get(i).id == sensor.id)
                     return;
             }
-            config.insert(id);
+            config.insert(sensor.id, sensor.name);
         }
         saveConfig();
     }

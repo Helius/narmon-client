@@ -33,9 +33,10 @@ public class MainActivity extends Activity implements
     private static final String AppApiVersion = "Av1.1a";
     private final String TAG = "narodmon";
     private ListUpdater listUpdater;
-    private ArrayList<Sensor> sensorList = null;
-    private SensorItemAdapter listAdapter = null;
-    private SensorItemAdapter watchAdapter = null;
+    private ArrayList<Sensor> sensorList;
+    private ArrayList<Sensor> watchedList;
+    private SensorItemAdapter listAdapter;
+    private WatchedItemAdapter watchAdapter;
     //private ImageButton btFavour = null;
     //private ImageButton btList = null;
     private ListView fullListView = null;
@@ -47,7 +48,7 @@ public class MainActivity extends Activity implements
     //private ImageButton btFiltering;
     private HorizontalPager mPager;
     private FilterDialog filterDialog;
-    private FilterFlags filterFlags;
+    private UiFlags uiFlags;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -62,7 +63,7 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onFilterChange() {
-        listAdapter.getFilter().filter("");
+        listAdapter.update();
     }
 
     /*
@@ -86,6 +87,7 @@ public class MainActivity extends Activity implements
                 makeSensorListFromJson(result);
                 //todo: probably we could place gui updating in MainActivity class
                 listAdapter.update();
+                updateWatchedList();
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Wrong server respond, try later", Toast.LENGTH_SHORT).show();
             }
@@ -94,7 +96,7 @@ public class MainActivity extends Activity implements
         @Override
         public void onNoResult() {
             getter = null;
-            Log.w(TAG,"Server not responds");
+            Log.w(TAG, "Server not responds");
             Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
             fullListView.setVisibility(View.INVISIBLE);
             findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
@@ -153,7 +155,7 @@ public class MainActivity extends Activity implements
         void sendLocation (String geoCode) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" +geoCode+ "\"}");
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + geoCode + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -191,21 +193,33 @@ public class MainActivity extends Activity implements
     @Override
     public void onPause ()
     {
+        Log.i(TAG,"onPause");
         stopTimer();
-        filterFlags.save(this);
+        uiFlags.save(this);
         super.onPause();
     }
 
     @Override
     public void onResume () {
+        super.onResume();
         Log.i(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         startTimer();
-        super.onResume();
+        if (uiFlags.uiMode == UiFlags.UiMode.watched) {
+            Log.d(TAG,"onResume uiMode is watched, switch Watched");
+            mPager.setCurrentScreen(1,false);
+            getActionBar().setSelectedNavigationItem(1);
+        } else {
+            Log.d(TAG,"onResume uiMode is list, switch list");
+            mPager.setCurrentScreen(0,false);
+            getActionBar().setSelectedNavigationItem(0);
+        }
     }
 
     @Override
     public void onDestroy () {
+        Log.i(TAG,"onDestroy");
+        uiFlags.save(this);
         stopTimer();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroy();
@@ -216,6 +230,7 @@ public class MainActivity extends Activity implements
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG,"onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mPager = (HorizontalPager) findViewById(R.id.horizontal_pager);
@@ -223,10 +238,24 @@ public class MainActivity extends Activity implements
             @Override
             public void onScreenSwitched(int screen) {
                 getActionBar().setSelectedNavigationItem(screen);
+                if (screen == 1) {
+                    uiFlags.uiMode = UiFlags.UiMode.watched;
+                    Log.d(TAG,"uiMode is watched");
+                } else {
+                    uiFlags.uiMode = UiFlags.UiMode.list;
+                    Log.d(TAG,"uiMode is list");
+                }
             }
         });
 
-        filterFlags = FilterFlags.load(this);
+        uiFlags = UiFlags.load(this);
+//        if (uiFlags.uiMode == UiFlags.UiMode.watched) {
+//            Log.d(TAG,"uiMode is watched, switch Watched");
+//            //mPager.setCurrentScreen(1,false);
+//        } else {
+//            Log.d(TAG,"uiMode is list, switch List");
+//            //mPager.setCurrentScreen(0,false);
+//        }
 
         fullListView = (ListView)findViewById(R.id.fullListView);
         watchedListView = (ListView)findViewById(R.id.watchedListView);
@@ -241,7 +270,7 @@ public class MainActivity extends Activity implements
         uid = config.getUid();
 
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
-        listAdapter.setFilterFlags(filterFlags);
+        listAdapter.setUiFlags(uiFlags);
         fullListView.setAdapter(listAdapter);
         fullListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         fullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -250,17 +279,16 @@ public class MainActivity extends Activity implements
                 sensorItemClick(position);
             }
         });
-
-        watchAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
+        watchedList = new ArrayList<Sensor>();
+        watchAdapter = new WatchedItemAdapter(getApplicationContext(), watchedList);
         watchedListView.setAdapter(watchAdapter);
         watchedListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         watchedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                sensorItemClick(position);
+                watchedItemClick(position);
             }
         });
-
 
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -270,12 +298,13 @@ public class MainActivity extends Activity implements
                 android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-                mPager.setCurrentScreen(itemPosition, true);
+              //  mPager.setCurrentScreen(itemPosition, true);
                 return true;
             }
         });
 
-        filterDialog = new FilterDialog(filterFlags);
+        FilterDialog.setUiFlags(uiFlags);
+        filterDialog = new FilterDialog();
         filterDialog.setOnChangeListener(this);
 
         VersionSender versionSender = new VersionSender();
@@ -291,6 +320,31 @@ public class MainActivity extends Activity implements
         Intent i = new Intent(this, OnBootReceiver.class);
         sendBroadcast(i);
         scheduleAlarmWatcher();
+
+    }
+
+
+    private void updateWatchedList() {
+        watchedList.clear();
+        for (Configuration.SensorTask storedItem : ConfigHolder.getInstance(this).getConfig().watchedId) {
+            boolean found = false;
+            for (Sensor aSensorList : sensorList) {
+                if (storedItem.id == aSensorList.id) {
+                    // watched item online
+                    aSensorList.online = true;
+                    watchedList.add(aSensorList);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                // watched item offline
+                watchedList.add(new Sensor(storedItem));
+            }
+        }
+        watchAdapter.clear();
+        watchAdapter.addAll(watchedList);
+        watchAdapter.notifyDataSetChanged();
     }
 
     void sendLocation () {
@@ -368,10 +422,16 @@ public class MainActivity extends Activity implements
         return "";
     }
 
+    private void watchedItemClick(int position) {
+        Intent i = new Intent (this, SensorInfo.class);
+        i.putExtra("Sensor", watchAdapter.getItem(position));
+        startActivity(i);
+    }
+
     private void sensorItemClick (int position)
     {
         Intent i = new Intent (this, SensorInfo.class);
-        i.putExtra("Sensor", sensorList.get(position));
+        i.putExtra("Sensor", listAdapter.getItem(position));
         startActivity(i);
     }
 
