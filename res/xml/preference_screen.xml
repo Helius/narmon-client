@@ -41,24 +41,5 @@
                 android:title="@string/text_Place"
                 android:summary="@string/text_Russia_novosibirsk"
                 android:dialogTitle="@string/text_Enter_your_place" />
-
-
-        <!--CheckBoxPreference
-                android:key="checkbox_preference"
-                android:title="titel2"
-                android:summary="summary2" /-->
-
     </PreferenceCategory>
-
-    <!--PreferenceCategory
-            android:title="Application">
-
-        <EditTextPreference
-                android:key=""
-                android:title="title4"
-                android:summary="summary4"
-                android:dialogTitle="dialogTitle4" />
-
-    </PreferenceCategory-->
-
 </PreferenceScreen>

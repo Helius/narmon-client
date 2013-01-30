@@ -156,16 +156,35 @@ public class MainActivity extends Activity implements
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" +
-                    String.valueOf((double)Math.round(l2*1000000)/1000000) +","+ String.valueOf((double)Math.round(l1*1000000)/1000000) + "\"}");
+                    String.valueOf((double) Math.round(l2 * 1000000) / 1000000) + "," + String.valueOf((double) Math.round(l1 * 1000000) / 1000000) + "\"}");
         }
         void sendLocation (String geoCode) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put ("addr",geoCode);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG,"json is: " + jsonObject.toString());
+            http://androidforums.ru/topic/9870-json-и-русские-символы/
+
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + geoCode + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
             //TODO: send this addres string to preference
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(result);
+                String addr = jsonObject.getString("addr");
+                Log.d(TAG, "location result, addr: " + addr);
+                PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString(getString(R.string.pref_key_geoloc),addr).commit();
+            } catch (JSONException e) {
+                Log.e(TAG,"Location result: wrong json - " + e.getMessage());
+            }
+
             Log.d(TAG, "Location result: " + result);
             listUpdater.updateList();
         }
