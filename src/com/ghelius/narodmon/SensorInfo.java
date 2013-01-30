@@ -6,7 +6,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import org.achartengine.ChartFactory;
+import org.achartengine.GraphicalView;
+import org.achartengine.chart.PointStyle;
+import org.achartengine.model.XYMultipleSeriesDataset;
+import org.achartengine.model.XYSeries;
+import org.achartengine.renderer.XYMultipleSeriesRenderer;
+import org.achartengine.renderer.XYSeriesRenderer;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -56,7 +64,7 @@ public class SensorInfo extends Activity {
                     break;
             }
             type.setText(types);
-            setTitle(types + " sensor");
+            setTitle(types);
             String suffix = "";
             switch (sensor.type) {
                 case 1:
@@ -151,5 +159,66 @@ public class SensorInfo extends Activity {
             agoText = String.valueOf(difftime/(3600*24)) + getString(R.string.text_days);
         }
         return agoText;
+    }
+
+    private GraphicalView mChart;
+    private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
+    private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
+    private XYSeries mCurrentSeries;
+    private XYSeriesRenderer mCurrentRenderer;
+
+    private void initChart() {
+        mCurrentSeries = new XYSeries("");
+        mDataset.addSeries(mCurrentSeries);
+        mCurrentRenderer = new XYSeriesRenderer();
+        mRenderer.addSeriesRenderer(mCurrentRenderer);
+        mRenderer.setShowLabels(true);
+        mRenderer.setShowGrid(true);
+        mRenderer.setGridColor(0xFF505050);
+        mRenderer.setXLabels(20);
+        mRenderer.setYLabels(10);
+        mRenderer.setPointSize(4f);
+        mRenderer.setLabelsTextSize(15);
+        mCurrentRenderer.setColor(0xFF00FF00);
+        mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
+        mCurrentRenderer.setLineWidth(2);
+        mCurrentRenderer.setFillPoints(true);
+        mCurrentRenderer.setChartValuesTextSize(15);
+
+    }
+
+    private void addSampleData() {
+        mCurrentSeries.add(1, 2);
+        mCurrentSeries.add(2, 3);
+        mCurrentSeries.add(3, 2);
+        mCurrentSeries.add(4, 5);
+        mCurrentSeries.add(5, 4);
+        mCurrentSeries.add(10, 3);
+        mCurrentSeries.add(11, 1);
+        mCurrentSeries.add(12, -1);
+        mCurrentSeries.add(13, -3);
+        mCurrentSeries.add(14, -2);
+        mCurrentSeries.add(15, 0);
+        mCurrentSeries.add(16, 5);
+        mCurrentSeries.add(17, 10);
+        mCurrentSeries.add(18, 20);
+        mCurrentSeries.add(19, 18);
+        mCurrentSeries.add(20, 15);
+        mCurrentSeries.add(25, 10);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
+        if (mChart == null) {
+            initChart();
+            addSampleData();
+            //mChart = ChartFactory.getCubeLineChartView(this, mDataset, mRenderer, 0.2f);
+            mChart = ChartFactory.getLineChartView(this, mDataset, mRenderer);
+            layout.addView(mChart);
+        } else {
+            mChart.repaint();
+        }
     }
 }

@@ -8,7 +8,7 @@
     <string name="text_distance">Удаленность:</string>
     <string name="text_km">км</string>
     <string name="text_type">Тип:</string>
-    <string name="text_lastupdate">Выход на связь:</string>
+    <string name="text_lastupdate">Время последнего показания:</string>
     <string name="menu_text_quit">выход</string>
     <string name="menu_text_preference">Настройки</string>
     <string name="pref_user_settings">Пользователь</string>
@@ -28,10 +28,10 @@
     <string name="text_Enter_your_place">Введите ардес</string>
     <string name="text_Login_or_email">Логин (или email)</string>
     <string name="text_Enter_Login">Введите логин</string>
-    <string name="text_sec"> сек</string>
-    <string name="text_min"> мин</string>
-    <string name="text_hr"> ч</string>
-    <string name="text_days"> дней</string>
+    <string name="text_sec">сек</string>
+    <string name="text_min">мин</string>
+    <string name="text_hr">ч</string>
+    <string name="text_days">дней</string>
     <string name="text_ago">назад</string>
     <string name="text_show">Отображать:</string>
     <string name="text_all">все</string>

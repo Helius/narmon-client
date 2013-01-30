@@ -1,6 +1,7 @@
 package com.ghelius.narodmon;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -138,12 +139,25 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             holder.name.setText(sensor.name);
             holder.location.setText(sensor.location);
             holder.value.setText(sensor.value);
+
             if (config.isSensorWatched(sensor.id)) {
                 holder.value.setTypeface(null, Typeface.BOLD);
             } else {
                 holder.value.setTypeface(null, Typeface.NORMAL);
-                //holder.value.setVisibility(View.INVISIBLE);
             }
+
+            if (ConfigHolder.getInstance(context).isSensorWatched(sensor.id)) {
+                holder.value.setTextColor(Color.argb(0xFF,0x00,0xFF,0x00));
+            } else {
+                holder.value.setTextColor(Color.WHITE);
+            }
+
+            if (sensor.time < System.currentTimeMillis()/1000 - 3600) {
+                holder.name.setTextColor(Color.GRAY);
+            } else {
+                holder.name.setTextColor(Color.WHITE);
+            }
+
             switch (sensor.type) {
                 case 1:
                     holder.icon.setImageResource(R.drawable.termo_icon);
