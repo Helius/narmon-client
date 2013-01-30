@@ -18,19 +18,24 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends Activity implements
         SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener {
 
-    private static final String AppApiVersion = "Av1.1a";
+    private static final String AppApiVersion = "A1.1a";
     private final String TAG = "narodmon";
     private ListUpdater listUpdater;
     private ArrayList<Sensor> sensorList;
@@ -150,7 +155,8 @@ public class MainActivity extends Activity implements
         void sendLocation (Double l1, Double l2) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + Math.round(l1*1000000) +" "+ Math.round(l2*1000000) + "\"}");
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" +
+                    String.valueOf((double)Math.round(l2*1000000)/1000000) +","+ String.valueOf((double)Math.round(l1*1000000)/1000000) + "\"}");
         }
         void sendLocation (String geoCode) {
             getter = new ServerDataGetter();
@@ -159,6 +165,7 @@ public class MainActivity extends Activity implements
         }
         @Override
         public void onResultReceived(String result) {
+            //TODO: send this addres string to preference
             Log.d(TAG, "Location result: " + result);
             listUpdater.updateList();
         }

@@ -133,6 +133,8 @@ public class SensorInfo extends Activity {
             alarm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    AlarmsSetupDialog dialog = new AlarmsSetupDialog();
+                    dialog.show(getFragmentManager(),"alarmDialog");
 //                    if (config.isSensorWatchJob(sensor.id)) {
 //                        alarm.setImageResource(R.drawable.alarm_blue);
 //                    } else {

@@ -20,4 +20,13 @@
         <item>Online sensors</item>
         <item>Watched sensors</item>
     </string-array>
+    <string-array name="alarms_list">
+        <item>None</item>
+        <item>\'More than limit\' alarm</item>
+        <item>\'Less than limit\' alarm</item>
+        <item>\'Out of limits\' alarm</item>
+        <item>\'Within of limits\' alarm</item>
+
+    </string-array>
+
 </resources>

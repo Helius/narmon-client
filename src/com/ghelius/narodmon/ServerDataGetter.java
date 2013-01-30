@@ -46,7 +46,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     protected String doInBackground(String... uri) {
         Log.d(TAG,"doInBackground");
         String responseString = null;
-        URL url = null;
+        URL url;
         HttpURLConnection urlConnection = null;
         try {
             Log.d(TAG, uri[0]);
