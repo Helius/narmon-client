@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+    <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/AlarmSpinner" android:spinnerMode="dropdown"
+            android:entries="@array/alarms_list"/>
+    <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hight limit"
+                    android:id="@+id/textView1" android:layout_gravity="center" android:layout_marginRight="10dp"/>
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New EditText"
+                    android:id="@+id/editText" android:inputType="numberSigned"/>
+        </TableRow>
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Low limit"
+                    android:id="@+id/textView" android:layout_gravity="center" android:layout_marginRight="10dp"
+                    android:layout_column="0"/>
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New EditText"
+                    android:id="@+id/editText1" android:layout_column="1" android:inputType="numberSigned"/>
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>

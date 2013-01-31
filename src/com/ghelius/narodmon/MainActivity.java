@@ -156,16 +156,7 @@ public class MainActivity extends Activity implements
         void sendLocation (String geoCode) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            JSONObject jsonObject = new JSONObject();
-            try {
-                jsonObject.put ("addr",geoCode);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Log.d(TAG,"json is: " + jsonObject.toString());
-            http://androidforums.ru/topic/9870-json-и-русские-символы/
-
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + geoCode + "\"}");
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + JSONEncoder.encode(geoCode) + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -510,6 +501,7 @@ public class MainActivity extends Activity implements
                         getString(getString(R.string.pref_key_interval),"5"))),
                 pi);
     }
+
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 ////        MenuInflater menuInflater = getMenuInflater();
