@@ -35,22 +35,17 @@ import java.util.TimerTask;
 public class MainActivity extends Activity implements
         SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener {
 
-    private static final String AppApiVersion = "A1.1a";
     private final String TAG = "narodmon";
     private ListUpdater listUpdater;
     private ArrayList<Sensor> sensorList;
     private ArrayList<Sensor> watchedList;
     private SensorItemAdapter listAdapter;
     private WatchedItemAdapter watchAdapter;
-    //private ImageButton btFavour = null;
-    //private ImageButton btList = null;
     private ListView fullListView = null;
     private ListView watchedListView = null;
     private String uid;
-    private float fromPosition;
     private Loginer loginer;
     private Timer updateTimer = null;
-    //private ImageButton btFiltering;
     private HorizontalPager mPager;
     private FilterDialog filterDialog;
     private UiFlags uiFlags;
@@ -202,7 +197,7 @@ public class MainActivity extends Activity implements
         void sendVersion () {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"version\",\"uuid\":\"" + uid + "\",\"version\":\"" + AppApiVersion + "\"}");
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"version\",\"uuid\":\"" + uid + "\",\"version\":\"" + getString(R.string.app_version_name) + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
