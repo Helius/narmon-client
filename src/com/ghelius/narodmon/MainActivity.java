@@ -270,13 +270,6 @@ public class MainActivity extends Activity implements
         });
 
         uiFlags = UiFlags.load(this);
-//        if (uiFlags.uiMode == UiFlags.UiMode.watched) {
-//            Log.d(TAG,"uiMode is watched, switch Watched");
-//            //mPager.setCurrentScreen(1,false);
-//        } else {
-//            Log.d(TAG,"uiMode is list, switch List");
-//            //mPager.setCurrentScreen(0,false);
-//        }
 
         fullListView = (ListView)findViewById(R.id.fullListView);
         watchedListView = (ListView)findViewById(R.id.watchedListView);
@@ -313,13 +306,13 @@ public class MainActivity extends Activity implements
 
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME);
         actionBar.setCustomView(R.layout.actionbar_top); //load your layout
         actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
                 android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-              //  mPager.setCurrentScreen(itemPosition, true);
+                mPager.setCurrentScreen(itemPosition, true);
                 return true;
             }
         });
@@ -341,7 +334,6 @@ public class MainActivity extends Activity implements
         Intent i = new Intent(this, OnBootReceiver.class);
         sendBroadcast(i);
         scheduleAlarmWatcher();
-
     }
 
 
@@ -518,6 +510,15 @@ public class MainActivity extends Activity implements
                         getString(getString(R.string.pref_key_interval),"5"))),
                 pi);
     }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+////        MenuInflater menuInflater = getMenuInflater();
+////        menuInflater.inflate(R.menu.icon_menu, menu);
+////
+////        return super.onCreateOptionsMenu(menu);
+//        Log.i(TAG,"onCreateOptionMenu");
+//        return false;
+//    }
 
 }
 

@@ -17,7 +17,7 @@
         <item>30</item>
     </string-array>
     <string-array name="action_list">
-        <item>Датчики онлайн</item>
+        <item>Все датчики</item>
         <item>Наблюдаемые</item>
     </string-array>
 </resources>
