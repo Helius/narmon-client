@@ -12,9 +12,11 @@ import java.net.URL;
 
 class ServerDataGetter extends AsyncTask<String, String, String> {
     private final static String TAG = "narodmon-getter";
+    boolean asyncJobFail = false;
     interface OnResultListener {
         void onResultReceived(String result);
         void onNoResult ();
+        boolean asyncJobWithResult(String result);
     }
 
     OnResultListener listener;
@@ -56,15 +58,29 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
             urlConnection.setReadTimeout(10000);
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             responseString = inputStreamToString(in);
+            publishProgress(responseString);
+            if (asyncJobFail) {
+                // callback reports about fail, so result not valid
+            }
         } catch (MalformedURLException e) {
             Log.e(TAG,"MalformedURLException:" + e.getMessage());
         } catch (IOException e) {
             Log.e(TAG,"IOException:" + e.getMessage());
             e.printStackTrace();
         } finally {
-            urlConnection.disconnect();
+            if (urlConnection != null)
+                urlConnection.disconnect();
         }
         return responseString;
+    }
+
+    @Override
+    protected void onProgressUpdate (String... value) {
+        if (value != null)
+            if (!listener.asyncJobWithResult(value[0])) {
+                Log.e(TAG, "asyncJob report about fail");
+                asyncJobFail = true;
+            }
     }
 
     @Override
@@ -74,7 +90,8 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         if (isCancelled()) {
             Log.d(TAG,"task was cancelled");
         }
-        if ((result == null)) {
+        if ((result == null)||(asyncJobFail)) {
+            Log.e(TAG,"asyncJob report about fail, so finished with NoResult");
             listener.onNoResult();
         } else {
             listener.onResultReceived(result);

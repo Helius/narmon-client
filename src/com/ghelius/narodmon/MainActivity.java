@@ -21,34 +21,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends Activity implements
-        SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener {
 
     private final String TAG = "narodmon";
-    private ListUpdater listUpdater;
     private ArrayList<Sensor> sensorList;
     private ArrayList<Sensor> watchedList;
     private SensorItemAdapter listAdapter;
     private WatchedItemAdapter watchAdapter;
-    private ListView fullListView = null;
-    private ListView watchedListView = null;
-    private String uid;
-    private Loginer loginer;
     private Timer updateTimer = null;
     private HorizontalPager mPager;
     private FilterDialog filterDialog;
     private UiFlags uiFlags;
+    private NarodmonApi narodmonApi;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -57,7 +47,7 @@ public class MainActivity extends Activity implements
             scheduleAlarmWatcher();
             startTimer();
         } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
-            loginer.login();
+            doAuthorisation();
         }
     }
 
@@ -65,142 +55,6 @@ public class MainActivity extends Activity implements
     public void onFilterChange() {
         listAdapter.update();
     }
-
-    /*
-    * Class for get full sensor list from server, parse it and put to sensorList and update listAdapter
-    * */
-    private class ListUpdater implements ServerDataGetter.OnResultListener {
-        ServerDataGetter getter;
-        void updateList () {
-            findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
-            if (getter != null)
-                getter.cancel(true);
-            getter = new ServerDataGetter ();
-            getter.setOnListChangeListener(this);
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
-        }
-        @Override
-        public void onResultReceived(String result) {
-            Log.d(TAG,"result resived " + result);
-            getter = null;
-            try {
-                makeSensorListFromJson(result);
-                //todo: probably we could place gui updating in MainActivity class
-                listAdapter.update();
-                updateWatchedList();
-            } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), "Wrong server respond, try later", Toast.LENGTH_SHORT).show();
-            }
-            findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
-        }
-        @Override
-        public void onNoResult() {
-            getter = null;
-            Log.w(TAG, "Server not responds");
-            Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
-            fullListView.setVisibility(View.INVISIBLE);
-            findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
-        }
-    }
-
-    /*
-    * Class for login procedure
-    * */
-    private class Loginer implements ServerDataGetter.OnResultListener {
-        ServerDataGetter getter;
-        void login ()
-        {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-            String userLogin = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
-            String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
-            Log.d(TAG,"my id is: " + uid + ", login: " + userLogin + ", passwd: " + passwd);
-            if (userLogin.equals("")) {// don't try if login is empty
-                Log.d(TAG,"Loginer: login is empty, don't try");
-                return;
-            }
-            getter = new ServerDataGetter();
-            getter.setOnListChangeListener(this);
-            Log.d(TAG,"password: " + passwd + " md5: " + md5(passwd));
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"login\",\"uuid\":\"" + uid + "\",\"login\":\"" + userLogin +"\",\"hash\":\"" + md5(uid+md5(passwd)) +"\"}");
-        }
-        @Override
-        public void onResultReceived(String result) {
-            //{"error":"auth error"} or {"login":"mylogin"}
-            Log.d(TAG,"Login result: " + result);
-            try {
-                JSONObject jObject = new JSONObject(result);
-                String login = jObject.getString("login");
-                Log.d(TAG,"Login result: " + login);
-            } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), "Login failed (wrong answer)", Toast.LENGTH_SHORT).show();
-            }
-            listUpdater.updateList();
-        }
-        @Override
-        public void onNoResult() {
-            Log.e(TAG,"Server not responds");
-        }
-    }
-
-    /*
-    * Class for location send procedure
-    * */
-    private class LocationSender implements ServerDataGetter.OnResultListener {
-        ServerDataGetter getter;
-        void sendLocation (Double l1, Double l2) {
-            getter = new ServerDataGetter();
-            getter.setOnListChangeListener(this);
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" +
-                    String.valueOf((double) Math.round(l2 * 1000000) / 1000000) + "," + String.valueOf((double) Math.round(l1 * 1000000) / 1000000) + "\"}");
-        }
-        void sendLocation (String geoCode) {
-            getter = new ServerDataGetter();
-            getter.setOnListChangeListener(this);
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"location\",\"uuid\":\"" + uid + "\",\"addr\":\"" + JSONEncoder.encode(geoCode) + "\"}");
-        }
-        @Override
-        public void onResultReceived(String result) {
-            //TODO: send this addres string to preference
-            JSONObject jsonObject = null;
-            try {
-                jsonObject = new JSONObject(result);
-                String addr = jsonObject.getString("addr");
-                Log.d(TAG, "location result, addr: " + addr);
-                PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString(getString(R.string.pref_key_geoloc),addr).commit();
-            } catch (JSONException e) {
-                Log.e(TAG,"Location result: wrong json - " + e.getMessage());
-            }
-
-            Log.d(TAG, "Location result: " + result);
-            listUpdater.updateList();
-        }
-        @Override
-        public void onNoResult() {
-            //Toast.makeText(getApplicationContext(), "Server not responds", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /*
-    * Class for AppApiVersion send procedure
-    * */
-    private class VersionSender implements ServerDataGetter.OnResultListener {
-        ServerDataGetter getter;
-        void sendVersion () {
-            getter = new ServerDataGetter();
-            getter.setOnListChangeListener(this);
-            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"version\",\"uuid\":\"" + uid + "\",\"version\":\"" + getString(R.string.app_version_name) + "\"}");
-        }
-        @Override
-        public void onResultReceived(String result) {
-            Log.d(TAG, "Version result: " + result);
-            listUpdater.updateList();
-        }
-        @Override
-        public void onNoResult() {
-            Log.e(TAG,"No result while send AppApiVersion");
-        }
-    }
-
 
     @Override
     public void onPause ()
@@ -262,17 +116,18 @@ public class MainActivity extends Activity implements
 
         uiFlags = UiFlags.load(this);
 
-        fullListView = (ListView)findViewById(R.id.fullListView);
-        watchedListView = (ListView)findViewById(R.id.watchedListView);
+        ListView fullListView = (ListView) findViewById(R.id.fullListView);
+        ListView watchedListView = (ListView) findViewById(R.id.watchedListView);
         sensorList = new ArrayList<Sensor>();
 
 		// get android UUID
         final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
-        if ((config.getUid() == null) || (config.getUid().length() < 2)) {
-            config.setUid (md5(Settings.Secure.getString(getBaseContext().getContentResolver(),
+        String uid = config.getUid();
+        if ((uid == null) || (uid.length() < 2)) {
+            config.setUid (NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(),
                     Settings.Secure.ANDROID_ID)));
+            uid = config.getUid();
         }
-        uid = config.getUid();
 
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
         listAdapter.setUiFlags(uiFlags);
@@ -312,21 +167,60 @@ public class MainActivity extends Activity implements
         filterDialog = new FilterDialog();
         filterDialog.setOnChangeListener(this);
 
-        VersionSender versionSender = new VersionSender();
-        listUpdater = new ListUpdater();
-        loginer = new Loginer();
+        narodmonApi = new NarodmonApi(this, uid, "http://narodmon.ru/client.php?json=");
+        narodmonApi.setOnResultReceiveListener(this);
 
-        versionSender.sendVersion();
-        loginer.login();
-        listUpdater.updateList();
-
+        doAuthorisation();
         sendLocation();
+        sendVersion();
 
         Intent i = new Intent(this, OnBootReceiver.class);
         sendBroadcast(i);
         scheduleAlarmWatcher();
     }
 
+    public void updateSensorList () {
+        findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+        narodmonApi.getSensorList(sensorList);
+    }
+
+    private void sendVersion () {
+        narodmonApi.sendVersion(getString(R.string.app_version_name));
+    }
+
+    private void doAuthorisation () {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        String login = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
+        String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
+        if (!login.equals("")) {// don't try if login is empty
+            narodmonApi.doAuthorisation(login,passwd);
+        }
+    }
+
+    void sendLocation () {
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_use_geocode),false)) {
+            // use address
+            narodmonApi.sendLocation(PreferenceManager.getDefaultSharedPreferences(this).
+                    getString(getString(R.string.pref_key_geoloc),getString(R.string.text_Russia_novosibirsk)));
+        } else {
+            // use gps
+            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            String provider = lm.getBestProvider(criteria, true);
+            Location mostRecentLocation = lm.getLastKnownLocation(provider);
+            if(mostRecentLocation != null){
+                double lat=mostRecentLocation.getLatitude();
+                double lon=mostRecentLocation.getLongitude();
+                // use API to send location
+                Log.d(TAG,"my location: " + lat +" "+lon);
+                narodmonApi.sendLocation(lat, lon);
+            } else {
+                narodmonApi.sendLocation(PreferenceManager.getDefaultSharedPreferences(this).
+                        getString(getString(R.string.pref_key_geoloc),getString(R.string.text_Russia_novosibirsk)));
+            }
+        }
+    }
 
     private void updateWatchedList() {
         watchedList.clear();
@@ -351,80 +245,8 @@ public class MainActivity extends Activity implements
         watchAdapter.notifyDataSetChanged();
     }
 
-    void sendLocation () {
-        LocationSender locationSender = new LocationSender();
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_use_geocode),false)) {
-            // use address
-            locationSender.sendLocation(PreferenceManager.getDefaultSharedPreferences(this).
-                    getString(getString(R.string.pref_key_geoloc),getString(R.string.text_Russia_novosibirsk)));
-        } else {
-            // use gps
-            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-            String provider = lm.getBestProvider(criteria, true);
-            Location mostRecentLocation = lm.getLastKnownLocation(provider);
-            if(mostRecentLocation != null){
-                double latid=mostRecentLocation.getLatitude();
-                double longid=mostRecentLocation.getLongitude();
-                // use API to send location
-                Log.d(TAG,"my location: " + latid +" "+longid);
-                locationSender.sendLocation(latid, longid);
-            } else {
-                locationSender.sendLocation(PreferenceManager.getDefaultSharedPreferences(this).
-                        getString(getString(R.string.pref_key_geoloc),getString(R.string.text_Russia_novosibirsk)));
-            }
-        }
-    }
 
 
-    void makeSensorListFromJson (String result) throws JSONException {
-        if (result != null) {
-            sensorList.clear();
-            JSONObject jObject = new JSONObject(result);
-            JSONArray devicesArray = jObject.getJSONArray("devices");
-            for (int i = 0; i < devicesArray.length(); i++) {
-                String location = devicesArray.getJSONObject(i).getString("location");
-                float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
-                boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
-                //Log.d(TAG, + i + ": " + location);
-                JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
-                for (int j = 0; j < sensorsArray.length(); j++) {
-                    String values = sensorsArray.getJSONObject(j).getString("value");
-                    String name   = sensorsArray.getJSONObject(j).getString("name");
-                    int type      = sensorsArray.getJSONObject(j).getInt("type");
-                    int id        = sensorsArray.getJSONObject(j).getInt("id");
-                    boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
-                    long times    = sensorsArray.getJSONObject(j).getLong("time");
-                    sensorList.add(new Sensor(id, type, location, name, values, distance, my, pub, times));
-                }
-            }
-        }
-    }
-
-    public static final String md5(final String s) {
-        try {
-            // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest
-                    .getInstance("MD5");
-            digest.update(s.getBytes());
-            byte messageDigest[] = digest.digest();
-
-            // Create Hex String
-            StringBuffer hexString = new StringBuffer();
-            for (int i = 0; i < messageDigest.length; i++) {
-                String h = Integer.toHexString(0xFF & messageDigest[i]);
-                while (h.length() < 2)
-                    h = "0" + h;
-                hexString.append(h);
-            }
-            return hexString.toString();
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     private void watchedItemClick(int position) {
         Intent i = new Intent (this, SensorInfo.class);
@@ -449,12 +271,11 @@ public class MainActivity extends Activity implements
         }
     }
 
-
     final Handler h = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
-            Log.d(TAG," ---- updateTimer fired! ----");
-            listUpdater.updateList();
+            Log.d(TAG, " ---- updateTimer fired! ----");
+            updateSensorList();
             return false;
         }
     });
@@ -502,18 +323,46 @@ public class MainActivity extends Activity implements
                 pi);
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-////        MenuInflater menuInflater = getMenuInflater();
-////        menuInflater.inflate(R.menu.icon_menu, menu);
-////
-////        return super.onCreateOptionsMenu(menu);
-//        Log.i(TAG,"onCreateOptionMenu");
-//        return false;
-//    }
+    @Override
+    public void onLocationResult(boolean ok, String addr) {
+        if (ok) {
+            PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString(getString(R.string.pref_key_geoloc), addr).commit();
+        }
+    }
 
+    @Override
+    public void onAuthorisationResult(boolean ok, String res) {
+        if (ok) {
+            Log.d(TAG, "authorisation: ok, result:" + res);
+        } else {
+            Log.e(TAG, "authorisation: fail, result: " + res);
+        }
+    }
+
+    @Override
+    public void onSendVersionResult(boolean ok, String res) {
+        if (ok)
+            Log.d(TAG,"sendVerion ok, result: " + res);
+    }
+
+    @Override
+    public void onSensorListResult(boolean ok, String res) {
+        findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+        listAdapter.update();
+        updateWatchedList();
+    }
 }
 
+
+
+
+
+
+
+
+
+
+// TODO: for future, if we need more icons, than use this menu, it splits actionBar and uses space effective
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
 //        Log.d(TAG, "onOptionMenuItemSelected " + item);
@@ -522,7 +371,6 @@ public class MainActivity extends Activity implements
 //                return super.onOptionsItemSelected(item);
 //        }
 //    }
-// TODO: for future, if i need more icons - use this menu, it's splitted action bar what use space effective
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        MenuInflater menuInflater = getMenuInflater();
@@ -530,4 +378,3 @@ public class MainActivity extends Activity implements
 //
 //        return super.onCreateOptionsMenu(menu);
 //    }
-
