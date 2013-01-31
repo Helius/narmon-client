@@ -13,9 +13,13 @@ import java.net.URL;
 class ServerDataGetter extends AsyncTask<String, String, String> {
     private final static String TAG = "narodmon-getter";
     boolean asyncJobFail = false;
+    private AsyncJobCallbackInterface asyncCallback;
+
     interface OnResultListener {
         void onResultReceived(String result);
         void onNoResult ();
+    }
+    interface AsyncJobCallbackInterface {
         boolean asyncJobWithResult(String result);
     }
 
@@ -23,6 +27,9 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
 
     void setOnListChangeListener (OnResultListener l) {
         listener = l;
+    }
+    void setAsyncJobCallback (AsyncJobCallbackInterface l) {
+        asyncCallback = l;
     }
 
 
@@ -58,9 +65,14 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
             urlConnection.setReadTimeout(10000);
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             responseString = inputStreamToString(in);
-            publishProgress(responseString);
+            if (asyncCallback!=null) {
+                Log.d(TAG,"call asyncJob");
+                if (!asyncCallback.asyncJobWithResult(responseString)) {
+                    asyncJobFail = true;
+                }
+            }
             if (asyncJobFail) {
-                // callback reports about fail, so result not valid
+                Log.e(TAG,"asyncJob report fail to asyncTask");
             }
         } catch (MalformedURLException e) {
             Log.e(TAG,"MalformedURLException:" + e.getMessage());
@@ -75,18 +87,10 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     }
 
     @Override
-    protected void onProgressUpdate (String... value) {
-        if (value != null)
-            if (!listener.asyncJobWithResult(value[0])) {
-                Log.e(TAG, "asyncJob report about fail");
-                asyncJobFail = true;
-            }
-    }
-
-    @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
         Log.d(TAG,"---------getter finished------");
+        Log.d(TAG,"result: " + result);
         if (isCancelled()) {
             Log.d(TAG,"task was cancelled");
         }

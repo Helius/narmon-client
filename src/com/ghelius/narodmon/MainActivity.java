@@ -29,7 +29,7 @@ import java.util.TimerTask;
 public class MainActivity extends Activity implements
         SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener {
 
-    private final String TAG = "narodmon";
+    private final String TAG = "narodmon-main";
     private ArrayList<Sensor> sensorList;
     private ArrayList<Sensor> watchedList;
     private SensorItemAdapter listAdapter;
@@ -39,6 +39,8 @@ public class MainActivity extends Activity implements
     private FilterDialog filterDialog;
     private UiFlags uiFlags;
     private NarodmonApi narodmonApi;
+    private boolean locationSended;
+    private boolean authorisationDone;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -68,18 +70,18 @@ public class MainActivity extends Activity implements
     @Override
     public void onResume () {
         super.onResume();
+        findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
         Log.i(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         startTimer();
         if (uiFlags.uiMode == UiFlags.UiMode.watched) {
-            Log.d(TAG,"onResume uiMode is watched, switch Watched");
             mPager.setCurrentScreen(1,false);
             getActionBar().setSelectedNavigationItem(1);
         } else {
-            Log.d(TAG,"onResume uiMode is list, switch list");
             mPager.setCurrentScreen(0,false);
             getActionBar().setSelectedNavigationItem(0);
         }
+
     }
 
     @Override
@@ -98,6 +100,8 @@ public class MainActivity extends Activity implements
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG,"onCreate");
         super.onCreate(savedInstanceState);
+        authorisationDone = false;
+        locationSended = false;
         setContentView(R.layout.main);
         mPager = (HorizontalPager) findViewById(R.id.horizontal_pager);
         mPager.setOnScreenSwitchListener(new HorizontalPager.OnScreenSwitchListener() {
@@ -106,10 +110,8 @@ public class MainActivity extends Activity implements
                 getActionBar().setSelectedNavigationItem(screen);
                 if (screen == 1) {
                     uiFlags.uiMode = UiFlags.UiMode.watched;
-                    Log.d(TAG,"uiMode is watched");
                 } else {
                     uiFlags.uiMode = UiFlags.UiMode.list;
-                    Log.d(TAG,"uiMode is list");
                 }
             }
         });
@@ -167,9 +169,10 @@ public class MainActivity extends Activity implements
         filterDialog = new FilterDialog();
         filterDialog.setOnChangeListener(this);
 
-        narodmonApi = new NarodmonApi(this, uid, "http://narodmon.ru/client.php?json=");
+        narodmonApi = new NarodmonApi(uid, "http://narodmon.ru/client.php?json=");
         narodmonApi.setOnResultReceiveListener(this);
 
+        updateSensorList();
         doAuthorisation();
         sendLocation();
         sendVersion();
@@ -179,8 +182,15 @@ public class MainActivity extends Activity implements
         scheduleAlarmWatcher();
     }
 
+
+
+
+
+
+
     public void updateSensorList () {
-        findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+        Log.d(TAG,"------------ update sensor list ---------------");
+        findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
         narodmonApi.getSensorList(sensorList);
     }
 
@@ -189,11 +199,14 @@ public class MainActivity extends Activity implements
     }
 
     private void doAuthorisation () {
+        Log.d(TAG,"doAuthorisation");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         String login = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
         String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
         if (!login.equals("")) {// don't try if login is empty
             narodmonApi.doAuthorisation(login,passwd);
+        } else {
+            Log.w(TAG,"login is empty, do not authorisation");
         }
     }
 
@@ -221,6 +234,55 @@ public class MainActivity extends Activity implements
             }
         }
     }
+
+
+
+
+
+    @Override
+    public void onLocationResult(boolean ok, String addr) {
+        Log.d(TAG, "location sended");
+        if (ok) {
+            PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString(getString(R.string.pref_key_geoloc), addr).commit();
+        }
+        locationSended = true;
+        if (authorisationDone) // update list if both finished
+            updateSensorList();
+
+    }
+
+    @Override
+    public void onAuthorisationResult(boolean ok, String res) {
+        if (ok) {
+            Log.d(TAG, "authorisation: ok, result:" + res);
+        } else {
+            Log.e(TAG, "authorisation: fail, result: " + res);
+        }
+        authorisationDone = true;
+        if (locationSended) // update list if both finished
+            updateSensorList();
+    }
+
+    @Override
+    public void onSendVersionResult(boolean ok, String res) {
+//        if (ok)
+//            Log.d(TAG,"sendVerion ok, result: " + res);
+    }
+
+    @Override
+    public void onSensorListResult(boolean ok, String res) {
+        Log.d(TAG,"---------------- List updated --------------");
+        findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+        listAdapter.update();
+        updateWatchedList();
+    }
+
+
+
+
+
+
+
 
     private void updateWatchedList() {
         watchedList.clear();
@@ -274,13 +336,12 @@ public class MainActivity extends Activity implements
     final Handler h = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
-            Log.d(TAG, " ---- updateTimer fired! ----");
+            Log.d(TAG, "updateTimer fired");
             updateSensorList();
             return false;
         }
     });
     void startTimer () {
-        Log.d(TAG,"start timer");
         stopTimer();
         updateTimer = new Timer("updateTimer",true);
         updateTimer.schedule(new TimerTask() {
@@ -288,7 +349,7 @@ public class MainActivity extends Activity implements
             public void run() {
                 h.sendEmptyMessage(0);
             }
-        }, 500, 60000*Integer.valueOf(PreferenceManager.
+        }, 10000, 60000*Integer.valueOf(PreferenceManager.
                 getDefaultSharedPreferences(this).
                 getString(getString(R.string.pref_key_interval),"5")));
     }
@@ -323,34 +384,11 @@ public class MainActivity extends Activity implements
                 pi);
     }
 
-    @Override
-    public void onLocationResult(boolean ok, String addr) {
-        if (ok) {
-            PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString(getString(R.string.pref_key_geoloc), addr).commit();
-        }
-    }
 
-    @Override
-    public void onAuthorisationResult(boolean ok, String res) {
-        if (ok) {
-            Log.d(TAG, "authorisation: ok, result:" + res);
-        } else {
-            Log.e(TAG, "authorisation: fail, result: " + res);
-        }
-    }
 
-    @Override
-    public void onSendVersionResult(boolean ok, String res) {
-        if (ok)
-            Log.d(TAG,"sendVerion ok, result: " + res);
-    }
 
-    @Override
-    public void onSensorListResult(boolean ok, String res) {
-        findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
-        listAdapter.update();
-        updateWatchedList();
-    }
+
+
 }
 
 

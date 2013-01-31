@@ -1,6 +1,5 @@
 package com.ghelius.narodmon;
 
-import android.content.Context;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 public class NarodmonApi {
 
     private String apiUrl;
-    private Context context;
     private onResultReceiveListener listener;
     private ListUpdater listUpdater;
     private LocationSender locationSender;
@@ -29,12 +27,11 @@ public class NarodmonApi {
         void onSensorListResult (boolean ok, String res);
     }
 
-    NarodmonApi (Context context, String uid, String jsonApiUrl) {
+    NarodmonApi (String uid, String jsonApiUrl) {
         listUpdater    = new ListUpdater();
         locationSender = new LocationSender();
         loginer        = new Loginer();
         versionSender  = new VersionSender();
-        this.context   = context;
         this.apiUrl    = jsonApiUrl;
         this.uid       = uid;
     }
@@ -59,13 +56,14 @@ public class NarodmonApi {
     }
 
     public void doAuthorisation (String login, String passwd) {
+        loginer.login(login,passwd);
     }
 
 
     /*
     * Class for get full sensor list from server, parse it and put to sensorList and update listAdapter
     * */
-    private class ListUpdater implements ServerDataGetter.OnResultListener {
+    private class ListUpdater implements ServerDataGetter.OnResultListener, ServerDataGetter.AsyncJobCallbackInterface {
         ServerDataGetter getter;
         ArrayList<Sensor> sensorList;
         void updateList (ArrayList<Sensor> sensorList) {
@@ -74,10 +72,12 @@ public class NarodmonApi {
             this.sensorList = sensorList;
             getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
+            getter.setAsyncJobCallback(this);
             getter.execute(apiUrl+"{\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
+            Log.d(TAG,"listUpdate: result receive");
             if (listener != null)
                 listener.onSensorListResult(true, "");
         }
@@ -91,8 +91,11 @@ public class NarodmonApi {
 
         @Override
         public boolean asyncJobWithResult(String result) {
+            Log.d(TAG,"do asyncJob");
             try {
                 makeSensorListFromJson(result);
+                Log.d(TAG,"asyncJob done with " + sensorList.size() + " sensor");
+                Log.d(TAG,"make sensor list done");
             } catch (JSONException e) {
                 return false;
             }
@@ -156,12 +159,6 @@ public class NarodmonApi {
             Log.e(TAG,"Authorisation: Server not responds");
             listener.onAuthorisationResult(false, "");
         }
-
-        @Override
-        public boolean asyncJobWithResult(String result) {
-        /*note, this method calls in doInBackground, not in UI thread! we must return TRUE if don't want report about wrong result*/
-            return true;
-        }
     }
 
     /*
@@ -204,12 +201,6 @@ public class NarodmonApi {
                 listener.onLocationResult(false,"");
             }
         }
-
-        @Override
-        public boolean asyncJobWithResult(String result) {
-        /*note, this method calls in doInBackground, not in UI thread! we must return TRUE if don't want report about wrong result*/
-            return true;
-        }
     }
 
     /*
@@ -233,12 +224,6 @@ public class NarodmonApi {
             Log.e(TAG,"No result while send AppApiVersion");
             if (listener!=null)
                 listener.onSendVersionResult(false,"");
-        }
-
-        @Override
-        public boolean asyncJobWithResult(String result) {
-        /*note, this method calls in doInBackground, not in UI thread! we must return TRUE if don't want report about wrong result*/
-            return true;
         }
     }
 
