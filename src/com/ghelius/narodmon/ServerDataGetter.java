@@ -12,15 +12,24 @@ import java.net.URL;
 
 class ServerDataGetter extends AsyncTask<String, String, String> {
     private final static String TAG = "narodmon-getter";
+    boolean asyncJobFail = false;
+    private AsyncJobCallbackInterface asyncCallback;
+
     interface OnResultListener {
         void onResultReceived(String result);
         void onNoResult ();
+    }
+    interface AsyncJobCallbackInterface {
+        boolean asyncJobWithResult(String result);
     }
 
     OnResultListener listener;
 
     void setOnListChangeListener (OnResultListener l) {
         listener = l;
+    }
+    void setAsyncJobCallback (AsyncJobCallbackInterface l) {
+        asyncCallback = l;
     }
 
 
@@ -56,13 +65,23 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
             urlConnection.setReadTimeout(10000);
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             responseString = inputStreamToString(in);
+            if (asyncCallback!=null) {
+                Log.d(TAG,"call asyncJob");
+                if (!asyncCallback.asyncJobWithResult(responseString)) {
+                    asyncJobFail = true;
+                }
+            }
+            if (asyncJobFail) {
+                Log.e(TAG,"asyncJob report fail to asyncTask");
+            }
         } catch (MalformedURLException e) {
             Log.e(TAG,"MalformedURLException:" + e.getMessage());
         } catch (IOException e) {
             Log.e(TAG,"IOException:" + e.getMessage());
             e.printStackTrace();
         } finally {
-            urlConnection.disconnect();
+            if (urlConnection != null)
+                urlConnection.disconnect();
         }
         return responseString;
     }
@@ -71,10 +90,12 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
         Log.d(TAG,"---------getter finished------");
+        Log.d(TAG,"result: " + result);
         if (isCancelled()) {
             Log.d(TAG,"task was cancelled");
         }
-        if ((result == null)) {
+        if ((result == null)||(asyncJobFail)) {
+            Log.e(TAG,"asyncJob report about fail, so finished with NoResult");
             listener.onNoResult();
         } else {
             listener.onResultReceived(result);
