@@ -5,10 +5,22 @@ import java.util.ArrayList;
 
 
 public class Configuration implements Serializable{
-    final public static Integer NOTHING      = 0;
-    final public static Integer LEVEL        = 1;
-    final public static Integer LEVEL_INVERT = 2;
+    final public static int NOTHING      = 0;
+    final public static int MORE_THAN    = 1;
+    final public static int LESS_THAN    = 2;
+    final public static int OUT_OF       = 3;
+    final public static int WITHIN_OF    = 4;
     public String uid;
+
+    public void setAlarm(int id, int job, Float hi, Float lo) {
+        for (int i = 0; i < watchedId.size(); i++) {
+            if (id == watchedId.get(i).id) {
+                watchedId.get(i).job = job;
+                watchedId.get(i).hi = hi;
+                watchedId.get(i).lo = lo;
+            }
+        }
+    }
 
     public class SensorTask implements Serializable {
         SensorTask (Integer id, String name) {
@@ -17,8 +29,8 @@ public class Configuration implements Serializable{
             this.name = name;
         }
         Integer id;
-        Integer hi;
-        Integer lo;
+        Float   hi;
+        Float   lo;
         Integer job;
         Float lastValue;
         Long timestamp;

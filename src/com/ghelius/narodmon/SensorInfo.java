@@ -4,10 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
@@ -22,11 +19,11 @@ import java.util.TimeZone;
 
 
 public class SensorInfo extends Activity {
-    boolean checked = false;
     private final String TAG = "narodmon-info";
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sensorinfo);
+        final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             final Sensor sensor = (Sensor)extras.getSerializable("Sensor");
@@ -43,6 +40,15 @@ public class SensorInfo extends Activity {
             name.setText(sensor.name);
             location.setText(sensor.location);
             distance.setText(sensor.distance.toString());
+
+            dialog.setOnAlarmChangeListener(new AlarmsSetupDialog.AlarmChangeListener() {
+                @Override
+                public void onAlarmChange(int job, Float hi, Float lo) {
+                    Log.d(TAG, "new alarm setup: " + job + " " + hi + " " + lo);
+                    ConfigHolder.getInstance(SensorInfo.this).getConfig().setAlarm(sensor.id, job, hi, lo);
+                    Toast.makeText(SensorInfo.this, "Set alarm", Toast.LENGTH_SHORT).show();
+                }
+            });
 
             String types;
             switch (sensor.type) {
@@ -133,8 +139,8 @@ public class SensorInfo extends Activity {
             alarm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AlarmsSetupDialog dialog = new AlarmsSetupDialog();
-                    dialog.show(getFragmentManager(),"alarmDialog");
+                    dialog.setCurrentValue(sensor.value);
+                    dialog.show(getFragmentManager(), "alarmDialog");
 //                    if (config.isSensorWatchJob(sensor.id)) {
 //                        alarm.setImageResource(R.drawable.alarm_blue);
 //                    } else {

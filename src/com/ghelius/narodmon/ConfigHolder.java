@@ -131,17 +131,25 @@ public class ConfigHolder {
     public boolean checkLimits(Integer id, Float value, Long timeStamp) {
         for (int i = 0; i < config.watchedId.size(); i++) {
             if (config.watchedId.get(i).id.equals(id)) {
-                if (config.watchedId.get(i).job.equals(config.NOTHING)) {
+                if (config.watchedId.get(i).job.equals(Configuration.NOTHING)) {
                     // just save value if it's needed
                     config.watchedId.get(i).lastValue = value;
                     config.watchedId.get(i).timestamp = timeStamp;
                     return false;
                 }
-                if (config.watchedId.get(i).job.equals(config.LEVEL)) {
+                if (config.watchedId.get(i).job == Configuration.MORE_THAN) {
+                    if (value > config.watchedId.get(i).hi)
+                        return true;
+                }
+                if (config.watchedId.get(i).job == Configuration.LESS_THAN) {
+                    if (value < config.watchedId.get(i).lo)
+                        return true;
+                }
+                if (config.watchedId.get(i).job == Configuration.OUT_OF) {
                     if ((value > config.watchedId.get(i).hi) || (value < config.watchedId.get(i).lo))
                         return true;
                 }
-                if (config.watchedId.get(i).job.equals(config.LEVEL_INVERT)) {
+                if (config.watchedId.get(i).job == Configuration.WITHIN_OF) {
                     if ((value < config.watchedId.get(i).hi) || (value > config.watchedId.get(i).lo))
                         return true;
                 }

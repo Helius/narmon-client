@@ -110,11 +110,12 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
         return v;
     }
 
+    @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         Log.d(LOG_TAG, "Dialog 1: onDismiss");
     }
-
+    @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
         Log.d(LOG_TAG, "Dialog 1: onCancel");

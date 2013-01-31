@@ -38,8 +38,8 @@
     <string name="text_my">мои</string>
     <string name="text_filte_type">Фильтр типов:</string>
     <string name="text_sort_by">Порядок:</string>
-    <string name="text_by_name">Имя</string>
-    <string name="text_by_distance">Дистанция</string>
+    <string name="text_by_name">имя</string>
+    <string name="text_by_distance">дистанция</string>
     <string name="text_dont_use_navig_summary">Использовать строку с адресом (ниже) вместо координат.</string>
     <string name="text_dont_use_navigation_checkbox">Не использовать навигацию</string>
 </resources>

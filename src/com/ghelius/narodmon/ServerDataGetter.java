@@ -65,7 +65,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
             urlConnection.setReadTimeout(10000);
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             responseString = inputStreamToString(in);
-            if (asyncCallback!=null) {
+            if (asyncCallback!=null && !isCancelled()) {
                 Log.d(TAG,"call asyncJob");
                 if (!asyncCallback.asyncJobWithResult(responseString)) {
                     asyncJobFail = true;
@@ -93,6 +93,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         Log.d(TAG,"result: " + result);
         if (isCancelled()) {
             Log.d(TAG,"task was cancelled");
+            return;
         }
         if ((result == null)||(asyncJobFail)) {
             Log.e(TAG,"asyncJob report about fail, so finished with NoResult");

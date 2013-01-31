@@ -9,12 +9,27 @@
             android:layout_height="wrap_content"
             android:id="@+id/AlarmSpinner" android:spinnerMode="dropdown"
             android:entries="@array/alarms_list"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:layout_marginBottom="10dp" android:layout_marginLeft="10dp">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Current value:"
+                android:id="@+id/textView2"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="23.8"
+                android:id="@+id/alarmDialogCurrentValue" android:textSize="20dp" android:layout_marginLeft="10dp"/>
+    </LinearLayout>
     <TableLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="wrap_content" android:layout_marginLeft="10dp">
         <TableRow
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="wrap_content" android:id="@+id/row_highlimit">
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -23,12 +38,14 @@
             <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New EditText"
-                    android:id="@+id/editText" android:inputType="numberSigned"/>
+                    android:text="10"
+                    android:id="@+id/hiLimit"
+                    android:inputType="numberSigned|numberDecimal"
+                    android:textSize="25dp"/>
         </TableRow>
         <TableRow
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="wrap_content" android:id="@+id/row_lowlimit">
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -38,9 +55,23 @@
             <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New EditText"
-                    android:id="@+id/editText1" android:layout_column="1" android:inputType="numberSigned"/>
+                    android:text="-10"
+                    android:id="@+id/lowLimit"
+                    android:layout_column="1"
+                    android:inputType="numberSigned"
+                    android:digits ="-1234567890." android:textSize="25dp"/>
         </TableRow>
     </TableLayout>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alarm fired if value of sensor will more than high limit or less than low limit"
+            android:id="@+id/alarmHelp" android:layout_marginBottom="20dp" android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp" android:layout_marginRight="10dp"/>
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accept"
+            android:id="@+id/AcceptButton" android:layout_gravity="center" android:layout_marginBottom="10dp"/>
 
 </LinearLayout>
