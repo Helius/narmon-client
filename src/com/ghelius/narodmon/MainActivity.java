@@ -221,17 +221,16 @@ public class MainActivity extends Activity implements
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
             String provider = lm.getBestProvider(criteria, true);
+            if (provider == null)
+                return;
             Location mostRecentLocation = lm.getLastKnownLocation(provider);
-            if(mostRecentLocation != null){
-                double lat=mostRecentLocation.getLatitude();
-                double lon=mostRecentLocation.getLongitude();
-                // use API to send location
-                Log.d(TAG,"my location: " + lat +" "+lon);
-                narodmonApi.sendLocation(lat, lon);
-            } else {
-                narodmonApi.sendLocation(PreferenceManager.getDefaultSharedPreferences(this).
-                        getString(getString(R.string.pref_key_geoloc),getString(R.string.text_Russia_novosibirsk)));
-            }
+            if(mostRecentLocation == null)
+                return;
+            double lat=mostRecentLocation.getLatitude();
+            double lon=mostRecentLocation.getLongitude();
+            // use API to send location
+            Log.d(TAG,"my location: " + lat +" "+lon);
+            narodmonApi.sendLocation(lat, lon);
         }
     }
 
