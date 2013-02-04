@@ -84,6 +84,8 @@ public class AlarmsSetupDialog extends DialogFragment {
                         getView().findViewById(R.id.row_highlimit).setVisibility(View.VISIBLE);
                         getView().findViewById(R.id.row_lowlimit).setVisibility(View.VISIBLE);
                         break;
+                    default:
+                        break;
                 }
             }
 

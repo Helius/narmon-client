@@ -13,14 +13,13 @@ import java.util.ArrayList;
 
 public class WatchedItemAdapter extends ArrayAdapter<Sensor> {
     private final Context context;
-    private final String TAG = "narodmon-watched";
+    private static final String TAG = "narodmon-watched";
 
     ConfigHolder config;
 
     public WatchedItemAdapter(Context context, ArrayList<Sensor> values) {
         super(context, R.layout.sensor_list_item);
         this.context = context;
-        config = ConfigHolder.getInstance(context);
     }
 
 

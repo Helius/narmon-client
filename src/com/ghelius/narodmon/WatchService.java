@@ -37,13 +37,14 @@ public class WatchService extends WakefulIntentService {
             }
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            String queryId = "";
-            for (int i = 0; i < ids.size(); i++) {
+            StringBuilder buf = new StringBuilder();
+            for (int i = 0; i < ids.size(); ++i) {
                 if (i != 0) {
-                    queryId += ",";
+                    buf.append(",");
                 }
-                queryId += ids.get(i);
+                buf.append(ids.get(i));
             }
+            String queryId = buf.toString();
             getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorInfo\",\"uuid\":\""+
                     ConfigHolder.getInstance(WatchService.this).getUid() +"\",\"sensor\":["+ queryId +"]}");
         }

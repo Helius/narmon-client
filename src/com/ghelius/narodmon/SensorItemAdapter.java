@@ -24,7 +24,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     private final List<Sensor> originItems;
     private ArrayList<Sensor> localItems = null;
     private SensorFilter filter = null;
-    private final String TAG = "narodmon-adapter";
+    private static final String TAG = "narodmon-adapter";
     ConfigHolder config;
     private UiFlags uiFlags;
 
@@ -44,14 +44,14 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         getFilter().filter("");
     }
 
-    class SensorNameComparator implements Comparator<Sensor> {
+  static class SensorNameComparator implements Comparator<Sensor> {
         @Override
         public int compare(Sensor o1, Sensor o2) {
             return o1.name.compareToIgnoreCase(o2.name);
         }
     }
 
-    class SensorDistanceComparator implements Comparator<Sensor> {
+  static  class SensorDistanceComparator implements Comparator<Sensor> {
         @Override
         public int compare(Sensor o1, Sensor o2) {
             return o1.distance.compareTo(o2.distance);

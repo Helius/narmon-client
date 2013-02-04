@@ -8,8 +8,8 @@ import java.io.*;
 
 public class ConfigHolder {
 
-    final private String TAG="narodmon-config";
-    final private String fileName = "internal.data";
+    final static private String TAG="narodmon-config";
+    final static private String fileName = "internal.data";
     private static ConfigHolder ourInstance = null;
     private Configuration config = null;
     private Context context = null;

@@ -82,10 +82,12 @@ public class SensorInfo extends Activity {
                 case 3:
                     suffix = " %";
                     break;
+                default:
+                    break;
             }
             value.setText(sensor.value+suffix);
 
-            id.setText(String.valueOf(sensor.id));
+            id.setText(sensor.id);
 
             long dv = Long.valueOf(sensor.time)*1000;// its need to be in milisecond
             Date df = new java.util.Date(dv);
