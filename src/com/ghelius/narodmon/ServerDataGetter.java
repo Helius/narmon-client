@@ -90,7 +90,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
         Log.d(TAG,"---------getter finished------");
-        Log.d(TAG,"result: " + result);
+        //Log.d(TAG,"result: " + result);
         if (isCancelled()) {
             Log.d(TAG,"task was cancelled");
             return;
