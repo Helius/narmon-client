@@ -1,6 +1,7 @@
 package com.ghelius.narodmon;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +33,7 @@ public class SensorInfo extends Activity {
             TextView distance = (TextView) findViewById(R.id.text_distance);
             TextView time = (TextView) findViewById(R.id.text_time);
             TextView value = (TextView) findViewById(R.id.text_value);
+            TextView units = (TextView) findViewById(R.id.value_units);
             TextView type = (TextView) findViewById(R.id.text_type);
             TextView id = (TextView) findViewById(R.id.text_id);
             TextView ago = (TextView) findViewById(R.id.text_ago);
@@ -74,18 +76,20 @@ public class SensorInfo extends Activity {
             String suffix = "";
             switch (sensor.type) {
                 case 1:
-                    suffix = " C";
+                    suffix = "°C";
                     break;
                 case 2:
-                    suffix = " mmHg";
+                    suffix = "mmHg";
+                    ((LinearLayout)findViewById(R.id.value_layout)).setOrientation(LinearLayout.VERTICAL);
                     break;
                 case 3:
-                    suffix = " %";
+                    suffix = "%";
                     break;
                 default:
                     break;
             }
-            value.setText(sensor.value+suffix);
+            value.setText(sensor.value);
+            units.setText(suffix);
 
             id.setText(String.valueOf(sensor.id));
 
@@ -96,7 +100,7 @@ public class SensorInfo extends Activity {
             String vv = sdf.format(df);
             time.setText(vv);
 
-            ago.setText(getTimeSince(sensor.time));
+            ago.setText(getTimeSince(this,sensor.time));
 
             final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
             final ImageButton alarm = (ImageButton) findViewById(R.id.alarmSetup);
@@ -156,17 +160,17 @@ public class SensorInfo extends Activity {
 
     }
 
-    public String getTimeSince (Long time) {
+    public static String getTimeSince (Context context, Long time) {
         long difftime = (System.currentTimeMillis() - time*1000)/1000;
         String agoText;
         if (difftime < 60) {
-            agoText = String.valueOf(difftime) + getString(R.string.text_sec);
+            agoText = String.valueOf(difftime) + context.getString(R.string.text_sec);
         } else if (difftime/60 < 60) {
-            agoText = String.valueOf(difftime/60) + getString(R.string.text_min);
+            agoText = String.valueOf(difftime/60) + context.getString(R.string.text_min);
         } else if (difftime/3600 < 24) {
-            agoText = String.valueOf(difftime/3600) + getString(R.string.text_hr);
+            agoText = String.valueOf(difftime/3600) + context.getString(R.string.text_hr);
         } else {
-            agoText = String.valueOf(difftime/(3600*24)) + getString(R.string.text_days);
+            agoText = String.valueOf(difftime/(3600*24)) + context.getString(R.string.text_days);
         }
         return agoText;
     }

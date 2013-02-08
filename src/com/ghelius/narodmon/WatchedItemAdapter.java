@@ -9,7 +9,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class WatchedItemAdapter extends ArrayAdapter<Sensor> {
     private final Context context;
@@ -42,10 +45,15 @@ public class WatchedItemAdapter extends ArrayAdapter<Sensor> {
         holder.name.setText(sensor.name);
         holder.value.setText(sensor.value);
 
+        long dv = Long.valueOf(sensor.time)*1000;// its need to be in milisecond
+        Date df = new java.util.Date(dv);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        sdf.setTimeZone(TimeZone.getDefault());
+        String vv = sdf.format(df);
         if (!sensor.online) {
             holder.name.setEnabled(false);
-            holder.bottomText.setText("offline since ");
         }
+        holder.bottomText.setText (vv + " (" + SensorInfo.getTimeSince(context, sensor.time) + ")");
         switch (sensor.type) {
             case 1:
                 holder.icon.setImageResource(R.drawable.termo_icon);

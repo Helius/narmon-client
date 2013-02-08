@@ -21,8 +21,24 @@
                     android:scaleType="fitStart"/>
             <LinearLayout
                     android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="140%"
+                        android:id="@+id/text_value" android:textSize="30dp"
+                        android:ellipsize="none"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="units"
+                        android:id="@+id/value_units" android:textSize="30dp"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:layout_marginLeft="100dp">
+                    android:layout_height="wrap_content" android:layout_marginLeft="10dp">
                 <ImageButton
                         android:layout_width="40dp"
                         android:layout_height="30dp"
@@ -41,23 +57,6 @@
                         android:layout_marginLeft="10dp" android:layout_marginTop="10dp"/>
             </LinearLayout>
         </LinearLayout>
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="140%"
-                    android:id="@+id/text_value" android:textSize="40dp" android:layout_gravity="center"
-                    android:ellipsize="none"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="New Text"
-                    android:id="@+id/value_units" android:textSize="30dp" android:layout_gravity="bottom"
-                    android:layout_marginLeft="10dp"/>
-        </LinearLayout>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -67,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Location"
-                android:id="@+id/text_location" android:layout_marginBottom="10dp"/>
+                android:id="@+id/text_location"/>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
