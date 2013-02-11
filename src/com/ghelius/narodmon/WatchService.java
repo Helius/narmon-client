@@ -25,9 +25,69 @@ public class WatchService extends WakefulIntentService {
         ids = new ArrayList<Integer>();
     }
 
+//    /*
+//    * return true if limit are exceeded , false otherwise*/
+//    public boolean checkLimits(Integer id, Float value, Long timeStamp) {
+//        for (int i = 0; i < config.watchedId.size(); i++) {
+//            if (config.watchedId.get(i).id == id) {
+//                if (config.watchedId.get(i).job == Configuration.NOTHING) {
+//                    // just save value if it's needed
+//                    config.watchedId.get(i).lastValue = value;
+//                    config.watchedId.get(i).timestamp = timeStamp;
+//                    return false;
+//                }
+//                if (config.watchedId.get(i).job == Configuration.MORE_THAN) {
+//                    if (value > config.watchedId.get(i).hi)
+//                        return true;
+//                }
+//                if (config.watchedId.get(i).job == Configuration.LESS_THAN) {
+//                    if (value < config.watchedId.get(i).lo)
+//                        return true;
+//                }
+//                if (config.watchedId.get(i).job == Configuration.OUT_OF) {
+//                    if ((value > config.watchedId.get(i).hi) || (value < config.watchedId.get(i).lo))
+//                        return true;
+//                }
+//                if (config.watchedId.get(i).job == Configuration.WITHIN_OF) {
+//                    if ((value < config.watchedId.get(i).hi) || (value > config.watchedId.get(i).lo))
+//                        return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
+    private void updateNotify (String name, String value, String job, String limit) {
+        showNotification (name, value + " " + job + " " + limit);
+    }
+
     private void checkLimits(Integer id, Float value, Long timeStamp) {
-        if (ConfigHolder.getInstance(this).checkLimits(id, value, timeStamp)) {12
-            showNotification (ConfigHolder.getInstance(this).getName(id), String.valueOf(value) + " more than " + "lo");
+        Configuration.SensorTask task = ConfigHolder.getInstance(this).getSensorTask(id);
+
+        if (task.job == Configuration.NOTHING) {
+            // just save value if it's needed
+            task.lastValue = value;
+            task.timestamp = timeStamp;
+            return;
+        }
+        if (task.job == Configuration.MORE_THAN) {
+            if (value > task.hi) {
+                updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_more_than), String.valueOf(task.hi));
+            }
+        } else if (task.job == Configuration.LESS_THAN) {
+            if (value < task.lo) {
+                updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_less_than), String.valueOf(task.lo));
+            }
+        } else if (task.job == Configuration.OUT_OF) {
+            if (value > task.hi) {
+                updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_more_than), String.valueOf(task.hi));
+            } else if (value < task.lo) {
+                updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_less_than), String.valueOf(task.lo));
+            }
+        } else if (task.job == Configuration.WITHIN_OF) {
+            if ((value > task.lo) && (value < task.hi)) {
+                updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_within), String.valueOf(task.lo) + ".." + String.valueOf(task.hi));
+            }
         }
     }
 

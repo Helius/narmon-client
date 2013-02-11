@@ -42,4 +42,7 @@
     <string name="text_by_distance">дистанция</string>
     <string name="text_dont_use_navig_summary">Использовать строку с адресом (ниже) вместо координат.</string>
     <string name="text_dont_use_navigation_checkbox">Не использовать навигацию</string>
+    <string name="text_notify_more_than">more than</string>
+    <string name="text_notify_less_than">less than</string>
+    <string name="text_notify_within">within</string>
 </resources>

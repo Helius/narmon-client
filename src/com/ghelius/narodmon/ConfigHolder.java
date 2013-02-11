@@ -136,37 +136,6 @@ public class ConfigHolder {
         return "unknown";
     }
 
-    /*
-    * return true if limit are exceeded , false otherwise*/
-    public boolean checkLimits(Integer id, Float value, Long timeStamp) {
-        for (int i = 0; i < config.watchedId.size(); i++) {
-            if (config.watchedId.get(i).id == id) {
-                if (config.watchedId.get(i).job == Configuration.NOTHING) {
-                    // just save value if it's needed
-                    config.watchedId.get(i).lastValue = value;
-                    config.watchedId.get(i).timestamp = timeStamp;
-                    return false;
-                }
-                if (config.watchedId.get(i).job == Configuration.MORE_THAN) {
-                    if (value > config.watchedId.get(i).hi)
-                        return true;
-                }
-                if (config.watchedId.get(i).job == Configuration.LESS_THAN) {
-                    if (value < config.watchedId.get(i).lo)
-                        return true;
-                }
-                if (config.watchedId.get(i).job == Configuration.OUT_OF) {
-                    if ((value > config.watchedId.get(i).hi) || (value < config.watchedId.get(i).lo))
-                        return true;
-                }
-                if (config.watchedId.get(i).job == Configuration.WITHIN_OF) {
-                    if ((value < config.watchedId.get(i).hi) || (value > config.watchedId.get(i).lo))
-                        return true;
-                }
-            }
-        }
-        return false;
-    }
 
     public Configuration.SensorTask getSensorTask(int id) {
         for (int i = 0; i < config.watchedId.size(); i++) {
