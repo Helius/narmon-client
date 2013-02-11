@@ -25,8 +25,10 @@ public class WatchService extends WakefulIntentService {
         ids = new ArrayList<Integer>();
     }
 
-    private boolean checkLimits(Integer id, Float value, Long timeStamp) {
-        return ConfigHolder.getInstance(this).checkLimits(id, value, timeStamp);
+    private void checkLimits(Integer id, Float value, Long timeStamp) {
+        if (ConfigHolder.getInstance(this).checkLimits(id, value, timeStamp)) {12
+            showNotification (ConfigHolder.getInstance(this).getName(id), String.valueOf(value) + " more than " + "lo");
+        }
     }
 
     class SensorDataUpdater implements ServerDataGetter.OnResultListener {
@@ -61,9 +63,8 @@ public class WatchService extends WakefulIntentService {
                         String value = sensArray.getJSONObject(i).getString("value");
                         String time = sensArray.getJSONObject(i).getString("time");
                         Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
-                        if (checkLimits(Integer.valueOf(id), Float.valueOf(value), Long.valueOf(time))) {
-                            showNotification(1);
-                        }
+                        checkLimits(Integer.valueOf(id), Float.valueOf(value), Long.valueOf(time));
+
                     }
                 } catch (JSONException e) {
                     Log.e(TAG,"Wrong JSON");
@@ -101,7 +102,7 @@ public class WatchService extends WakefulIntentService {
     /**
      * Show a notification while this service is running.
      */
-    private void showNotification(int nmb) {
+    private void showNotification(String name, String value) {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         int dash = 500;     // Length of a Morse Code "dash" in milliseconds
         int gap = 200;    // Length of Gap Between dots/dashes
@@ -122,7 +123,8 @@ public class WatchService extends WakefulIntentService {
                 new Intent(this, MainActivity.class), 0);
 
         // Set the info for the views that show in the notification panel.
-        notification.setLatestEventInfo(this, "Alarm", nmb + " sensor", contentIntent);
+
+        notification.setLatestEventInfo(this, name, value, contentIntent);
         //notification.
 
         // Send the notification.

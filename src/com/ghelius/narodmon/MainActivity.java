@@ -73,6 +73,7 @@ public class MainActivity extends Activity implements
         findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
         Log.i(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+        listAdapter.notifyDataSetChanged();
         startTimer();
         if (uiFlags.uiMode == UiFlags.UiMode.watched) {
             mPager.setCurrentScreen(1,false);

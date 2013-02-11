@@ -47,7 +47,8 @@ public class SensorInfo extends Activity {
                 @Override
                 public void onAlarmChange(int job, Float hi, Float lo) {
                     Log.d(TAG, "new alarm setup: " + job + " " + hi + " " + lo);
-                    ConfigHolder.getInstance(SensorInfo.this).getConfig().setAlarm(sensor.id, job, hi, lo);
+                    ConfigHolder.getInstance(SensorInfo.this).setAlarm(sensor.id, job, hi, lo);
+
                     Toast.makeText(SensorInfo.this, "Set alarm", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -146,12 +147,20 @@ public class SensorInfo extends Activity {
                 @Override
                 public void onClick(View v) {
                     dialog.setCurrentValue(sensor.value);
+                    Configuration.SensorTask task = ConfigHolder.getInstance(SensorInfo.this).getSensorTask(sensor.id);
+                    Log.d(TAG,"find SensorTask");
+                    if (task != null) {
+                        Log.d(TAG, "SensorTask with job " + task.job);
+                    } else {
+                        Log.e(TAG, "Cant find sensorTask");
+                    }
+                    dialog.setSensorTask(task);
                     dialog.show(getFragmentManager(), "alarmDialog");
-//                    if (config.isSensorWatchJob(sensor.id)) {
-//                        alarm.setImageResource(R.drawable.alarm_blue);
-//                    } else {
-//                        alarm.setImageResource(R.drawable.alarm_gray);
-//                    }
+                    if (config.isSensorWatchJob(sensor.id)) {
+                        alarm.setImageResource(R.drawable.alarm_blue);
+                    } else {
+                        alarm.setImageResource(R.drawable.alarm_gray);
+                    }
                 }
             });
         } else {

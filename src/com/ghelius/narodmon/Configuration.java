@@ -12,15 +12,6 @@ public class Configuration implements Serializable{
     final public static int WITHIN_OF    = 4;
     public String uid;
 
-    public void setAlarm(int id, int job, Float hi, Float lo) {
-        for (int i = 0; i < watchedId.size(); i++) {
-            if (id == watchedId.get(i).id) {
-                watchedId.get(i).job = job;
-                watchedId.get(i).hi = hi;
-                watchedId.get(i).lo = lo;
-            }
-        }
-    }
 
     public class SensorTask implements Serializable {
         SensorTask (Integer id, String name) {
@@ -28,10 +19,10 @@ public class Configuration implements Serializable{
             this.job = NOTHING;
             this.name = name;
         }
-        Integer id;
+        int     id;
         Float   hi;
         Float   lo;
-        Integer job;
+        int     job;
         Float lastValue;
         Long timestamp;
         String name;

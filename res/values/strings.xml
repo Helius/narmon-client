@@ -44,5 +44,5 @@
     <string name="pref_key_use_geocode">pref_key_use_geoloc</string>
     <string name="text_dont_use_navig_summary">Use address string below instead navigation</string>
     <string name="text_dont_use_navigation_checkbox">Don\'t use gps location</string>
-    <string name="app_version_name">А1.1a</string>
+    <string name="app_version_name">A1.1a</string>
 </resources>

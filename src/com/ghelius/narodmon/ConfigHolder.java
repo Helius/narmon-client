@@ -93,7 +93,7 @@ public class ConfigHolder {
     {
         for (int i = 0; i < config.watchedId.size(); i++) {
             if (config.watchedId.get(i).id == id)
-                return (!config.watchedId.get(i).job.equals(Configuration.NOTHING));
+                return (config.watchedId.get(i).job != Configuration.NOTHING);
         }
         return false;
     }
@@ -126,12 +126,22 @@ public class ConfigHolder {
     public void setUid (String uid) {
         config.uid = uid;
     }
+
+    public String getName (int id) {
+        for (int i = 0; i < config.watchedId.size(); i++) {
+            if (config.watchedId.get(i).id == id) {
+                return config.watchedId.get(i).name;
+            }
+        }
+        return "unknown";
+    }
+
     /*
     * return true if limit are exceeded , false otherwise*/
     public boolean checkLimits(Integer id, Float value, Long timeStamp) {
         for (int i = 0; i < config.watchedId.size(); i++) {
-            if (config.watchedId.get(i).id.equals(id)) {
-                if (config.watchedId.get(i).job.equals(Configuration.NOTHING)) {
+            if (config.watchedId.get(i).id == id) {
+                if (config.watchedId.get(i).job == Configuration.NOTHING) {
                     // just save value if it's needed
                     config.watchedId.get(i).lastValue = value;
                     config.watchedId.get(i).timestamp = timeStamp;
@@ -156,5 +166,27 @@ public class ConfigHolder {
             }
         }
         return false;
+    }
+
+    public Configuration.SensorTask getSensorTask(int id) {
+        for (int i = 0; i < config.watchedId.size(); i++) {
+            if (config.watchedId.get(i).id == id) {
+                Log.d(TAG,"Obtain: job,hi,lo:" + config.watchedId.get(i).job +", "+ config.watchedId.get(i).hi +", "+ config.watchedId.get(i).lo);
+                return config.watchedId.get(i);
+            }
+        }
+        return null;
+    }
+
+    public void setAlarm(int id, int job, Float hi, Float lo) {
+        Log.d(TAG,"set alarm: job,hi,lo:" + job + ", " + hi + ", " + lo);
+        for (int i = 0; i < config.watchedId.size(); i++) {
+            if (id == config.watchedId.get(i).id) {
+                config.watchedId.get(i).job = job;
+                config.watchedId.get(i).hi = hi;
+                config.watchedId.get(i).lo = lo;
+                saveConfig();
+            }
+        }
     }
 }
