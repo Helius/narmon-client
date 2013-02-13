@@ -119,6 +119,30 @@ public class MainActivity extends Activity implements
 
         uiFlags = UiFlags.load(this);
 
+//        // check who calls us
+//        Log.d(TAG,"Check who calls us");
+//        Bundle extras = getIntent().getExtras();
+//        if (extras != null) {
+//            Log.d(TAG,"create by intent, mode watch");
+//            if (extras.getString("Mode","").equals("watch")) {
+//                //mPager.setCurrentScreen(1,false);
+//                uiFlags.uiMode = UiFlags.UiMode.watched;
+//            }
+////            } else if (extras.getString("Mode","").equals("sensorInfo")) {
+////                int id = -1;
+////                if ((id = extras.getInt("Sensor",-1)) != -1) {
+////                    for (Sensor aSensorList : sensorList) {
+////                        if (id == aSensorList.id) {
+////                            Intent i = new Intent (this, SensorInfo.class);
+////                            i.putExtra("Sensor", listAdapter.);
+////                            startActivity(i);
+////                        }
+////                }
+////            }
+//        } else {
+//            Log.d(TAG,"Create by launcher");
+//        }
+
         ListView fullListView = (ListView) findViewById(R.id.fullListView);
         ListView watchedListView = (ListView) findViewById(R.id.watchedListView);
         sensorList = new ArrayList<Sensor>();
@@ -182,6 +206,7 @@ public class MainActivity extends Activity implements
         sendBroadcast(i);
         scheduleAlarmWatcher();
     }
+
 
 
 
@@ -306,9 +331,6 @@ public class MainActivity extends Activity implements
         watchAdapter.addAll(watchedList);
         watchAdapter.notifyDataSetChanged();
     }
-
-
-
 
     private void watchedItemClick(int position) {
         Intent i = new Intent (this, SensorInfo.class);

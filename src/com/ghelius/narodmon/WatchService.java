@@ -179,8 +179,11 @@ public class WatchService extends WakefulIntentService {
                 System.currentTimeMillis());
 
         // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
+        //TODO: we must show AlarmInfo or watched list, do it later...
+        Intent i = new Intent (this, MainActivity.class);
+        //i.putExtra("Mode","watch");
+        //i.putExtra("Sensor", watchAdapter.getItem(position));
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, i, 0);
 
         // Set the info for the views that show in the notification panel.
 

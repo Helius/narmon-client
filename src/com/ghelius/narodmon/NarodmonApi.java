@@ -18,7 +18,9 @@ public class NarodmonApi {
     private Loginer loginer;
     private VersionSender versionSender;
     private String uid;
-    private static final String TAG = "narodmon-api";
+    private static final String TAG = "nm-api";
+
+
 
     interface onResultReceiveListener {
         void onLocationResult (boolean ok, String addr);
@@ -227,6 +229,7 @@ public class NarodmonApi {
         }
     }
 
+
     public static String md5(final String s) {
         try {
             // Create MD5 Hash
@@ -250,4 +253,8 @@ public class NarodmonApi {
         }
         return "";
     }
+
+    //{"cmd":"sensorLog","uuid":"38c070002121a4fc852d8d8251c18cfb","id":"1296","period":"week","offset":"2"}
+
+
 }
