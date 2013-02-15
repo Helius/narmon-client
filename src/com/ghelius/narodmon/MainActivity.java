@@ -65,6 +65,7 @@ public class MainActivity extends Activity implements
     public void onDialogClose() {
         if (uiFlags.radiusKm > oldRadiusKm) {
             updateSensorList();
+            oldRadiusKm = uiFlags.radiusKm;
         }
     }
 
@@ -84,6 +85,7 @@ public class MainActivity extends Activity implements
         Log.i(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         listAdapter.notifyDataSetChanged();
+        updateSensorList();
         startTimer();
         if (uiFlags.uiMode == UiFlags.UiMode.watched) {
             mPager.setCurrentScreen(1,false);
@@ -230,6 +232,13 @@ public class MainActivity extends Activity implements
         narodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
     }
 
+    public void updateSensorsValue () {
+        Log.d(TAG,"------------ update sensor value ---------------");
+        findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
+        narodmonApi.updateSensorsValue(sensorList);
+    }
+
+
     private void sendVersion () {
         narodmonApi.sendVersion(getString(R.string.app_version_name));
     }
@@ -369,7 +378,7 @@ public class MainActivity extends Activity implements
         @Override
         public boolean handleMessage(Message msg) {
             Log.d(TAG, "updateTimer fired");
-            updateSensorList();
+            updateSensorsValue();
             return false;
         }
     });

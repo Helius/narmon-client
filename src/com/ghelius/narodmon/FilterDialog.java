@@ -8,16 +8,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.RadioGroup;
-import android.widget.SeekBar;
+import android.widget.*;
 
 public class FilterDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
     final static String LOG_TAG = "narodmon-dialog";
     private OnChangeListener listener;
     private static UiFlags uiFlags = null;
+    private TextView radiusValue;
 
     public FilterDialog () {
     }
@@ -37,7 +35,7 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().setTitle(this.getString(R.string.text_filter_dialog_title));
-        View v = inflater.inflate(R.layout.filter_dialog, null);
+        final View v = inflater.inflate(R.layout.filter_dialog, null);
 
         RadioGroup radioGroup = (RadioGroup) v.findViewById(R.id.radiogroupe_All_My);
         if (uiFlags.showingMyOnly)
@@ -110,13 +108,17 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
         });
 
         SeekBar radius = (SeekBar) v.findViewById(R.id.radius_seekerbar);
-        radius.setMax(10000);
-        radius.setProgress(uiFlags.radiusKm);
+        radius.setMax(15);
+        radius.setProgress((int) (Math.log(uiFlags.radiusKm)/Math.log(2)));
+        radiusValue = (TextView) v.findViewById(R.id.radius_value);
+        radiusValue.setText(String.valueOf(uiFlags.radiusKm));
         radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (progress != 0)
-                    uiFlags.radiusKm = progress;
+                int distance = (int) Math.pow(2,progress);
+                radiusValue.setText(String.valueOf(distance));
+                if (distance != 0)
+                    uiFlags.radiusKm = distance;
                 else
                     uiFlags.radiusKm = 1;
             }

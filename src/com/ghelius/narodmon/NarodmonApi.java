@@ -19,7 +19,7 @@ public class NarodmonApi {
     private VersionSender versionSender;
     private String uid;
     private static final String TAG = "nm-api";
-
+    private final ValueUpdater valueUpdater;
 
 
     interface onResultReceiveListener {
@@ -34,6 +34,7 @@ public class NarodmonApi {
         locationSender = new LocationSender();
         loginer        = new Loginer();
         versionSender  = new VersionSender();
+        valueUpdater   = new ValueUpdater();
         this.apiUrl    = jsonApiUrl;
         this.uid       = uid;
     }
@@ -61,6 +62,9 @@ public class NarodmonApi {
         loginer.login(login,passwd);
     }
 
+    public void updateSensorsValue (ArrayList<Sensor> list) {
+        valueUpdater.updateValue(list);
+    }
 
     /*
     * Class for get full sensor list from server, parse it and put to sensorList and update listAdapter
@@ -124,6 +128,83 @@ public class NarodmonApi {
                         long times    = sensorsArray.getJSONObject(j).getLong("time");
                         sensorList.add(new Sensor(id, type, location, name, values, distance, my, pub, times));
                     }
+                }
+            }
+        }
+    }
+
+    /*
+    * Class for update values for sensors id set
+    * */
+    private class ValueUpdater implements ServerDataGetter.OnResultListener, ServerDataGetter.AsyncJobCallbackInterface {
+        ServerDataGetter getter;
+        ArrayList<Sensor> sensorList;
+        void updateValue (ArrayList<Sensor> sensorList) {
+            if (getter != null)
+                getter.cancel(true);
+            this.sensorList = sensorList;
+            getter = new ServerDataGetter ();
+            getter.setOnListChangeListener(this);
+            getter.setAsyncJobCallback(this);
+
+            StringBuilder buf = new StringBuilder();
+            for (int i = 0; i < sensorList.size(); ++i) {
+                if (i != 0) {
+                    buf.append(",");
+                }
+                buf.append(sensorList.get(i).id);
+            }
+            String queryId = buf.toString();
+            getter.execute("http://narodmon.ru/client.php?json={\"cmd\":\"sensorInfo\",\"uuid\":\""+
+                    uid +"\",\"sensor\":["+ queryId +"]}");
+
+        }
+        @Override
+        public void onResultReceived(String result) {
+            Log.d(TAG,"listUpdate: result receive");
+            if (listener != null)
+                listener.onSensorListResult(true, "");
+        }
+        @Override
+        public void onNoResult() {
+            getter = null;
+            Log.w(TAG, "listUpdater: Server not responds");
+            if (listener != null)
+                listener.onSensorListResult(false, "");
+        }
+
+        @Override
+        public boolean asyncJobWithResult(String result) {
+            Log.d(TAG,"do asyncJob");
+            try {
+                parseValue(result);
+                Log.d(TAG,"asyncJob done with " + sensorList.size() + " sensor");
+                Log.d(TAG,"make sensor list done");
+            } catch (JSONException e) {
+                return false;
+            }
+            return true;
+        }
+
+        private void parseValue (String result) throws JSONException {
+            if (result != null) {
+                JSONObject jObject = new JSONObject(result);
+                JSONArray sensArray = jObject.getJSONArray("sensors");
+                for (int i = 0; i < sensArray.length(); i++) {
+                    String id = sensArray.getJSONObject(i).getString("id");
+                    String value = sensArray.getJSONObject(i).getString("value");
+                    String time = sensArray.getJSONObject(i).getString("time");
+                    Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
+                    updateSensorValue (Integer.valueOf(id), value, Long.valueOf(time));
+                }
+            }
+        }
+
+        private void updateSensorValue(int id, String value, long time) {
+            for (Sensor aSensorList : sensorList) {
+                if (aSensorList.id == id) {
+                    aSensorList.value = value;
+                    aSensorList.time = time;
                 }
             }
         }
