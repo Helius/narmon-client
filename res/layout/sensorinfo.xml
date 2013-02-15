@@ -139,4 +139,9 @@
             android:layout_height="fill_parent"
             android:id="@+id/sensorInfoChart">
     </LinearLayout>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/textView3" android:layout_gravity="center_horizontal"/>
 </LinearLayout>

@@ -42,8 +42,8 @@ public class NarodmonApi {
         this.listener = listener;
     }
 
-    public void getSensorList (ArrayList<Sensor> list) {
-        listUpdater.updateList(list);
+    public void getSensorList (ArrayList<Sensor> list, int radius) {
+        listUpdater.updateList(list, radius);
     }
 
     public void sendLocation (String addr) {
@@ -68,14 +68,14 @@ public class NarodmonApi {
     private class ListUpdater implements ServerDataGetter.OnResultListener, ServerDataGetter.AsyncJobCallbackInterface {
         ServerDataGetter getter;
         ArrayList<Sensor> sensorList;
-        void updateList (ArrayList<Sensor> sensorList) {
+        void updateList (ArrayList<Sensor> sensorList, int radius) {
             if (getter != null)
                 getter.cancel(true);
             this.sensorList = sensorList;
             getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.setAsyncJobCallback(this);
-            getter.execute(apiUrl+"{\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\"}");
+            getter.execute(apiUrl+"{\"cmd\":\"sensorList\",\"uuid\":\"" + uid + "\",\"radius\":\""+ String.valueOf(radius) +"\"}");
         }
         @Override
         public void onResultReceived(String result) {

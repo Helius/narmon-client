@@ -45,4 +45,6 @@
     <string name="text_notify_more_than">more than</string>
     <string name="text_notify_less_than">less than</string>
     <string name="text_notify_within">within</string>
+    <string name="text_radius">Показывать датчики в радиусе, км</string>
+    <string name="text_filter_dialog_title">Фильтр</string>
 </resources>

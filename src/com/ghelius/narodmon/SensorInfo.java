@@ -213,16 +213,21 @@ public class SensorInfo extends Activity {
         mRenderer.setShowLabels(true);
         mRenderer.setShowGrid(true);
         mRenderer.setGridColor(0xFF505050);
-        mRenderer.setXLabels(20);
+        mRenderer.setXLabels(24);
+        mRenderer.setXTitle("today");
         mRenderer.setYLabels(10);
         mRenderer.setPointSize(4f);
+        mRenderer.setAxisTitleTextSize(20);
+        mRenderer.setChartTitleTextSize(20);
         mRenderer.setLabelsTextSize(15);
+        mRenderer.setLegendTextSize(10);
+        mRenderer.setYLabelsPadding(-20);
+
         mCurrentRenderer.setColor(0xFF00FF00);
         mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
         mCurrentRenderer.setLineWidth(2);
         mCurrentRenderer.setFillPoints(true);
         mCurrentRenderer.setChartValuesTextSize(15);
-
     }
 
     private void addSampleData() {

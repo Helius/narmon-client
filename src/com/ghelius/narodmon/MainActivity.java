@@ -41,6 +41,7 @@ public class MainActivity extends Activity implements
     private NarodmonApi narodmonApi;
     private boolean locationSended;
     private boolean authorisationDone;
+    private int oldRadiusKm;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -55,7 +56,16 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onFilterChange() {
+        Log.d(TAG,"new Radius is " + uiFlags.radiusKm);
+        oldRadiusKm = uiFlags.radiusKm;
         listAdapter.update();
+    }
+
+    @Override
+    public void onDialogClose() {
+        if (uiFlags.radiusKm > oldRadiusKm) {
+            updateSensorList();
+        }
     }
 
     @Override
@@ -118,7 +128,7 @@ public class MainActivity extends Activity implements
         });
 
         uiFlags = UiFlags.load(this);
-
+        oldRadiusKm = uiFlags.radiusKm;
 //        // check who calls us
 //        Log.d(TAG,"Check who calls us");
 //        Bundle extras = getIntent().getExtras();
@@ -217,7 +227,7 @@ public class MainActivity extends Activity implements
     public void updateSensorList () {
         Log.d(TAG,"------------ update sensor list ---------------");
         findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
-        narodmonApi.getSensorList(sensorList);
+        narodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
     }
 
     private void sendVersion () {

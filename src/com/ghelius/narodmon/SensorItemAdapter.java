@@ -73,7 +73,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
                         uiFlags.types[UiFlags.type_humidity] && (originItem.type == Sensor.TYPE_HUMIDITY) ||
                         uiFlags.types[UiFlags.type_pressure] && (originItem.type == Sensor.TYPE_PRESSURE) ||
                         uiFlags.types[UiFlags.type_unknown] && (originItem.type == Sensor.TYPE_UNKNOWN);
-                if (my_match && type_match) {
+                if (my_match && type_match && (originItem.distance < uiFlags.radiusKm)) {
                     tempFilteredItems.add(originItem);
                 }
             }
@@ -84,6 +84,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             }
             filteredResult.values = tempFilteredItems;
             filteredResult.count = tempFilteredItems.size();
+            Log.d(TAG,filteredResult.count + " items");
             return filteredResult;
         }
 
@@ -95,8 +96,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
                 return;
             }
             localItems.clear();
-            for (int i = 0; i < res.size(); i++) {
-                localItems.add (res.get(i));
+            for (Sensor re : res) {
+                localItems.add(re);
             }
             notifyDataSetChanged();
         }

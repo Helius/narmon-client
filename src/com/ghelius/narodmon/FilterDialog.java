@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 
 public class FilterDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -27,6 +28,7 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
 
     interface OnChangeListener {
         void onFilterChange ();
+        void onDialogClose();
     }
 
     public void setOnChangeListener (OnChangeListener listener) {
@@ -34,7 +36,7 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getDialog().setTitle("Filtering and sorting");
+        getDialog().setTitle(this.getString(R.string.text_filter_dialog_title));
         View v = inflater.inflate(R.layout.filter_dialog, null);
 
         RadioGroup radioGroup = (RadioGroup) v.findViewById(R.id.radiogroupe_All_My);
@@ -107,6 +109,30 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
             }
         });
 
+        SeekBar radius = (SeekBar) v.findViewById(R.id.radius_seekerbar);
+        radius.setMax(10000);
+        radius.setProgress(uiFlags.radiusKm);
+        radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (progress != 0)
+                    uiFlags.radiusKm = progress;
+                else
+                    uiFlags.radiusKm = 1;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (listener!=null) {
+                    listener.onFilterChange();
+                }
+            }
+        });
+
         return v;
     }
 
@@ -114,6 +140,8 @@ public class FilterDialog extends DialogFragment implements DialogInterface.OnCl
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         Log.d(LOG_TAG, "Dialog 1: onDismiss");
+        if (listener != null)
+            listener.onDialogClose();
     }
     @Override
     public void onCancel(DialogInterface dialog) {

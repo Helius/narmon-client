@@ -17,6 +17,7 @@ public class UiFlags implements Serializable {
     boolean sortingDistance;
     boolean types [] = new boolean[4];
     UiMode uiMode;
+    int radiusKm;
 
     enum UiMode {list, watched}
 
@@ -28,6 +29,7 @@ public class UiFlags implements Serializable {
         types[type_pressure] = true;
         types[type_humidity] = true;
         uiMode = UiMode.list;
+        radiusKm=20000;
     }
 
     public static UiFlags load (Context context) {
