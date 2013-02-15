@@ -1,10 +1,12 @@
 package com.ghelius.narodmon;
 
+import android.content.Context;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -18,8 +20,9 @@ public class NarodmonApi {
     private Loginer loginer;
     private VersionSender versionSender;
     private String uid;
-    private static final String TAG = "nm-api";
+    private static final String TAG = "narodmon-api";
     private final ValueUpdater valueUpdater;
+    private final String fileName = "sensorList.obj";
 
 
     interface onResultReceiveListener {
@@ -66,12 +69,38 @@ public class NarodmonApi {
         valueUpdater.updateValue(list);
     }
 
+    public void restoreSensorList (Context context, ArrayList<Sensor> list) {
+        listUpdater.restoreList(context,list);
+    }
+
     /*
     * Class for get full sensor list from server, parse it and put to sensorList and update listAdapter
     * */
     private class ListUpdater implements ServerDataGetter.OnResultListener, ServerDataGetter.AsyncJobCallbackInterface {
         ServerDataGetter getter;
         ArrayList<Sensor> sensorList;
+        Context context;
+
+        void restoreList (Context context, ArrayList<Sensor> sensorList) {
+            this.context = context;
+            this.sensorList = sensorList;
+            Log.d(TAG,"------restore list start-------");
+            FileInputStream fis;
+            try {
+                fis = context.openFileInput(fileName);
+                ObjectInputStream is = new ObjectInputStream(fis);
+                sensorList.addAll((ArrayList<Sensor>) is.readObject());
+                is.close();
+                fis.close();
+                for (Sensor aSensorList : sensorList) aSensorList.value = "--";
+                Log.d(TAG,"------restored list end------- " + sensorList.size());
+                if (listener != null)
+                    listener.onSensorListResult(true,"");
+            } catch (Exception e) {
+               Log.e(TAG,"Can't read sensorList: " + e.getMessage());
+            }
+        }
+
         void updateList (ArrayList<Sensor> sensorList, int radius) {
             if (getter != null)
                 getter.cancel(true);
@@ -127,6 +156,17 @@ public class NarodmonApi {
                         boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
                         long times    = sensorsArray.getJSONObject(j).getLong("time");
                         sensorList.add(new Sensor(id, type, location, name, values, distance, my, pub, times));
+                    }
+                }
+                if (!sensorList.isEmpty() && context!=null) {
+                    FileOutputStream fos;
+                    try {
+                        fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+                        ObjectOutputStream os = null;
+                        os = new ObjectOutputStream(fos);
+                        os.writeObject(sensorList);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Can't serialise sensor list: " + e.getMessage());
                     }
                 }
             }

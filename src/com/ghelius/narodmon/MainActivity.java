@@ -85,6 +85,7 @@ public class MainActivity extends Activity implements
         Log.i(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         listAdapter.notifyDataSetChanged();
+       // narodmonApi.restoreSensorList(this, sensorList);
         updateSensorList();
         startTimer();
         if (uiFlags.uiMode == UiFlags.UiMode.watched) {
@@ -94,7 +95,6 @@ public class MainActivity extends Activity implements
             mPager.setCurrentScreen(0,false);
             getActionBar().setSelectedNavigationItem(0);
         }
-
     }
 
     @Override
@@ -209,7 +209,8 @@ public class MainActivity extends Activity implements
         narodmonApi = new NarodmonApi(uid, "http://narodmon.ru/client.php?json=");
         narodmonApi.setOnResultReceiveListener(this);
 
-        updateSensorList();
+        narodmonApi.restoreSensorList(this,sensorList);
+        //updateSensorList();
         doAuthorisation();
         sendLocation();
         sendVersion();
