@@ -19,12 +19,12 @@ public class Configuration implements Serializable{
             this.job = NOTHING;
             this.name = name;
         }
-        int     id;
-        Float   hi;
-        Float   lo;
-        int     job;
-        Float lastValue;
-        Long timestamp;
+        int    id;
+        float  hi;
+        float  lo;
+        int    job;
+        float  lastValue;
+        long   timestamp;
         String name;
     }
 

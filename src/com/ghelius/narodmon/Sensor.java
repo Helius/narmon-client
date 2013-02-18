@@ -13,8 +13,8 @@ public class Sensor implements Serializable {
     public String location;
     public String name;
     public String value;
-    public Float distance;
-    public Long time;
+    public float distance;
+    public long  time;
     public boolean my;
     public boolean pub;
     public boolean online;

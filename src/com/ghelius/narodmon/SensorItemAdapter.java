@@ -54,7 +54,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
   static  class SensorDistanceComparator implements Comparator<Sensor> {
         @Override
         public int compare(Sensor o1, Sensor o2) {
-            return o1.distance.compareTo(o2.distance);
+            return Float.valueOf(o1.distance).compareTo(o2.distance);
         }
     }
 

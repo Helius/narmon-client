@@ -59,7 +59,7 @@ public class SensorInfo extends Activity {
 
         name.setText(sensor.name);
         location.setText(sensor.location);
-        distance.setText(sensor.distance.toString());
+        distance.setText(String.valueOf(sensor.distance));
 
         dialog.setOnAlarmChangeListener(new AlarmsSetupDialog.AlarmChangeListener() {
             @Override

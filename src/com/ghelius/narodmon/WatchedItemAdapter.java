@@ -45,7 +45,7 @@ public class WatchedItemAdapter extends ArrayAdapter<Sensor> {
         holder.name.setText(sensor.name);
         holder.value.setText(sensor.value);
 
-        long dv = Long.valueOf(sensor.time)*1000;// its need to be in milisecond
+        long dv = sensor.time*1000;// its need to be in milisecond
         Date df = new java.util.Date(dv);
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         sdf.setTimeZone(TimeZone.getDefault());
