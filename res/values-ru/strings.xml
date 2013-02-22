@@ -47,4 +47,18 @@
     <string name="text_notify_within">within</string>
     <string name="text_radius">Показывать датчики в радиусе, км</string>
     <string name="text_filter_dialog_title">Фильтр</string>
+    <string name="text_alarm_disabled">Наблюдение включено</string>
+    <string name="text_alarm_enabled">Наблюдение выключено</string>
+    <string name="text_today">Сегодня</string>
+    <string name="text_alarm_setup_titel">Наблюдение</string>
+    <string name="alarm_info_text_1">Выберите тип срабатывания сигнала</string>
+    <string name="alarm_info_text_2">Сигнал, если значение превышает порог.</string>
+    <string name="alarm_info_text_3">Сигнал, если значение ниже порога.</string>
+    <string name="alarm_info_text_4">Сигнал, если значение за пределами интервала</string>
+    <string name="alarm_info_text_5">Сигнал, если значение внутри интервала</string>
+    <string name="alarm_info_type">Тип тревоги</string>
+    <string name="alarm_info_hi_level">Верхний порог</string>
+    <string name="alarm_info_low_level">Нижний порог</string>
+    <string name="alarm_info_current_value">Текущее значение:</string>
+    <string name="alarm_info_accept_btn_text">Установить</string>
 </resources>

@@ -61,13 +61,22 @@ public class SensorInfo extends Activity {
         location.setText(sensor.location);
         distance.setText(String.valueOf(sensor.distance));
 
+        final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
+        final ImageButton alarm = (ImageButton) findViewById(R.id.alarmSetup);
+        final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
+
         dialog.setOnAlarmChangeListener(new AlarmsSetupDialog.AlarmChangeListener() {
             @Override
             public void onAlarmChange(int job, Float hi, Float lo) {
                 Log.d(TAG, "new alarm setup: " + job + " " + hi + " " + lo);
                 ConfigHolder.getInstance(SensorInfo.this).setAlarm(sensor.id, job, hi, lo);
-
-                Toast.makeText(SensorInfo.this, "Set alarm", Toast.LENGTH_SHORT).show();
+                if (job == 0) {
+                    alarm.setImageResource(R.drawable.alarm_gray);
+                    Toast.makeText(SensorInfo.this, getString(R.string.text_alarm_disabled), Toast.LENGTH_SHORT).show();
+                } else {
+                    alarm.setImageResource(R.drawable.alarm_blue);
+                    Toast.makeText(SensorInfo.this, getString(R.string.text_alarm_enabled), Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -121,9 +130,6 @@ public class SensorInfo extends Activity {
 
         ago.setText(getTimeSince(this,sensor.time));
 
-        final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
-        final ImageButton alarm = (ImageButton) findViewById(R.id.alarmSetup);
-        final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
 
         if (config.isSensorWatched(sensor.id)) {
             monitor.setImageResource(R.drawable.yey_blue);
@@ -214,7 +220,7 @@ public class SensorInfo extends Activity {
         mRenderer.setShowGrid(true);
         mRenderer.setGridColor(0xFF505050);
         mRenderer.setXLabels(24);
-        mRenderer.setXTitle("today");
+        mRenderer.setXTitle(getString(R.string.text_today));
         mRenderer.setYLabels(10);
         mRenderer.setPointSize(4f);
         mRenderer.setAxisTitleTextSize(20);
@@ -291,7 +297,7 @@ public class SensorInfo extends Activity {
         @Override
         public void onResultReceived(String result) {
             logData.clear();
-            Log.d(TAG,"sensorLog received: " + result);
+            //Log.d(TAG,"sensorLog received: " + result);
             try {
                 JSONObject jsonObject = new JSONObject(result);
                 JSONArray arr = jsonObject.getJSONArray("data");

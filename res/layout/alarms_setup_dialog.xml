@@ -4,11 +4,6 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
-    <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/AlarmSpinner" android:spinnerMode="dialog"
-            android:entries="@array/alarms_list"/>
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
@@ -16,13 +11,28 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Current value:"
+                android:text="@string/alarm_info_current_value"
                 android:id="@+id/textView2"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="23.8"
                 android:id="@+id/alarmDialogCurrentValue" android:textSize="20dp" android:layout_marginLeft="10dp"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:layout_marginLeft="10dp">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/alarm_info_type"
+                android:id="@+id/textView3" android:layout_marginRight="10dp"/>
+        <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/AlarmSpinner" android:spinnerMode="dialog"
+                android:entries="@array/alarms_list"/>
     </LinearLayout>
     <TableLayout
             android:layout_width="fill_parent"
@@ -33,7 +43,7 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hight limit"
+                    android:text="@string/alarm_info_hi_level"
                     android:id="@+id/textView1" android:layout_gravity="center" android:layout_marginRight="10dp"/>
             <EditText
                     android:layout_width="wrap_content"
@@ -49,7 +59,7 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Low limit"
+                    android:text="@string/alarm_info_low_level"
                     android:id="@+id/textView" android:layout_gravity="center" android:layout_marginRight="10dp"
                     android:layout_column="0"/>
             <EditText

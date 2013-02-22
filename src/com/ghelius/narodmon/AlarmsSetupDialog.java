@@ -36,7 +36,7 @@ public class AlarmsSetupDialog extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getDialog().setTitle("Alarm setup");
+        getDialog().setTitle(this.getString(R.string.text_alarm_setup_titel));
         View v = inflater.inflate(R.layout.alarms_setup_dialog, null);
         return v;
     }
@@ -74,36 +74,39 @@ public class AlarmsSetupDialog extends DialogFragment {
             ((EditText) getView().findViewById(R.id.hiLimit)).setText(String.valueOf(sensorTask.hi));
             ((EditText) getView().findViewById(R.id.lowLimit)).setText(String.valueOf(sensorTask.lo));
             ((Spinner)getView().findViewById(R.id.AlarmSpinner)).setSelection(sensorTask.job);
-        } else {
-            Log.e(TAG,"Sensor task is null");
+            if (sensorTask.job == 0) {
+                ((EditText) getView().findViewById(R.id.hiLimit)).setText(String.valueOf(currentValue+10));
+                ((EditText) getView().findViewById(R.id.lowLimit)).setText(String.valueOf(currentValue-10));
+            }
         }
+
 
         ((Spinner)getView().findViewById(R.id.AlarmSpinner)).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        ((TextView)getView().findViewById(R.id.alarmHelp)).setText("For enable alarms, select alarm type");
+                        ((TextView)getView().findViewById(R.id.alarmHelp)).setText(AlarmsSetupDialog.this.getString(R.string.alarm_info_text_1));
                         getView().findViewById(R.id.row_highlimit).setVisibility(View.INVISIBLE);
                         getView().findViewById(R.id.row_lowlimit).setVisibility(View.INVISIBLE);
                         break;
                     case 1:
-                        ((TextView)getView().findViewById(R.id.alarmHelp)).setText("Alarm occurs when the value is above the limit");
+                        ((TextView)getView().findViewById(R.id.alarmHelp)).setText(AlarmsSetupDialog.this.getString(R.string.alarm_info_text_2));
                         getView().findViewById(R.id.row_highlimit).setVisibility(View.VISIBLE);
                         getView().findViewById(R.id.row_lowlimit).setVisibility(View.INVISIBLE);
                         break;
                     case 2:
-                        ((TextView)getView().findViewById(R.id.alarmHelp)).setText("Alarm occurs when the value is below the limit");
+                        ((TextView)getView().findViewById(R.id.alarmHelp)).setText(AlarmsSetupDialog.this.getString(R.string.alarm_info_text_3));
                         getView().findViewById(R.id.row_highlimit).setVisibility(View.INVISIBLE);
                         getView().findViewById(R.id.row_lowlimit).setVisibility(View.VISIBLE);
                         break;
                     case 3:
-                        ((TextView)getView().findViewById(R.id.alarmHelp)).setText("Alarm occurs when the value out of limits");
+                        ((TextView)getView().findViewById(R.id.alarmHelp)).setText(AlarmsSetupDialog.this.getString(R.string.alarm_info_text_4));
                         getView().findViewById(R.id.row_highlimit).setVisibility(View.VISIBLE);
                         getView().findViewById(R.id.row_lowlimit).setVisibility(View.VISIBLE);
                         break;
                     case 4:
-                        ((TextView)getView().findViewById(R.id.alarmHelp)).setText("Alarm occurs when the value within limits");
+                        ((TextView)getView().findViewById(R.id.alarmHelp)).setText(AlarmsSetupDialog.this.getString(R.string.alarm_info_text_5));
                         getView().findViewById(R.id.row_highlimit).setVisibility(View.VISIBLE);
                         getView().findViewById(R.id.row_lowlimit).setVisibility(View.VISIBLE);
                         break;

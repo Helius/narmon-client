@@ -234,7 +234,7 @@ public class NarodmonApi {
                     String id = sensArray.getJSONObject(i).getString("id");
                     String value = sensArray.getJSONObject(i).getString("value");
                     String time = sensArray.getJSONObject(i).getString("time");
-                    Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
+                    //Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
                     updateSensorValue (Integer.valueOf(id), value, Long.valueOf(time));
                 }
             }

@@ -20,4 +20,11 @@
         <item>Все датчики</item>
         <item>Наблюдаемые</item>
     </string-array>
+    <string-array name="alarms_list">
+        <item>Нет</item>
+        <item>Больше порога</item>
+        <item>Меньше порога</item>
+        <item>За пределами интервала</item>
+        <item>Внутри интервала</item>
+    </string-array>
 </resources>
