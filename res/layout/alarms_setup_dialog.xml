@@ -81,7 +81,7 @@
     <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Accept"
+            android:text="@string/alarm_dialog_accept_btn"
             android:id="@+id/AcceptButton" android:layout_gravity="center" android:layout_marginBottom="10dp"/>
 
 </LinearLayout>

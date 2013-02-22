@@ -60,5 +60,5 @@
     <string name="alarm_info_hi_level">Верхний порог</string>
     <string name="alarm_info_low_level">Нижний порог</string>
     <string name="alarm_info_current_value">Текущее значение:</string>
-    <string name="alarm_info_accept_btn_text">Установить</string>
+    <string name="alarm_dialog_accept_btn">Установить</string>
 </resources>
