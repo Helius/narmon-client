@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 import org.achartengine.ChartFactory;
@@ -250,12 +251,17 @@ public class SensorInfo extends Activity {
             initChart();
             mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
             layout.addView(mChart);
+            mChart.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    logGetter.getLog(id,period,1);
+                    return false;
+                }
+            });
         }
         timeSeries.clear();
-        for (int i = 0; i < logData.size(); i++) {
-            if (i > 20 && i < 100)
-                continue;
-            timeSeries.add((logData.get(i).time * 1000), logData.get(i).value);
+        for (Point aLogData : logData) {
+            timeSeries.add((aLogData.time * 1000), aLogData.value);
         }
         mChart.repaint();
     }
