@@ -2,6 +2,7 @@ package com.ghelius.narodmon;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,8 +13,8 @@ import android.widget.*;
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
+import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 import org.json.JSONArray;
@@ -208,44 +209,53 @@ public class SensorInfo extends Activity {
     private GraphicalView mChart;
     private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
     private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
-    private XYSeries mCurrentSeries;
+    private TimeSeries timeSeries;
     private XYSeriesRenderer mCurrentRenderer;
 
     private void initChart() {
-        mCurrentSeries = new XYSeries("");
-        mDataset.addSeries(mCurrentSeries);
+        timeSeries = new TimeSeries ("");
+        mDataset.addSeries(timeSeries);
         mCurrentRenderer = new XYSeriesRenderer();
         mRenderer.addSeriesRenderer(mCurrentRenderer);
         mRenderer.setShowLabels(true);
         mRenderer.setShowGrid(true);
         mRenderer.setGridColor(0xFF505050);
-        mRenderer.setXLabels(24);
+        //mRenderer.setXLabels(24);
+
         mRenderer.setXTitle(getString(R.string.text_today));
         mRenderer.setYLabels(10);
-        mRenderer.setPointSize(4f);
+        mRenderer.setPointSize(1f);
         mRenderer.setAxisTitleTextSize(20);
         mRenderer.setChartTitleTextSize(20);
         mRenderer.setLabelsTextSize(15);
         mRenderer.setLegendTextSize(10);
         mRenderer.setYLabelsPadding(-20);
+        mRenderer.setXLabelsAlign(Paint.Align.CENTER);
+        //mRenderer.setShowCustomTextGrid(true);
+        mRenderer.setXLabels(10);
 
         mCurrentRenderer.setColor(0xFF00FF00);
         mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
-        mCurrentRenderer.setLineWidth(2);
+//        mCurrentRenderer.setLineWidth(-1);
         mCurrentRenderer.setFillPoints(true);
         mCurrentRenderer.setChartValuesTextSize(15);
+
+
+
     }
 
     private void addSampleData() {
-        for (int i = 0; i < logData.size(); i++) {
-            mCurrentSeries.add(i, logData.get(i).value);
+    if (mChart == null) {
+        LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
+            initChart();
+            mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
+            layout.addView(mChart);
         }
-        if (logData.size() > 20) {
-            mCurrentRenderer.setPointStyle(PointStyle.POINT);
-            mRenderer.setPointSize(1f);
-        } else {
-            mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
-            mRenderer.setPointSize(4f);
+        timeSeries.clear();
+        for (int i = 0; i < logData.size(); i++) {
+            if (i > 20 && i < 100)
+                continue;
+            timeSeries.add((logData.get(i).time * 1000), logData.get(i).value);
         }
         mChart.repaint();
     }
@@ -253,14 +263,6 @@ public class SensorInfo extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
-        if (mChart == null) {
-            initChart();
-            mChart = ChartFactory.getLineChartView(this, mDataset, mRenderer);
-            layout.addView(mChart);
-        } else {
-            mChart.repaint();
-        }
         startTimer();
     }
 
@@ -323,6 +325,7 @@ public class SensorInfo extends Activity {
     final Handler h = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
+            //logGetter.getLog(id, period, offset);
             logGetter.getLog(id, period, offset);
             return false;
         }

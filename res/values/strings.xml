@@ -52,7 +52,7 @@
     <string name="text_filter_dialog_title">Filtering</string>
     <string name="text_alarm_disabled">Alarm disabled</string>
     <string name="text_alarm_enabled">Alarm enabled</string>
-    <string name="text_today">today</string>
+    <string name="text_today">Today, h</string>
     <string name="text_alarm_setup_titel">Alarm setup</string>
     <string name="alarm_info_text_1">For enable alarms, select alarm type</string>
     <string name="alarm_info_text_2">Alarm occurs when the value is above the limit</string>
