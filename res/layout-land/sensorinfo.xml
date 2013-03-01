@@ -144,7 +144,42 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/sensorInfoChart">
+            android:layout_height="fill_parent">
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/sensorInfoChart" android:layout_weight="0.7">
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_weight="0.3" android:gravity="center_vertical|center_horizontal">
+            <Button
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="\u003c"
+                    android:id="@+id/bt_graph_prev" android:layout_weight="0"/>
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="day"
+                    android:id="@+id/bt_graph_day" android:layout_weight="0"/>
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="week"
+                    android:id="@+id/bt_graph_week" android:layout_weight="0"/>
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="month"
+                    android:id="@+id/bt_graph_month" android:layout_weight="0"/>
+            <Button
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:text="\u003e"
+                    android:id="@+id/bt_graph_next" android:layout_weight="0"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

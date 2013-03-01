@@ -146,7 +146,7 @@
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\u003c\u003c"
+                android:text="\u003c"
                 android:id="@+id/bt_graph_prev"/>
         <Button
                 android:layout_width="wrap_content"
@@ -166,7 +166,7 @@
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\u003e\u003e"
+                android:text="\u003e"
                 android:id="@+id/bt_graph_next"/>
     </LinearLayout>
 </LinearLayout>

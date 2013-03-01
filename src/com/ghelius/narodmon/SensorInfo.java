@@ -110,7 +110,9 @@ public class SensorInfo extends Activity {
                 break;
             case 2:
                 suffix = "mmHg";
-                ((LinearLayout)findViewById(R.id.value_layout)).setOrientation(LinearLayout.VERTICAL);
+                LinearLayout l = ((LinearLayout)findViewById(R.id.value_layout));
+                if (l != null)
+                    l.setOrientation(LinearLayout.VERTICAL);
                 break;
             case 3:
                 suffix = "%";
@@ -347,13 +349,7 @@ public class SensorInfo extends Activity {
         for (Point data : logData) {
             timeSeries.add((data.time * 1000), data.value);
         }
-//        mRenderer.initAxesRange();
-
         mRenderer.initAxesRange(1);
-//        mRenderer.setXAxisMax(timeSeries.getMaxX());
-//        mRenderer.setXAxisMin(timeSeries.getMinX());
-//        mRenderer.setYAxisMax(timeSeries.getMaxY());
-//        mRenderer.setYAxisMin(timeSeries.getMinY());
         mChart.repaint();
     }
 
