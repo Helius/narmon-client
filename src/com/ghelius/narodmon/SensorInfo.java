@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 import org.achartengine.ChartFactory;
@@ -35,6 +34,7 @@ public class SensorInfo extends Activity {
     private LogPeriod period = LogPeriod.day;
     private SensorLogGetter logGetter;
     private int id;
+    private LogPeriod oldPeriod;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -190,6 +190,82 @@ public class SensorInfo extends Activity {
             }
         });
 
+        findViewById(R.id.bt_graph_prev).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                offset += 1;
+                updateGraph();
+            }
+        });
+        findViewById(R.id.bt_graph_day).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                period = LogPeriod.day;
+                offset = 0;
+                updateGraph();
+            }
+        });
+        findViewById(R.id.bt_graph_week).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                period = LogPeriod.week;
+                offset = 0;
+                updateGraph();
+            }
+        });
+        findViewById(R.id.bt_graph_month).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                period = LogPeriod.month;
+                offset = 0;
+                updateGraph();
+            }
+        });
+        findViewById(R.id.bt_graph_next).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (offset > 0) {
+                    offset -= 1;
+                    updateGraph();
+                }
+            }
+        });
+
+    }
+
+    private void updateGraph() {
+        logGetter.getLog(id, period, offset);
+        String title = "";
+        switch (period) {
+            case day:
+                if (offset == 0)
+                    title = "today";
+                else
+                    title = String.valueOf(offset) + " days ago";
+                break;
+            case week:
+                if (offset == 0)
+                    title = "this week";
+                else
+                    title = String.valueOf(offset) + " weeks ago";
+                break;
+            case month:
+                if (offset == 0)
+                    title = "this month";
+                else
+                    title = String.valueOf(offset) + " months ago";
+                break;
+            case year:
+                if (offset == 0)
+                    title = "this year";
+                else
+                    title = String.valueOf(offset) + " years ago";
+                break;
+        }
+        if (offset == 0) {
+
+        }
+        mRenderer.setXTitle(title);
     }
 
     public static String getTimeSince (Context context, Long time) {
@@ -247,22 +323,37 @@ public class SensorInfo extends Activity {
 
     private void addSampleData() {
     if (mChart == null) {
-        LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
+            LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
             initChart();
             mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
             layout.addView(mChart);
-            mChart.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    logGetter.getLog(id,period,1);
-                    return false;
-                }
-            });
+            oldPeriod = period;
+        }
+        if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format
+            LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
+            layout.removeAllViews();
+            if (period == LogPeriod.day)
+                mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
+            else if (period == LogPeriod.week)
+                mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "E");
+            else if (period == LogPeriod.month)
+                mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "d");
+            else if (period == LogPeriod.year)
+                mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "M.d");
+            oldPeriod = period;
+            layout.addView(mChart);
         }
         timeSeries.clear();
-        for (Point aLogData : logData) {
-            timeSeries.add((aLogData.time * 1000), aLogData.value);
+        for (Point data : logData) {
+            timeSeries.add((data.time * 1000), data.value);
         }
+//        mRenderer.initAxesRange();
+
+        mRenderer.initAxesRange(1);
+//        mRenderer.setXAxisMax(timeSeries.getMaxX());
+//        mRenderer.setXAxisMin(timeSeries.getMinX());
+//        mRenderer.setYAxisMax(timeSeries.getMaxY());
+//        mRenderer.setYAxisMin(timeSeries.getMinY());
         mChart.repaint();
     }
 
@@ -282,6 +373,10 @@ public class SensorInfo extends Activity {
     private class SensorLogGetter implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
         void getLog (int id, LogPeriod period, int offset) {
+            if (getter != null) {
+                getter.cancel(true);
+            }
+            Log.d(TAG,"Getting log for id:" + id + " period:" + period.name() + " offset:" + offset);
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             String sPeriod = "";
@@ -319,11 +414,12 @@ public class SensorInfo extends Activity {
             // now we have full data, paint graph
             Log.d(TAG,"add log data to graph, items count: " + logData.size());
             addSampleData();
+            getter = null;
         }
 
         @Override
         public void onNoResult() {
-            Log.e(TAG,"getLog: no data");
+            Log.e(TAG, "getLog: no data");
         }
     }
 
@@ -331,8 +427,7 @@ public class SensorInfo extends Activity {
     final Handler h = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
-            //logGetter.getLog(id, period, offset);
-            logGetter.getLog(id, period, offset);
+            updateGraph();
             return false;
         }
     });

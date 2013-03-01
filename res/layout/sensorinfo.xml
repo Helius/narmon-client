@@ -137,11 +137,36 @@
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/sensorInfoChart">
+            android:id="@+id/sensorInfoChart" android:layout_weight="0.5">
     </LinearLayout>
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/textView3" android:layout_gravity="center_horizontal"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" android:layout_weight="0.8" android:gravity="center_vertical|center_horizontal">
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\u003c\u003c"
+                android:id="@+id/bt_graph_prev"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="day"
+                android:id="@+id/bt_graph_day"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="week"
+                android:id="@+id/bt_graph_week"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="month"
+                android:id="@+id/bt_graph_month"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\u003e\u003e"
+                android:id="@+id/bt_graph_next"/>
+    </LinearLayout>
 </LinearLayout>
