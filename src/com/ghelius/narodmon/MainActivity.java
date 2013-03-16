@@ -96,10 +96,10 @@ public class MainActivity extends SherlockFragmentActivity implements
         startTimer();
         if (uiFlags.uiMode == UiFlags.UiMode.watched) {
             mPager.setCurrentScreen(1,false);
-//            getActionBar().setSelectedNavigationItem(1);
+            getSupportActionBar().setSelectedNavigationItem(1);
         } else {
             mPager.setCurrentScreen(0,false);
-//            getActionBar().setSelectedNavigationItem(0);
+            getSupportActionBar().setSelectedNavigationItem(0);
         }
     }
 
@@ -127,7 +127,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         mPager.setOnScreenSwitchListener(new HorizontalPager.OnScreenSwitchListener() {
             @Override
             public void onScreenSwitched(int screen) {
-//                getActionBar().setSelectedNavigationItem(screen);
+                getSupportActionBar().setSelectedNavigationItem(screen);
                 if (screen == 1) {
                     uiFlags.uiMode = UiFlags.UiMode.watched;
                 } else {
@@ -147,6 +147,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
         apiHeader = config.getApiHeader();
         if ((apiHeader == null) || (apiHeader.length() < 2)) {
+            Log.d(TAG,"android ID: " + NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)));
             apiHeader = apiUrl + "{\"uuid\":\"" +  NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)) +
                     "\",\"api_key\":\"" + api_key + "\",";
             config.setApiHeader(apiHeader);
