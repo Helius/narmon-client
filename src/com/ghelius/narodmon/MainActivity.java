@@ -1,7 +1,5 @@
 package com.ghelius.narodmon;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -16,17 +14,17 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends Activity implements
+public class MainActivity extends FragmentActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener {
 
     private static final String apiUrl = "http://narodmon.ru/client.php?json=";
@@ -93,10 +91,10 @@ public class MainActivity extends Activity implements
         startTimer();
         if (uiFlags.uiMode == UiFlags.UiMode.watched) {
             mPager.setCurrentScreen(1,false);
-            getActionBar().setSelectedNavigationItem(1);
+//            getActionBar().setSelectedNavigationItem(1);
         } else {
             mPager.setCurrentScreen(0,false);
-            getActionBar().setSelectedNavigationItem(0);
+//            getActionBar().setSelectedNavigationItem(0);
         }
     }
 
@@ -123,7 +121,7 @@ public class MainActivity extends Activity implements
         mPager.setOnScreenSwitchListener(new HorizontalPager.OnScreenSwitchListener() {
             @Override
             public void onScreenSwitched(int screen) {
-                getActionBar().setSelectedNavigationItem(screen);
+//                getActionBar().setSelectedNavigationItem(screen);
                 if (screen == 1) {
                     uiFlags.uiMode = UiFlags.UiMode.watched;
                 } else {
@@ -169,18 +167,18 @@ public class MainActivity extends Activity implements
             }
         });
 
-        ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME);
-        actionBar.setCustomView(R.layout.actionbar_top); //load your layout
-        actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
-                android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
-            @Override
-            public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-                mPager.setCurrentScreen(itemPosition, true);
-                return true;
-            }
-        });
+//        ActionBar actionBar = getActionBar();
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+//        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME);
+//        actionBar.setCustomView(R.layout.actionbar_top); //load your layout
+//        actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
+//                android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+//                mPager.setCurrentScreen(itemPosition, true);
+//                return true;
+//            }
+//        });
 
         FilterDialog.setUiFlags(uiFlags);
         filterDialog = new FilterDialog();
@@ -328,7 +326,11 @@ public class MainActivity extends Activity implements
             }
         }
         watchAdapter.clear();
-        watchAdapter.addAll(watchedList);
+        // for compatibility reason
+//        watchAdapter.addAll(watchedList);
+        for (Sensor aWatchedList : watchedList) {
+            watchAdapter.add(aWatchedList);
+        }
         watchAdapter.notifyDataSetChanged();
     }
 
@@ -349,7 +351,8 @@ public class MainActivity extends Activity implements
     public void actionBtnClick (View view)
     {
         if (view == findViewById(R.id.btn_sort)) {
-            filterDialog.show(getFragmentManager(), "dlg1");
+           filterDialog.show(getSupportFragmentManager(), "dlg1");
+//            filterDialog.setShowsDialog(true);
         } else if (view == findViewById(R.id.btn_settings)) {
             startActivity(new Intent(MainActivity.this, PreferActivity.class));
         }

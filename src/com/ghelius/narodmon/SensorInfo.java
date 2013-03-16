@@ -1,12 +1,12 @@
 package com.ghelius.narodmon;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-public class SensorInfo extends Activity {
+public class SensorInfo extends FragmentActivity {
     private final String TAG = "narodmon-info";
     private ArrayList <Point> logData = new ArrayList<Point>();
     private Timer updateTimer;
@@ -182,7 +182,8 @@ public class SensorInfo extends Activity {
                     Log.e(TAG, "Cant find sensorTask");
                 }
                 dialog.setSensorTask(task);
-                dialog.show(getFragmentManager(), "alarmDialog");
+                dialog.show(getSupportFragmentManager(), "alarmDialog");
+//                dialog.setShowsDialog(true);
                 if (config.isSensorWatchJob(sensor.id)) {
                     alarm.setImageResource(R.drawable.alarm_blue);
                 } else {
