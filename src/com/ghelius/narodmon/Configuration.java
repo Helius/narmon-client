@@ -10,7 +10,7 @@ public class Configuration implements Serializable{
     final public static int LESS_THAN    = 2;
     final public static int OUT_OF       = 3;
     final public static int WITHIN_OF    = 4;
-    public String uid;
+    public String apiHeader;
 
 
     public class SensorTask implements Serializable {

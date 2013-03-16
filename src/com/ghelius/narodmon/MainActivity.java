@@ -29,6 +29,8 @@ import java.util.TimerTask;
 public class MainActivity extends Activity implements
         SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener {
 
+    private static final String apiUrl = "http://narodmon.ru/client.php?json=";
+    private static final String api_key = "85UneTlo8XBlA";
     private final String TAG = "narodmon-main";
     private ArrayList<Sensor> sensorList;
     private ArrayList<Sensor> watchedList;
@@ -42,6 +44,7 @@ public class MainActivity extends Activity implements
     private boolean locationSended;
     private boolean authorisationDone;
     private int oldRadiusKm;
+    private String apiHeader;
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -138,11 +141,11 @@ public class MainActivity extends Activity implements
 
 		// get android UUID
         final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
-        String uid = config.getUid();
-        if ((uid == null) || (uid.length() < 2)) {
-            config.setUid (NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(),
-                    Settings.Secure.ANDROID_ID)));
-            uid = config.getUid();
+        apiHeader = config.getApiHeader();
+        if ((apiHeader == null) || (apiHeader.length() < 2)) {
+            apiHeader = apiUrl + "{\"uuid\":\"" +  NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)) +
+                    "\",\"api_key\":\"" + api_key + "\",";
+            config.setApiHeader(apiHeader);
         }
 
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
@@ -183,7 +186,7 @@ public class MainActivity extends Activity implements
         filterDialog = new FilterDialog();
         filterDialog.setOnChangeListener(this);
 
-        narodmonApi = new NarodmonApi(uid, "http://narodmon.ru/client.php?json=");
+        narodmonApi = new NarodmonApi(apiHeader);
         narodmonApi.setOnResultReceiveListener(this);
 
         narodmonApi.restoreSensorList(this,sensorList);

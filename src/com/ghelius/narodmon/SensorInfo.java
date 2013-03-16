@@ -27,7 +27,6 @@ import java.util.*;
 
 public class SensorInfo extends Activity {
     private final String TAG = "narodmon-info";
-    private final String apiUrl = "http://narodmon.ru/client.php?json=";
     private ArrayList <Point> logData = new ArrayList<Point>();
     private Timer updateTimer;
     private int offset = 0;
@@ -389,8 +388,8 @@ public class SensorInfo extends Activity {
                 default:
                     break;
             }
-            getter.execute(apiUrl+"{\"cmd\":\"sensorLog\",\"uuid\":\"" + ConfigHolder.getInstance(SensorInfo.this).getUid() +
-                    "\",\"id\":\""+id+"\",\"period\":\"" + sPeriod + "\",\"offset\":\""+ offset +"\"}");
+            getter.execute(ConfigHolder.getInstance(getApplicationContext()).getApiHeader() + "\"cmd\":\"sensorLog\"," +
+                    "\"id\":\""+id+"\",\"period\":\"" + sPeriod + "\",\"offset\":\""+ offset +"\"}");
         }
 
         @Override

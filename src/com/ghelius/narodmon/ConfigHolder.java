@@ -120,11 +120,11 @@ public class ConfigHolder {
         return config;
     }
 
-    public String getUid () {
-        return config.uid;
+    public String getApiHeader() {
+        return config.apiHeader;
     }
-    public void setUid (String uid) {
-        config.uid = uid;
+    public void setApiHeader(String h) {
+        config.apiHeader = h;
     }
 
     public String getName (int id) {
