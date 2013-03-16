@@ -17,8 +17,8 @@
         <item>30</item>
     </string-array>
     <string-array name="action_list">
-        <item>Online sensors</item>
-        <item>Watched sensors</item>
+        <item>Online</item>
+        <item>Watched</item>
     </string-array>
     <string-array name="alarms_list">
         <item>None</item>

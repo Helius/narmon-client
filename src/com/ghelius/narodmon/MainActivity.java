@@ -14,18 +14,20 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends FragmentActivity implements
-        SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener {
+public class MainActivity extends SherlockFragmentActivity implements
+        SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener{
 
     private static final String apiUrl = "http://narodmon.ru/client.php?json=";
     private static final String api_key = "85UneTlo8XBlA";
@@ -113,6 +115,7 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG,"onCreate");
+        setTheme(R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
         authorisationDone = false;
         locationSended = false;
@@ -167,18 +170,18 @@ public class MainActivity extends FragmentActivity implements
             }
         });
 
-//        ActionBar actionBar = getActionBar();
-//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-//        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME);
-//        actionBar.setCustomView(R.layout.actionbar_top); //load your layout
-//        actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
-//                android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-//                mPager.setCurrentScreen(itemPosition, true);
-//                return true;
-//            }
-//        });
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setCustomView(R.layout.actionbar_top); //load your layout
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
+                android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
+            @Override
+            public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+                mPager.setCurrentScreen(itemPosition, true);
+                return true;
+            }
+        });
 
         FilterDialog.setUiFlags(uiFlags);
         filterDialog = new FilterDialog();
@@ -352,7 +355,6 @@ public class MainActivity extends FragmentActivity implements
     {
         if (view == findViewById(R.id.btn_sort)) {
            filterDialog.show(getSupportFragmentManager(), "dlg1");
-//            filterDialog.setShowsDialog(true);
         } else if (view == findViewById(R.id.btn_settings)) {
             startActivity(new Intent(MainActivity.this, PreferActivity.class));
         }
@@ -408,12 +410,6 @@ public class MainActivity extends FragmentActivity implements
                         getString(getString(R.string.pref_key_interval),"5"))),
                 pi);
     }
-
-
-
-
-
-
 }
 
 
