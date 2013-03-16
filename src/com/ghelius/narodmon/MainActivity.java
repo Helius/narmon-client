@@ -54,6 +54,9 @@ public class MainActivity extends SherlockFragmentActivity implements
             startTimer();
         } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
             doAuthorisation();
+        } else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
+            sendLocation();
+            //updateSensorList();
         }
     }
 
@@ -86,7 +89,7 @@ public class MainActivity extends SherlockFragmentActivity implements
     public void onResume () {
         super.onResume();
         findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
-        Log.i(TAG,"onResume");
+        Log.d(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         listAdapter.notifyDataSetChanged();
         updateSensorList();
@@ -172,8 +175,11 @@ public class MainActivity extends SherlockFragmentActivity implements
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        actionBar.setCustomView(R.layout.actionbar_top); //load your layout
+        actionBar.setCustomView(R.layout.actionbar_top); //load our layout
+        actionBar.setDisplayShowTitleEnabled(false);
+
         actionBar.setDisplayShowCustomEnabled(true);
+        setProgressBarIndeterminateVisibility(true);
         actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
                 android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
             @Override
@@ -240,19 +246,42 @@ public class MainActivity extends SherlockFragmentActivity implements
     void sendLocation () {
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_use_geocode),false)) {
             // use address
+            Log.d(TAG,"location: use address");
             narodmonApi.sendLocation(PreferenceManager.getDefaultSharedPreferences(this).
                     getString(getString(R.string.pref_key_geoloc),getString(R.string.text_Russia_novosibirsk)));
         } else {
+            Log.d(TAG,"location: use gps");
             // use gps
             LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
             String provider = lm.getBestProvider(criteria, true);
-            if (provider == null)
+            if (provider == null) {
+                Log.e(TAG,"location provider is NULL");
                 return;
+            }
             Location mostRecentLocation = lm.getLastKnownLocation(provider);
-            if(mostRecentLocation == null)
+            if(mostRecentLocation == null) {
+                Log.e(TAG,"mostRecentLocation is NULL");
+//                return;
+                Location locationGPS = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                Location locationNet = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                long GPSLocationTime = 0;
+                if (null != locationGPS) { GPSLocationTime = locationGPS.getTime();}
+                long NetLocationTime = 0;
+                if (null != locationNet) {
+                    NetLocationTime = locationNet.getTime();
+                }
+                if ( 0 < GPSLocationTime - NetLocationTime )
+                    mostRecentLocation = locationGPS;
+                else
+                    mostRecentLocation = locationNet;
+            }
+            if (mostRecentLocation == null) {
+                Log.e(TAG,"location still null");
                 return;
+            }
             double lat=mostRecentLocation.getLatitude();
             double lon=mostRecentLocation.getLongitude();
             // use API to send location
@@ -410,18 +439,13 @@ public class MainActivity extends SherlockFragmentActivity implements
                         getString(getString(R.string.pref_key_interval),"5"))),
                 pi);
     }
-}
-
-
-
-
-
-
-
-
-
-
-// TODO: for future, if we need more icons, than use this menu, it splits actionBar and uses space effective
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        final MenuInflater inflater = getSupportMenuInflater();
+//        inflater.inflate(R.menu.icon_menu, menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
 //        Log.d(TAG, "onOptionMenuItemSelected " + item);
@@ -430,10 +454,5 @@ public class MainActivity extends SherlockFragmentActivity implements
 //                return super.onOptionsItemSelected(item);
 //        }
 //    }
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater menuInflater = getMenuInflater();
-//        menuInflater.inflate(R.menu.icon_menu, menu);
-//
-//        return super.onCreateOptionsMenu(menu);
-//    }
+}
+

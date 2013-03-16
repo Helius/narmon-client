@@ -18,7 +18,7 @@
     </string-array>
     <string-array name="action_list">
         <item>Все датчики</item>
-        <item>Наблюдаемые</item>
+        <item>Выборка</item>
     </string-array>
     <string-array name="alarms_list">
         <item>Нет</item>
