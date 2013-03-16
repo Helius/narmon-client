@@ -357,6 +357,9 @@ public class NarodmonApi {
 
 
     public static String md5(final String s) {
+        Log.d(TAG,"string to md5: ["+s+"]");
+        if (s == null)
+            return "";
         try {
             // Create MD5 Hash
             MessageDigest digest = java.security.MessageDigest

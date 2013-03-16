@@ -1,7 +1,5 @@
 package com.ghelius.narodmon;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -21,13 +19,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends Activity implements
-        SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener {
+public class MainActivity extends SherlockFragmentActivity implements
+        SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener{
 
     private static final String apiUrl = "http://narodmon.ru/client.php?json=";
     private static final String api_key = "85UneTlo8XBlA";
@@ -54,6 +54,9 @@ public class MainActivity extends Activity implements
             startTimer();
         } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
             doAuthorisation();
+        } else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
+            sendLocation();
+            //updateSensorList();
         }
     }
 
@@ -86,17 +89,17 @@ public class MainActivity extends Activity implements
     public void onResume () {
         super.onResume();
         findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
-        Log.i(TAG,"onResume");
+        Log.d(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         listAdapter.notifyDataSetChanged();
         updateSensorList();
         startTimer();
         if (uiFlags.uiMode == UiFlags.UiMode.watched) {
             mPager.setCurrentScreen(1,false);
-            getActionBar().setSelectedNavigationItem(1);
+            getSupportActionBar().setSelectedNavigationItem(1);
         } else {
             mPager.setCurrentScreen(0,false);
-            getActionBar().setSelectedNavigationItem(0);
+            getSupportActionBar().setSelectedNavigationItem(0);
         }
     }
 
@@ -115,6 +118,7 @@ public class MainActivity extends Activity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG,"onCreate");
+        setTheme(R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
         authorisationDone = false;
         locationSended = false;
@@ -123,7 +127,7 @@ public class MainActivity extends Activity implements
         mPager.setOnScreenSwitchListener(new HorizontalPager.OnScreenSwitchListener() {
             @Override
             public void onScreenSwitched(int screen) {
-                getActionBar().setSelectedNavigationItem(screen);
+                getSupportActionBar().setSelectedNavigationItem(screen);
                 if (screen == 1) {
                     uiFlags.uiMode = UiFlags.UiMode.watched;
                 } else {
@@ -143,6 +147,7 @@ public class MainActivity extends Activity implements
         final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
         apiHeader = config.getApiHeader();
         if ((apiHeader == null) || (apiHeader.length() < 2)) {
+            Log.d(TAG,"android ID: " + NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)));
             apiHeader = apiUrl + "{\"uuid\":\"" +  NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)) +
                     "\",\"api_key\":\"" + api_key + "\",";
             config.setApiHeader(apiHeader);
@@ -169,10 +174,13 @@ public class MainActivity extends Activity implements
             }
         });
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME);
-        actionBar.setCustomView(R.layout.actionbar_top); //load your layout
+        actionBar.setCustomView(R.layout.actionbar_top); //load our layout
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        actionBar.setDisplayShowCustomEnabled(true);
+        setProgressBarIndeterminateVisibility(true);
         actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
                 android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
             @Override
@@ -239,19 +247,42 @@ public class MainActivity extends Activity implements
     void sendLocation () {
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_use_geocode),false)) {
             // use address
+            Log.d(TAG,"location: use address");
             narodmonApi.sendLocation(PreferenceManager.getDefaultSharedPreferences(this).
                     getString(getString(R.string.pref_key_geoloc),getString(R.string.text_Russia_novosibirsk)));
         } else {
+            Log.d(TAG,"location: use gps");
             // use gps
             LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
             String provider = lm.getBestProvider(criteria, true);
-            if (provider == null)
+            if (provider == null) {
+                Log.e(TAG,"location provider is NULL");
                 return;
+            }
             Location mostRecentLocation = lm.getLastKnownLocation(provider);
-            if(mostRecentLocation == null)
+            if(mostRecentLocation == null) {
+                Log.e(TAG,"mostRecentLocation is NULL");
+//                return;
+                Location locationGPS = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                Location locationNet = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                long GPSLocationTime = 0;
+                if (null != locationGPS) { GPSLocationTime = locationGPS.getTime();}
+                long NetLocationTime = 0;
+                if (null != locationNet) {
+                    NetLocationTime = locationNet.getTime();
+                }
+                if ( 0 < GPSLocationTime - NetLocationTime )
+                    mostRecentLocation = locationGPS;
+                else
+                    mostRecentLocation = locationNet;
+            }
+            if (mostRecentLocation == null) {
+                Log.e(TAG,"location still null");
                 return;
+            }
             double lat=mostRecentLocation.getLatitude();
             double lon=mostRecentLocation.getLongitude();
             // use API to send location
@@ -328,7 +359,11 @@ public class MainActivity extends Activity implements
             }
         }
         watchAdapter.clear();
-        watchAdapter.addAll(watchedList);
+        // for compatibility reason
+//        watchAdapter.addAll(watchedList);
+        for (Sensor aWatchedList : watchedList) {
+            watchAdapter.add(aWatchedList);
+        }
         watchAdapter.notifyDataSetChanged();
     }
 
@@ -349,7 +384,7 @@ public class MainActivity extends Activity implements
     public void actionBtnClick (View view)
     {
         if (view == findViewById(R.id.btn_sort)) {
-            filterDialog.show(getFragmentManager(), "dlg1");
+           filterDialog.show(getSupportFragmentManager(), "dlg1");
         } else if (view == findViewById(R.id.btn_settings)) {
             startActivity(new Intent(MainActivity.this, PreferActivity.class));
         }
@@ -405,24 +440,13 @@ public class MainActivity extends Activity implements
                         getString(getString(R.string.pref_key_interval),"5"))),
                 pi);
     }
-
-
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-// TODO: for future, if we need more icons, than use this menu, it splits actionBar and uses space effective
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        final MenuInflater inflater = getSupportMenuInflater();
+//        inflater.inflate(R.menu.icon_menu, menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
 //        Log.d(TAG, "onOptionMenuItemSelected " + item);
@@ -431,10 +455,5 @@ public class MainActivity extends Activity implements
 //                return super.onOptionsItemSelected(item);
 //        }
 //    }
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater menuInflater = getMenuInflater();
-//        menuInflater.inflate(R.menu.icon_menu, menu);
-//
-//        return super.onCreateOptionsMenu(menu);
-//    }
+}
+

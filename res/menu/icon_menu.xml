@@ -1,20 +1,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/itemid_0"
-          android:title="Action Item 0"
-          android:icon="@drawable/ic_launcher"
+    <item android:id="@+id/filter_menu"
+          android:title="filter"
+          android:icon="@android:drawable/ic_menu_sort_by_size"
           android:orderInCategory="0"
-          android:showAsAction="ifRoom|withText" />
-    <item android:id="@+id/itemid_1"
-          android:title="Item 1"
+          android:showAsAction="ifRoom" />
+    <item android:id="@+id/update_menu"
+          android:title="update"
+          android:icon="@android:drawable/ic_menu_upload"
           android:orderInCategory="0"
-          android:showAsAction="ifRoom|withText" />
-    <item android:id="@+id/itemid_2"
-          android:title="Item 2"
+          android:showAsAction="ifRoom" />
+    <item android:id="@+id/settings_menu"
+          android:icon="@android:drawable/ic_menu_preferences"
+          android:title="setting"
           android:orderInCategory="0"
-          android:showAsAction="ifRoom|withText" />
-    <item android:id="@+id/itemid_3"
-          android:title="item 3"
-          android:orderInCategory="0"
-          android:showAsAction="ifRoom|withText" />
-
+          android:showAsAction="ifRoom" />
 </menu>
