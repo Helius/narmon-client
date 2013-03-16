@@ -1,7 +1,6 @@
 package com.ghelius.narodmon;
 
 
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-public class FilterDialog extends DialogFragment implements DialogInterface.OnClickListener {
+public class FilterDialog extends android.support.v4.app.DialogFragment implements DialogInterface.OnClickListener {
 
     final static String LOG_TAG = "narodmon-dialog";
     private OnChangeListener listener;

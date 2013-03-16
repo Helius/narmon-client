@@ -17,8 +17,8 @@
         <item>30</item>
     </string-array>
     <string-array name="action_list">
-        <item>Все датчики</item>
-        <item>Наблюдаемые</item>
+        <item>Все</item>
+        <item>Выбранные</item>
     </string-array>
     <string-array name="alarms_list">
         <item>Нет</item>
