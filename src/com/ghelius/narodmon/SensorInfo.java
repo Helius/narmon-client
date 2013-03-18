@@ -83,15 +83,15 @@ public class SensorInfo extends FragmentActivity {
 
         String types;
         switch (sensor.type) {
-            case 1:
+            case Sensor.TYPE_TEMPERATURE:
                 types = getString(R.string.type_termometr);
                 icon.setImageResource(R.drawable.termo_icon);
                 break;
-            case 2:
+            case Sensor.TYPE_PRESSURE:
                 types = getString(R.string.type_pressure);
                 icon.setImageResource(R.drawable.pressure_icon);
                 break;
-            case 3:
+            case Sensor.TYPE_HUMIDITY:
                 types = getString(R.string.type_humidity);
                 icon.setImageResource(R.drawable.humid_icon);
                 break;
@@ -104,16 +104,16 @@ public class SensorInfo extends FragmentActivity {
         setTitle(types);
         String suffix = "";
         switch (sensor.type) {
-            case 1:
+            case Sensor.TYPE_TEMPERATURE:
                 suffix = "°C";
                 break;
-            case 2:
+            case Sensor.TYPE_PRESSURE:
                 suffix = "mmHg";
                 LinearLayout l = ((LinearLayout)findViewById(R.id.value_layout));
                 if (l != null)
                     l.setOrientation(LinearLayout.VERTICAL);
                 break;
-            case 3:
+            case Sensor.TYPE_HUMIDITY:
                 suffix = "%";
                 break;
             default:

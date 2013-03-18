@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
@@ -309,8 +310,10 @@ public class MainActivity extends SherlockFragmentActivity implements
     public void onAuthorisationResult(boolean ok, String res) {
         if (ok) {
             Log.d(TAG, "authorisation: ok, result:" + res);
+            Toast.makeText(this,"Authorisation successfully", Toast.LENGTH_SHORT).show();
         } else {
             Log.e(TAG, "authorisation: fail, result: " + res);
+            Toast.makeText(this,"Authorisation fail", Toast.LENGTH_SHORT).show();
         }
         authorisationDone = true;
         if (locationSended) // update list if both finished

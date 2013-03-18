@@ -160,13 +160,13 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             }
 
             switch (sensor.type) {
-                case 1:
+                case Sensor.TYPE_TEMPERATURE:
                     holder.icon.setImageResource(R.drawable.termo_icon);
                     break;
-                case 2:
+                case Sensor.TYPE_PRESSURE:
                     holder.icon.setImageResource(R.drawable.pressure_icon);
                     break;
-                case 3:
+                case Sensor.TYPE_HUMIDITY:
                     holder.icon.setImageResource(R.drawable.humid_icon);
                     break;
                 default:
