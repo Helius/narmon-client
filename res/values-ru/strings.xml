@@ -24,7 +24,7 @@
     <string name="text_Sensor_update_interval">Интервал обновления данных</string>
     <string name="text_Select_update_interval">Выберите интервал обновления данных датчиков</string>
     <string name="text_Place">Где вы находитесь (если нет навигации)</string>
-    <string name="text_Russia_novosibirsk">Россия, Новосибирск, Ленина 1</string>
+    <string name="text_Russia_novosibirsk">Россия, Москва</string>
     <string name="text_Enter_your_place">Введите ардес</string>
     <string name="text_Login_or_email">Логин (или email)</string>
     <string name="text_Enter_Login">Введите логин</string>

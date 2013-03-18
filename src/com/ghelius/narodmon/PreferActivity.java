@@ -52,6 +52,9 @@ public class PreferActivity extends SherlockPreferenceActivity implements Shared
             findPreference(this.getText(R.string.pref_key_geoloc)).setEnabled(true);
         else
             findPreference(this.getText(R.string.pref_key_geoloc)).setEnabled(false);
+        Preference geoCode = findPreference(this.getText(R.string.pref_key_geoloc));
+        EditTextPreference gc = (EditTextPreference) geoCode;
+        gc.setSummary(((EditTextPreference) geoCode).getText());
     }
 
     @Override
