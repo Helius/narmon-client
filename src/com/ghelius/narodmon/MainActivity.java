@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
@@ -29,7 +30,6 @@ import java.util.TimerTask;
 public class MainActivity extends SherlockFragmentActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener{
 
-    private static final String apiUrl = "http://narodmon.ru/client.php?json=";
     private static final String api_key = "85UneTlo8XBlA";
     private final String TAG = "narodmon-main";
     private ArrayList<Sensor> sensorList;
@@ -148,10 +148,11 @@ public class MainActivity extends SherlockFragmentActivity implements
         apiHeader = config.getApiHeader();
         if ((apiHeader == null) || (apiHeader.length() < 2)) {
             Log.d(TAG,"android ID: " + NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)));
-            apiHeader = apiUrl + "{\"uuid\":\"" +  NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)) +
+            apiHeader = "{\"uuid\":\"" +  NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)) +
                     "\",\"api_key\":\"" + api_key + "\",";
             config.setApiHeader(apiHeader);
         }
+
 
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
         listAdapter.setUiFlags(uiFlags);
@@ -202,13 +203,12 @@ public class MainActivity extends SherlockFragmentActivity implements
         doAuthorisation();
         sendLocation();
         sendVersion();
+        narodmonApi.getTypeDictionary(this);
 
         Intent i = new Intent(this, OnBootReceiver.class);
         sendBroadcast(i);
         scheduleAlarmWatcher();
     }
-
-
 
 
 
@@ -311,8 +311,10 @@ public class MainActivity extends SherlockFragmentActivity implements
     public void onAuthorisationResult(boolean ok, String res) {
         if (ok) {
             Log.d(TAG, "authorisation: ok, result:" + res);
+            Toast.makeText(this,"Authorisation successfully", Toast.LENGTH_SHORT).show();
         } else {
             Log.e(TAG, "authorisation: fail, result: " + res);
+            Toast.makeText(this,"Authorisation fail", Toast.LENGTH_SHORT).show();
         }
         authorisationDone = true;
         if (locationSended) // update list if both finished
@@ -333,11 +335,15 @@ public class MainActivity extends SherlockFragmentActivity implements
         updateWatchedList();
     }
 
-
-
-
-
-
+    @Override
+    public void onSensorTypeResult(boolean ok, String res) {
+        //parse res to container
+        Log.d(TAG,"---------------- TypeDict updated --------------");
+        if (!ok) return;
+        SensorTypeProvider.getInstance(this).setTypesFromString(res);
+        listAdapter.notifyDataSetChanged();
+        watchAdapter.notifyDataSetChanged();
+    }
 
 
     private void updateWatchedList() {

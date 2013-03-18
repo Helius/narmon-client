@@ -24,7 +24,7 @@
     <string name="text_Sensor_update_interval">Sensor update interval</string>
     <string name="text_Select_update_interval">Select sensor value update interval</string>
     <string name="text_Place">Place (if no navigation)</string>
-    <string name="text_Russia_novosibirsk">Russia, novosibirsk, Lenina 1</string>
+    <string name="text_Russia_novosibirsk">Russia, Moscow</string>
     <string name="text_Enter_your_place">Enter your place</string>
     <string name="text_Login_or_email">Login (or email)</string>
     <string name="text_login_or_email_summ">login or email on narodmon.ru</string>
@@ -44,7 +44,7 @@
     <string name="pref_key_use_geocode">pref_key_use_geoloc</string>
     <string name="text_dont_use_navig_summary">Use address string below instead navigation</string>
     <string name="text_dont_use_navigation_checkbox">Don\'t use gps location</string>
-    <string name="app_version_name">a1.2a</string>
+    <string name="app_version_name">1.2b</string>
     <string name="text_notify_more_than">more than</string>
     <string name="text_notify_less_than">less than</string>
     <string name="text_notify_within">within</string>

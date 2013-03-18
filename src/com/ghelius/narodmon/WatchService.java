@@ -75,7 +75,7 @@ public class WatchService extends WakefulIntentService {
                 buf.append(ids.get(i));
             }
             String queryId = buf.toString();
-            getter.execute(ConfigHolder.getInstance(WatchService.this).getApiHeader() + "\"cmd\":\"sensorInfo\",\"sensor\":["+ queryId +"]}");
+            getter.execute(NarodmonApi.apiUrl, ConfigHolder.getInstance(WatchService.this).getApiHeader() + "\"cmd\":\"sensorInfo\",\"sensor\":["+ queryId +"]}");
 
         }
 

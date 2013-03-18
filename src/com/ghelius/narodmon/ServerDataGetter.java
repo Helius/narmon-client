@@ -3,11 +3,14 @@ package com.ghelius.narodmon;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 
 class ServerDataGetter extends AsyncTask<String, String, String> {
@@ -33,6 +36,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     }
 
 
+
     private String inputStreamToString(InputStream is) {
         String s = "";
         String line = "";
@@ -51,19 +55,62 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         super.onPreExecute();
     }
 
+
+
+//    Log.d(TAG,"=========== POST =============");
+//    HttpResponse r = makeRequest("http://narodmon.ru/client.php","{\"uuid\":\"ce6a134409741618f1a2f30fe11c26db\",\"api_key\":\"85UneTlo8XBlA\",\"cmd\":\"sensorList\",\"radius\":\"1024\"}");
+//    if (r!=null) {
+//        try {
+//            InputStream is = r.getEntity().getContent();
+//            Log.d(TAG, "HTTP POST result:["+inputStreamToString(is)+"]");
+//        } catch (IOException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+//    }
+    public static HttpResponse makeRequest(String uri, String json) {
+        try {
+            HttpPost httpPost = new HttpPost(uri);
+            httpPost.setEntity(new StringEntity(json));
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            return new DefaultHttpClient().execute(httpPost);
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG,e.getMessage());
+        } catch (ClientProtocolException e) {
+            Log.e(TAG,e.getMessage());
+        } catch (IOException e) {
+            Log.e(TAG,e.getMessage());
+        }
+        return null;
+    }
+
+
     @Override
     protected String doInBackground(String... uri) {
         Log.d(TAG,"doInBackground");
         String responseString = null;
-        URL url;
-        HttpURLConnection urlConnection = null;
+//        URL url;
+//        HttpURLConnection urlConnection = null;
         try {
-            Log.d(TAG, uri[0]);
-            url = new URL(uri[0]);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setConnectTimeout(5000);
-            urlConnection.setReadTimeout(10000);
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            Log.d(TAG, uri[0] + ":" + uri[1]);
+            HttpResponse r = makeRequest(uri[0],uri[1]);
+            if (r == null) {
+                Log.e(TAG,"HttpResponse is null");
+                return "";
+            }
+//            try {
+//                InputStream is = r.getEntity().getContent();
+//                Log.d(TAG, "HTTP POST result:["+inputStreamToString(is)+"]");
+//            } catch (IOException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            }
+//
+//            Log.d(TAG,"========= END ========");
+//            url = new URL(uri[0]);
+//            urlConnection = (HttpURLConnection) url.openConnection();
+//            urlConnection.setConnectTimeout(5000);
+//            urlConnection.setReadTimeout(10000);
+            InputStream in = r.getEntity().getContent();
             responseString = inputStreamToString(in);
             if (asyncCallback!=null && !isCancelled()) {
                 Log.d(TAG,"call asyncJob");
@@ -79,9 +126,6 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         } catch (IOException e) {
             Log.e(TAG,"IOException:" + e.getMessage());
             e.printStackTrace();
-        } finally {
-            if (urlConnection != null)
-                urlConnection.disconnect();
         }
         return responseString;
     }

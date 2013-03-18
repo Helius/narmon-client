@@ -8,8 +8,8 @@ public class Sensor implements Serializable {
     public int type;
     final static int TYPE_UNKNOWN     = 0;
     final static int TYPE_TEMPERATURE = 1;
-    final static int TYPE_PRESSURE    = 2;
-    final static int TYPE_HUMIDITY    = 3;
+    final static int TYPE_HUMIDITY    = 2;
+    final static int TYPE_PRESSURE    = 3;
     public String location;
     public String name;
     public String value;

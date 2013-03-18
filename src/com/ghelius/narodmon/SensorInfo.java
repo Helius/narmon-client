@@ -17,6 +17,7 @@ import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
+import org.achartengine.util.MathHelper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,47 +81,42 @@ public class SensorInfo extends FragmentActivity {
                 }
             }
         });
-
-        String types;
+        String typeString = SensorTypeProvider.getInstance(this).getNameForType(sensor.type);
+        type.setText(typeString);
+        setTitle(typeString);
         switch (sensor.type) {
-            case 1:
-                types = getString(R.string.type_termometr);
+            case Sensor.TYPE_TEMPERATURE:
                 icon.setImageResource(R.drawable.termo_icon);
                 break;
-            case 2:
-                types = getString(R.string.type_pressure);
+            case Sensor.TYPE_PRESSURE:
                 icon.setImageResource(R.drawable.pressure_icon);
                 break;
-            case 3:
-                types = getString(R.string.type_humidity);
+            case Sensor.TYPE_HUMIDITY:
                 icon.setImageResource(R.drawable.humid_icon);
                 break;
             default:
-                types = getString(R.string.type_unknown);
                 icon.setImageResource(R.drawable.unknown_icon);
                 break;
         }
-        type.setText(types);
-        setTitle(types);
-        String suffix = "";
-        switch (sensor.type) {
-            case 1:
-                suffix = "°C";
-                break;
-            case 2:
-                suffix = "mmHg";
-                LinearLayout l = ((LinearLayout)findViewById(R.id.value_layout));
-                if (l != null)
-                    l.setOrientation(LinearLayout.VERTICAL);
-                break;
-            case 3:
-                suffix = "%";
-                break;
-            default:
-                break;
-        }
+//        String suffix = "";
+//        switch (sensor.type) {
+//            case Sensor.TYPE_TEMPERATURE:
+//                suffix = "°C";
+//                break;
+//            case Sensor.TYPE_PRESSURE:
+//                suffix = "mmHg";
+//                LinearLayout l = ((LinearLayout)findViewById(R.id.value_layout));
+//                if (l != null)
+//                    l.setOrientation(LinearLayout.VERTICAL);
+//                break;
+//            case Sensor.TYPE_HUMIDITY:
+//                suffix = "%";
+//                break;
+//            default:
+//                break;
+//        }
+        units.setText(SensorTypeProvider.getInstance(this).getUnitForType(sensor.type));
         value.setText(sensor.value);
-        units.setText(suffix);
 
         id.setText(String.valueOf(sensor.id));
 
@@ -295,6 +291,7 @@ public class SensorInfo extends FragmentActivity {
         timeSeries = new TimeSeries ("");
         mDataset.addSeries(timeSeries);
         mCurrentRenderer = new XYSeriesRenderer();
+
         mRenderer.addSeriesRenderer(mCurrentRenderer);
         mRenderer.setShowLabels(true);
         mRenderer.setShowGrid(true);
@@ -303,7 +300,7 @@ public class SensorInfo extends FragmentActivity {
 
         mRenderer.setXTitle(getString(R.string.text_today));
         mRenderer.setYLabels(10);
-        mRenderer.setPointSize(1f);
+        mRenderer.setPointSize(2f);
         mRenderer.setAxisTitleTextSize(20);
         mRenderer.setChartTitleTextSize(20);
         mRenderer.setLabelsTextSize(15);
@@ -331,25 +328,50 @@ public class SensorInfo extends FragmentActivity {
             layout.addView(mChart);
             oldPeriod = period;
         }
+        int max_gap = 1000*60;
+        if (period == LogPeriod.day) {
+            max_gap = 60*60;
+        } else if (period == LogPeriod.week) {
+            max_gap = 100*60;
+        } else if (period == LogPeriod.month) {
+            max_gap = 100*60;
+        }
+
         if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format
             LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
             layout.removeAllViews();
-            if (period == LogPeriod.day)
+            if (period == LogPeriod.day) {
                 mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
-            else if (period == LogPeriod.week)
+            } else if (period == LogPeriod.week) {
                 mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "E");
-            else if (period == LogPeriod.month)
+            } else if (period == LogPeriod.month) {
                 mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "d");
-            else if (period == LogPeriod.year)
+            } else if (period == LogPeriod.year) {
                 mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "M.d");
+            }
             oldPeriod = period;
             layout.addView(mChart);
         }
         timeSeries.clear();
-        for (Point data : logData) {
-            timeSeries.add((data.time * 1000), data.value);
+        if (!logData.isEmpty()) {
+            long prevTime = logData.get(0).time;
+            float max = logData.get(0).value;
+            float min = logData.get(0).value;
+            for (Point data : logData) {
+                if (data.value > max) max = data.value;
+                if (data.value < min) min = data.value;
+                timeSeries.add((data.time * 1000), data.value);
+                Log.d(TAG,"cur:"+data.time + " prev:" + prevTime + " diff:" + (data.time-prevTime));
+                if ((data.time - prevTime) > max_gap) {
+//                    Log.d(TAG,"add nullvalue");
+                    timeSeries.add(((data.time - 1) * 1000), MathHelper.NULL_VALUE);
+                }
+                prevTime = data.time;
+            }
+            mRenderer.initAxesRange(1);
+            mRenderer.setYAxisMin(min - (max-min)/10);
+            mRenderer.setYAxisMax(max + (max-min)/10);
         }
-        mRenderer.initAxesRange(1);
         mChart.repaint();
     }
 
@@ -389,7 +411,7 @@ public class SensorInfo extends FragmentActivity {
                 default:
                     break;
             }
-            getter.execute(ConfigHolder.getInstance(getApplicationContext()).getApiHeader() + "\"cmd\":\"sensorLog\"," +
+            getter.execute(NarodmonApi.apiUrl, ConfigHolder.getInstance(getApplicationContext()).getApiHeader() + "\"cmd\":\"sensorLog\"," +
                     "\"id\":\""+id+"\",\"period\":\"" + sPeriod + "\",\"offset\":\""+ offset +"\"}");
         }
 
@@ -436,9 +458,9 @@ public class SensorInfo extends FragmentActivity {
             public void run() {
                 h.sendEmptyMessage(0);
             }
-        }, 0, 60000*Integer.valueOf(PreferenceManager.
+        }, 0, 60000 * Integer.valueOf(PreferenceManager.
                 getDefaultSharedPreferences(this).
-                getString(getString(R.string.pref_key_interval),"5")));
+                getString(getString(R.string.pref_key_interval), "5")));
     }
     void stopTimer () {
         if (updateTimer != null) {
