@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 public class NarodmonApi {
 
+    public static final String apiUrl = "http://narodmon.ru/client.php";
     private onResultReceiveListener listener;
     private ListUpdater listUpdater;
     private LocationSender locationSender;
@@ -114,7 +115,7 @@ public class NarodmonApi {
             getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.setAsyncJobCallback(this);
-            getter.execute(makeRequestHeader("sensorList") + "\"radius\":\""+ String.valueOf(radius) +"\"}");
+            getter.execute(apiUrl, makeRequestHeader("sensorList") + "\"radius\":\""+ String.valueOf(radius) +"\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -201,7 +202,7 @@ public class NarodmonApi {
                 buf.append(sensorList.get(i).id);
             }
             String queryId = buf.toString();
-            getter.execute(makeRequestHeader("sensorInfo") +"\"sensor\":["+ queryId +"]}");
+            getter.execute(apiUrl, makeRequestHeader("sensorInfo") +"\"sensor\":["+ queryId +"]}");
 
         }
         @Override
@@ -265,8 +266,7 @@ public class NarodmonApi {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             Log.d(TAG, "password: " + passwd + " md5: " + md5(passwd));
-//            getter.execute(apiUrl + "{\"cmd\":\"login\",\"uuid\":\""+apiHeader+"\",\"login\":\""+login+"\",\"hash\":\""+md5(apiHeader+md5(passwd)) +"\"}");
-            getter.execute(makeRequestHeader("login") + "\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) +"\"}");
+            getter.execute(apiUrl, makeRequestHeader("login") + "\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) +"\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -299,12 +299,12 @@ public class NarodmonApi {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             // fucking hack!
-            getter.execute(makeRequestHeader("location") + "\"addr\":\"" + String.valueOf((double) Math.round(l2 * 1000000) / 1000000) + "," + String.valueOf((double) Math.round(l1 * 1000000) / 1000000) + "\"}");
+            getter.execute(apiUrl, makeRequestHeader("location") + "\"addr\":\"" + String.valueOf((double) Math.round(l2 * 1000000) / 1000000) + "," + String.valueOf((double) Math.round(l1 * 1000000) / 1000000) + "\"}");
         }
         void sendLocation (String geoCode) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute(makeRequestHeader("location") + "\"addr\":\"" + JSONEncoder.encode(geoCode) + "\"}");
+            getter.execute(apiUrl, makeRequestHeader("location") + "\"addr\":\"" + JSONEncoder.encode(geoCode) + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -339,7 +339,7 @@ public class NarodmonApi {
         void sendVersion (String version) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute(makeRequestHeader("version") + "\"version\":\"" + version + "\"}");
+            getter.execute(apiUrl, makeRequestHeader("version") + "\"version\":\"" + version + "\"}");
         }
         @Override
         public void onResultReceived(String result) {

@@ -29,7 +29,6 @@ import java.util.TimerTask;
 public class MainActivity extends SherlockFragmentActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener{
 
-    private static final String apiUrl = "http://narodmon.ru/client.php?json=";
     private static final String api_key = "85UneTlo8XBlA";
     private final String TAG = "narodmon-main";
     private ArrayList<Sensor> sensorList;
@@ -148,7 +147,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         apiHeader = config.getApiHeader();
         if ((apiHeader == null) || (apiHeader.length() < 2)) {
             Log.d(TAG,"android ID: " + NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)));
-            apiHeader = apiUrl + "{\"uuid\":\"" +  NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)) +
+            apiHeader = "{\"uuid\":\"" +  NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)) +
                     "\",\"api_key\":\"" + api_key + "\",";
             config.setApiHeader(apiHeader);
         }
@@ -206,9 +205,8 @@ public class MainActivity extends SherlockFragmentActivity implements
         Intent i = new Intent(this, OnBootReceiver.class);
         sendBroadcast(i);
         scheduleAlarmWatcher();
+
     }
-
-
 
 
 
