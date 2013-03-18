@@ -153,6 +153,7 @@ public class MainActivity extends SherlockFragmentActivity implements
             config.setApiHeader(apiHeader);
         }
 
+
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
         listAdapter.setUiFlags(uiFlags);
         fullListView.setAdapter(listAdapter);
@@ -202,11 +203,11 @@ public class MainActivity extends SherlockFragmentActivity implements
         doAuthorisation();
         sendLocation();
         sendVersion();
+        narodmonApi.getTypeDictionary(this);
 
         Intent i = new Intent(this, OnBootReceiver.class);
         sendBroadcast(i);
         scheduleAlarmWatcher();
-
     }
 
 
@@ -334,11 +335,15 @@ public class MainActivity extends SherlockFragmentActivity implements
         updateWatchedList();
     }
 
-
-
-
-
-
+    @Override
+    public void onSensorTypeResult(boolean ok, String res) {
+        //parse res to container
+        Log.d(TAG,"---------------- TypeDict updated --------------");
+        if (!ok) return;
+        SensorTypeProvider.getInstance(this).setTypesFromString(res);
+        listAdapter.notifyDataSetChanged();
+        watchAdapter.notifyDataSetChanged();
+    }
 
 
     private void updateWatchedList() {

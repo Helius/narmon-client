@@ -80,47 +80,42 @@ public class SensorInfo extends FragmentActivity {
                 }
             }
         });
-
-        String types;
+        String typeString = SensorTypeProvider.getInstance(this).getNameForType(sensor.type);
+        type.setText(typeString);
+        setTitle(typeString);
         switch (sensor.type) {
             case Sensor.TYPE_TEMPERATURE:
-                types = getString(R.string.type_termometr);
                 icon.setImageResource(R.drawable.termo_icon);
                 break;
             case Sensor.TYPE_PRESSURE:
-                types = getString(R.string.type_pressure);
                 icon.setImageResource(R.drawable.pressure_icon);
                 break;
             case Sensor.TYPE_HUMIDITY:
-                types = getString(R.string.type_humidity);
                 icon.setImageResource(R.drawable.humid_icon);
                 break;
             default:
-                types = getString(R.string.type_unknown);
                 icon.setImageResource(R.drawable.unknown_icon);
                 break;
         }
-        type.setText(types);
-        setTitle(types);
-        String suffix = "";
-        switch (sensor.type) {
-            case Sensor.TYPE_TEMPERATURE:
-                suffix = "°C";
-                break;
-            case Sensor.TYPE_PRESSURE:
-                suffix = "mmHg";
-                LinearLayout l = ((LinearLayout)findViewById(R.id.value_layout));
-                if (l != null)
-                    l.setOrientation(LinearLayout.VERTICAL);
-                break;
-            case Sensor.TYPE_HUMIDITY:
-                suffix = "%";
-                break;
-            default:
-                break;
-        }
+//        String suffix = "";
+//        switch (sensor.type) {
+//            case Sensor.TYPE_TEMPERATURE:
+//                suffix = "°C";
+//                break;
+//            case Sensor.TYPE_PRESSURE:
+//                suffix = "mmHg";
+//                LinearLayout l = ((LinearLayout)findViewById(R.id.value_layout));
+//                if (l != null)
+//                    l.setOrientation(LinearLayout.VERTICAL);
+//                break;
+//            case Sensor.TYPE_HUMIDITY:
+//                suffix = "%";
+//                break;
+//            default:
+//                break;
+//        }
+        units.setText(SensorTypeProvider.getInstance(this).getUnitForType(sensor.type));
         value.setText(sensor.value);
-        units.setText(suffix);
 
         id.setText(String.valueOf(sensor.id));
 

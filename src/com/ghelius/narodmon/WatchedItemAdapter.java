@@ -18,8 +18,6 @@ public class WatchedItemAdapter extends ArrayAdapter<Sensor> {
     private final Context context;
     private static final String TAG = "narodmon-watched";
 
-    ConfigHolder config;
-
     public WatchedItemAdapter(Context context, ArrayList<Sensor> values) {
         super(context, R.layout.sensor_list_item);
         this.context = context;

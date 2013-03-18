@@ -44,7 +44,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         getFilter().filter("");
     }
 
-  static class SensorNameComparator implements Comparator<Sensor> {
+    static class SensorNameComparator implements Comparator<Sensor> {
         @Override
         public int compare(Sensor o1, Sensor o2) {
             return o1.name.compareToIgnoreCase(o2.name);
@@ -158,6 +158,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             } else {
                 holder.name.setTextColor(Color.WHITE);
             }
+
 
             switch (sensor.type) {
                 case Sensor.TYPE_TEMPERATURE:

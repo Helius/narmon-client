@@ -21,6 +21,7 @@ public class NarodmonApi {
     private ListUpdater listUpdater;
     private LocationSender locationSender;
     private Loginer loginer;
+    private SensorTypeDictionaryGetter typeDictionaryGetter;
     private VersionSender versionSender;
     private static String uid;
     private static final String TAG = "narodmon-api";
@@ -34,6 +35,7 @@ public class NarodmonApi {
         void onAuthorisationResult (boolean ok, String res);
         void onSendVersionResult (boolean ok, String res);
         void onSensorListResult (boolean ok, String res);
+        void onSensorTypeResult (boolean ok, String res);
     }
 
     NarodmonApi (String apiHeader) {
@@ -42,6 +44,7 @@ public class NarodmonApi {
         loginer        = new Loginer();
         versionSender  = new VersionSender();
         valueUpdater   = new ValueUpdater();
+        typeDictionaryGetter = new SensorTypeDictionaryGetter();
         this.apiHeader = apiHeader;
     }
 
@@ -76,8 +79,12 @@ public class NarodmonApi {
         listUpdater.restoreList(context,list);
     }
 
+    public void getTypeDictionary(Context context) {
+        typeDictionaryGetter.getDictionary();
+    }
+
     public String makeRequestHeader(String cmd) {
-        return apiHeader + "\"cmd\":\""+cmd+"\",";
+        return apiHeader + "\"cmd\":\""+cmd+"\"";
     }
 
     /*
@@ -115,7 +122,7 @@ public class NarodmonApi {
             getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.setAsyncJobCallback(this);
-            getter.execute(apiUrl, makeRequestHeader("sensorList") + "\"radius\":\""+ String.valueOf(radius) +"\"}");
+            getter.execute(apiUrl, makeRequestHeader("sensorList") + ",\"radius\":\""+ String.valueOf(radius) +"\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -202,7 +209,7 @@ public class NarodmonApi {
                 buf.append(sensorList.get(i).id);
             }
             String queryId = buf.toString();
-            getter.execute(apiUrl, makeRequestHeader("sensorInfo") +"\"sensor\":["+ queryId +"]}");
+            getter.execute(apiUrl, makeRequestHeader("sensorInfo") +",\"sensor\":["+ queryId +"]}");
 
         }
         @Override
@@ -266,7 +273,7 @@ public class NarodmonApi {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             Log.d(TAG, "password: " + passwd + " md5: " + md5(passwd));
-            getter.execute(apiUrl, makeRequestHeader("login") + "\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) +"\"}");
+            getter.execute(apiUrl, makeRequestHeader("login") + ",\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) +"\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -299,12 +306,12 @@ public class NarodmonApi {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             // fucking hack!
-            getter.execute(apiUrl, makeRequestHeader("location") + "\"addr\":\"" + String.valueOf((double) Math.round(l2 * 1000000) / 1000000) + "," + String.valueOf((double) Math.round(l1 * 1000000) / 1000000) + "\"}");
+            getter.execute(apiUrl, makeRequestHeader("location") + ",\"addr\":\"" + String.valueOf((double) Math.round(l2 * 1000000) / 1000000) + "," + String.valueOf((double) Math.round(l1 * 1000000) / 1000000) + "\"}");
         }
         void sendLocation (String geoCode) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute(apiUrl, makeRequestHeader("location") + "\"addr\":\"" + JSONEncoder.encode(geoCode) + "\"}");
+            getter.execute(apiUrl, makeRequestHeader("location") + ",\"addr\":\"" + JSONEncoder.encode(geoCode) + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -332,6 +339,29 @@ public class NarodmonApi {
     }
 
     /*
+    * Class for get sensor type dictionary
+    * */
+    private class SensorTypeDictionaryGetter implements ServerDataGetter.OnResultListener {
+        ServerDataGetter getter;
+        void getDictionary () {
+            getter = new ServerDataGetter();
+            getter.setOnListChangeListener(this);
+            getter.execute(apiUrl, makeRequestHeader("sensorType") + "}");
+        }
+        @Override
+        public void onResultReceived(String result) {
+            Log.d(TAG, "Dictionary get result: " + result);
+            if (listener!=null)
+                listener.onSensorTypeResult(true,result);
+        }
+        @Override
+        public void onNoResult() {
+            Log.e(TAG,"No sensor dictionary result");
+            if (listener!=null)
+                listener.onSensorTypeResult(false,"");
+        }
+    }
+    /*
     * Class for AppApiVersion send procedure
     * */
     private class VersionSender implements ServerDataGetter.OnResultListener {
@@ -339,7 +369,7 @@ public class NarodmonApi {
         void sendVersion (String version) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute(apiUrl, makeRequestHeader("version") + "\"version\":\"" + version + "\"}");
+            getter.execute(apiUrl, makeRequestHeader("version") + ",\"version\":\"" + version + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
