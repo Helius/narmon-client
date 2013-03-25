@@ -23,7 +23,6 @@ public class NarodmonApi {
     private Loginer loginer;
     private SensorTypeDictionaryGetter typeDictionaryGetter;
     private VersionSender versionSender;
-    private static String uid;
     private static final String TAG = "narodmon-api";
     private final ValueUpdater valueUpdater;
     private final String fileName = "sensorList.obj";
@@ -67,8 +66,8 @@ public class NarodmonApi {
         versionSender.sendVersion(version);
     }
 
-    public void doAuthorisation (String login, String passwd) {
-        loginer.login(login,passwd);
+    public void doAuthorisation (String login, String passwd, String uid) {
+        loginer.login(login,passwd,uid);
     }
 
     public void updateSensorsValue (ArrayList<Sensor> list) {
@@ -268,7 +267,7 @@ public class NarodmonApi {
     * */
     private class Loginer implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
-        void login (String login, String passwd)
+        void login (String login, String passwd, String uid)
         {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
@@ -283,11 +282,18 @@ public class NarodmonApi {
                 JSONObject jObject = new JSONObject(result);
                 String login = jObject.getString("login");
                 Log.d(TAG,"Login result: " + login);
+	            if (login != null && login !="") {
+		            if (listener != null) {
+		                listener.onAuthorisationResult(true, result);
+			            return;
+		            }
+	            }
             } catch (JSONException e) {
                 Log.e(TAG, "Authorisation: wrong json, " + e.getMessage());
             }
             if (listener != null) {
-                listener.onAuthorisationResult(true, result);
+                listener.onAuthorisationResult(false,result);
+	            return;
             }
         }
         @Override

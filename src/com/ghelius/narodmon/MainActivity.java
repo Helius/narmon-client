@@ -22,6 +22,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -45,15 +48,18 @@ public class MainActivity extends SherlockFragmentActivity implements
     private boolean authorisationDone;
     private int oldRadiusKm;
     private String apiHeader;
+	private boolean needToRelogin = false;
+	String uid;
+//	private ProgressDialog progress;
 
-    @Override
+	@Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d(TAG,"onSharedPreferenceChanged " + key);
         if (key.equals(getString(R.string.pref_key_interval))) { // update interval changed
             scheduleAlarmWatcher();
             startTimer();
         } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
-            doAuthorisation();
+	        needToRelogin = true;
         } else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
             sendLocation();
             //updateSensorList();
@@ -101,6 +107,12 @@ public class MainActivity extends SherlockFragmentActivity implements
             mPager.setCurrentScreen(0,false);
             getSupportActionBar().setSelectedNavigationItem(0);
         }
+	    if (needToRelogin) {
+		    needToRelogin = false;
+//		    progress = ProgressDialog.show(this, "dialog title",
+//				    "dialog message", true);
+		    doAuthorisation();
+	    }
     }
 
     @Override
@@ -147,8 +159,9 @@ public class MainActivity extends SherlockFragmentActivity implements
         final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
         apiHeader = config.getApiHeader();
         if ((apiHeader == null) || (apiHeader.length() < 2)) {
-            Log.d(TAG,"android ID: " + NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)));
-            apiHeader = "{\"uuid\":\"" +  NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID)) +
+	        uid = NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+	        Log.d(TAG,"android ID: " + uid);
+            apiHeader = "{\"uuid\":\"" +  NarodmonApi.md5(uid) +
                     "\",\"api_key\":\"" + api_key + "\",";
             config.setApiHeader(apiHeader);
         }
@@ -177,11 +190,10 @@ public class MainActivity extends SherlockFragmentActivity implements
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        actionBar.setCustomView(R.layout.actionbar_top); //load our layout
+//        actionBar.setCustomView(R.layout.actionbar_top); //load our layout
         actionBar.setDisplayShowTitleEnabled(false);
 
         actionBar.setDisplayShowCustomEnabled(true);
-        setProgressBarIndeterminateVisibility(true);
         actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
                 android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
             @Override
@@ -199,8 +211,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         narodmonApi.setOnResultReceiveListener(this);
 
         narodmonApi.restoreSensorList(this,sensorList);
-        //updateSensorList();
-        doAuthorisation();
+//        doAuthorisation();
         sendLocation();
         sendVersion();
         narodmonApi.getTypeDictionary(this);
@@ -238,7 +249,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         String login = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
         String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
         if (!login.equals("")) {// don't try if login is empty
-            narodmonApi.doAuthorisation(login,passwd);
+            narodmonApi.doAuthorisation(login, passwd, NarodmonApi.md5(uid));
         } else {
             Log.w(TAG,"login is empty, do not authorisation");
         }
@@ -311,10 +322,10 @@ public class MainActivity extends SherlockFragmentActivity implements
     public void onAuthorisationResult(boolean ok, String res) {
         if (ok) {
             Log.d(TAG, "authorisation: ok, result:" + res);
-            Toast.makeText(this,"Authorisation successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Authorisation successfully", Toast.LENGTH_LONG).show();
         } else {
             Log.e(TAG, "authorisation: fail, result: " + res);
-            Toast.makeText(this,"Authorisation fail", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Authorisation fail", Toast.LENGTH_LONG).show();
         }
         authorisationDone = true;
         if (locationSended) // update list if both finished
@@ -323,8 +334,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     @Override
     public void onSendVersionResult(boolean ok, String res) {
-//        if (ok)
-//            Log.d(TAG,"sendVerion ok, result: " + res);
     }
 
     @Override
@@ -390,11 +399,13 @@ public class MainActivity extends SherlockFragmentActivity implements
     public void actionBtnClick (View view)
     {
         if (view == findViewById(R.id.btn_sort)) {
-           filterDialog.show(getSupportFragmentManager(), "dlg1");
-        } else if (view == findViewById(R.id.btn_settings)) {
-            startActivity(new Intent(MainActivity.this, PreferActivity.class));
         }
     }
+
+	// called by action (define via xml onClick)
+	public void showFilterDialog (MenuItem item) {
+		filterDialog.show(getSupportFragmentManager(), "dlg1");
+	}
 
     final Handler h = new Handler(new Handler.Callback() {
         @Override
@@ -446,20 +457,23 @@ public class MainActivity extends SherlockFragmentActivity implements
                         getString(getString(R.string.pref_key_interval),"5"))),
                 pi);
     }
-//
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        final MenuInflater inflater = getSupportMenuInflater();
-//        inflater.inflate(R.menu.icon_menu, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        Log.d(TAG, "onOptionMenuItemSelected " + item);
-//        switch (item.getItemId()) {
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        final MenuInflater inflater = getSupportMenuInflater();
+        inflater.inflate(R.menu.icon_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+	        case R.id.menu_settings :
+		        startActivity(new Intent(MainActivity.this, PreferActivity.class));
+	        case R.id.menu_refresh :
+		        updateSensorList();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }
 

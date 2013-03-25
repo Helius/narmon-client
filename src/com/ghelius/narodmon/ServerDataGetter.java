@@ -55,18 +55,6 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         super.onPreExecute();
     }
 
-
-
-//    Log.d(TAG,"=========== POST =============");
-//    HttpResponse r = makeRequest("http://narodmon.ru/client.php","{\"uuid\":\"ce6a134409741618f1a2f30fe11c26db\",\"api_key\":\"85UneTlo8XBlA\",\"cmd\":\"sensorList\",\"radius\":\"1024\"}");
-//    if (r!=null) {
-//        try {
-//            InputStream is = r.getEntity().getContent();
-//            Log.d(TAG, "HTTP POST result:["+inputStreamToString(is)+"]");
-//        } catch (IOException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
-//    }
     public static HttpResponse makeRequest(String uri, String json) {
         try {
             HttpPost httpPost = new HttpPost(uri);
@@ -89,8 +77,6 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     protected String doInBackground(String... uri) {
         Log.d(TAG,"doInBackground");
         String responseString = null;
-//        URL url;
-//        HttpURLConnection urlConnection = null;
         try {
             Log.d(TAG, uri[0] + ":" + uri[1]);
             HttpResponse r = makeRequest(uri[0],uri[1]);
@@ -98,18 +84,6 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
                 Log.e(TAG,"HttpResponse is null");
                 return "";
             }
-//            try {
-//                InputStream is = r.getEntity().getContent();
-//                Log.d(TAG, "HTTP POST result:["+inputStreamToString(is)+"]");
-//            } catch (IOException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            }
-//
-//            Log.d(TAG,"========= END ========");
-//            url = new URL(uri[0]);
-//            urlConnection = (HttpURLConnection) url.openConnection();
-//            urlConnection.setConnectTimeout(5000);
-//            urlConnection.setReadTimeout(10000);
             InputStream in = r.getEntity().getContent();
             responseString = inputStreamToString(in);
             if (asyncCallback!=null && !isCancelled()) {

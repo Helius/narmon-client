@@ -31,11 +31,9 @@ public class WatchService extends WakefulIntentService {
 
     private void checkLimits(Integer id, Float value, Long timeStamp) {
         Configuration.SensorTask task = ConfigHolder.getInstance(this).getSensorTask(id);
-
+        task.lastValue = value;
+        task.timestamp = timeStamp;
         if (task.job == Configuration.NOTHING) {
-            // just save value if it's needed
-            task.lastValue = value;
-            task.timestamp = timeStamp;
             return;
         }
         if (task.job == Configuration.MORE_THAN) {
@@ -57,6 +55,8 @@ public class WatchService extends WakefulIntentService {
                 updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_within), String.valueOf(task.lo) + ".." + String.valueOf(task.hi));
             }
         }
+        task.lastValue = value;
+        task.timestamp = timeStamp;
     }
 
     class SensorDataUpdater implements ServerDataGetter.OnResultListener {

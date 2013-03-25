@@ -61,4 +61,7 @@
     <string name="alarm_info_low_level">Нижний порог</string>
     <string name="alarm_info_current_value">Текущее значение:</string>
     <string name="alarm_dialog_accept_btn">Установить</string>
+    <string name="menu_settings_text">Настройки</string>
+    <string name="menu_text_filter">Фильтр</string>
+    <string name="menu_refresh_text">Обновить</string>
 </resources>
