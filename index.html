@@ -1,9 +1,81 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<title>Android клиент для narodmon.ru</title>
-</head>
-<body>
-	<p>Android + narodmon.ru = клиент</p>
-</body>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>narmon-client by Helius</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>narmon-client</h1>
+        <p>Android app for narodmon.ru service</p>
+
+        <p class="view"><a href="https://github.com/Helius/narmon-client">View the Project on GitHub <small>Helius/narmon-client</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Helius/narmon-client/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Helius/narmon-client/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Helius/narmon-client">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>narodmon.ru клиент для android.</h2>
+
+<h3>Статус</h3>
+
+<p>На данный момент программа находится в активном бэта-тестировании.</p>
+
+<h3>Платформы</h3>
+
+<p>Поддерживаются android 2.3 и старше.</p>
+
+<h3>Функционал</h3>
+
+<p>Основной экран приложения отображает список датчиков.
+По кнопке "Menu" вызывается меню с пунктами:</p>
+
+<ul>
+<li>Обновить - обновляет список и показания по всем датчикам</li>
+<li>Авторизация - вызов диалога авторизации</li>
+<li>Настройки - настройки программы.</li>
+</ul><p>В правом верхнем углу есть кнопка, она показывает диалог с фильтрами и сортировкой.</p>
+
+<p>Есть второй экран со списком датчиков - "Выбранные" изначально он пустой. Переключаться между экранами можно выбрав экран из списка (выпадающий список находится у иконки приложения в левом верхнем углу) или горизонтальным движением пальца по экрану.</p>
+
+<p>Тап по датчику открывает третий экран, с подробной информацией и графиком изменения параметра.
+На экране подробной информации есть кнопка в правом верхнем углу, с пиктограммой "глаз", нажатие на нее меняет ее цвет. Если она голубая - датчик добавлен в список "Выбранные". Убрать датчик из списка можно так же, нажав на кнопку, при этом она станет серой.</p>
+
+<p>Когда датчик добавлен в "Выбранные" под иконкой в виде глаза появляется иконка с пиктограммой "колокольчик". Это кнопка вызывает диалог установки оповещения, если значение параметра датчика пересечет один из порогов - сработает вибрация.</p>
+
+<p>Можно настроить следующий тип контроля:</p>
+
+<ul>
+<li>Превышение порога</li>
+<li>Снижение ниже порога</li>
+<li>Выход за диапазон из двух порогов</li>
+<li>Вход в диапазон из двух порогов</li>
+</ul><p>Далее следует изменить верхний и нижний пороги и нажать кнопку "Установить". Выключить оповещение можно, установив тип контроля в "НЕТ" и нажав "Установить".</p>
+
+<h3>Автор</h3>
+
+<p>Самойлов Евгений
+<a href="mailto:ghelius@gmail.com">ghelius@gmail.com</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Helius">Helius</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
 </html>
