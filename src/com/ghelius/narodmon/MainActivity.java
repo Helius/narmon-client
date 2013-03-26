@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -495,6 +496,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 		        Log.d(TAG,"show login dialog");
 		        loginDialog.show(getSupportFragmentManager(), "dlg2");
 				break;
+	        case R.id.menu_help :
+		        String url = "http://helius.github.com/narmon-client/";
+				Intent i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse(url));
+				startActivity(i);
+		        break;
             default:
                 return super.onOptionsItemSelected(item);
         }

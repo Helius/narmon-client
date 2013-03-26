@@ -78,4 +78,5 @@
     <string name="login_dialog_autherror">Ошибка авторизации</string>
     <string name="login_dialog_button_logout_text">Выйти</string>
     <string name="login_dialog_button_login_text">Войти</string>
+    <string name="menu_helppage_text">Справка</string>
 </resources>
