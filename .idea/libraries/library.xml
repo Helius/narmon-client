@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="library">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/library" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/library/src" />
+    </SOURCES>
+  </library>
+</component>
