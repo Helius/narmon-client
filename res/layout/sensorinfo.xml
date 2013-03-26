@@ -11,8 +11,8 @@
             android:layout_height="wrap_content" android:layout_gravity="left|center_vertical"
             android:baselineAligned="false">
         <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:id="@+id/info_sensor_icon" android:layout_gravity="center" android:src="@drawable/ic_launcher"
                 android:scaleType="fitStart"/>
         <LinearLayout
@@ -59,12 +59,17 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="name name name name"
-            android:id="@+id/text_name" android:textSize="25dp"/>
+            android:marqueeRepeatLimit ="marquee_forever"
+            android:scrollHorizontally="true"
+            android:id="@+id/text_name" android:textSize="25dp" android:ellipsize="marquee" android:singleLine="true"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Location"
-            android:id="@+id/text_location" android:layout_marginBottom="10dp"/>
+            android:marqueeRepeatLimit ="marquee_forever"
+            android:scrollHorizontally="true"
+            android:id="@+id/text_location" android:layout_marginBottom="10dp" android:ellipsize="marquee"
+            android:singleLine="true"/>
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
@@ -138,15 +143,15 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/sensorInfoChart"
-            android:layout_weight="0.5"
+            android:layout_weight="1"
             >
     </LinearLayout>
     <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="0.8"
-            android:gravity="center_vertical|center_horizontal">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:gravity="center_vertical|center_horizontal" android:layout_gravity="center_horizontal">
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

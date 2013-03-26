@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
@@ -26,7 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-public class SensorInfo extends FragmentActivity {
+public class SensorInfo extends SherlockFragmentActivity {
     private final String TAG = "narodmon-info";
     private ArrayList <Point> logData = new ArrayList<Point>();
     private Timer updateTimer;
@@ -98,23 +98,7 @@ public class SensorInfo extends FragmentActivity {
                 icon.setImageResource(R.drawable.unknown_icon);
                 break;
         }
-//        String suffix = "";
-//        switch (sensor.type) {
-//            case Sensor.TYPE_TEMPERATURE:
-//                suffix = "°C";
-//                break;
-//            case Sensor.TYPE_PRESSURE:
-//                suffix = "mmHg";
-//                LinearLayout l = ((LinearLayout)findViewById(R.id.value_layout));
-//                if (l != null)
-//                    l.setOrientation(LinearLayout.VERTICAL);
-//                break;
-//            case Sensor.TYPE_HUMIDITY:
-//                suffix = "%";
-//                break;
-//            default:
-//                break;
-//        }
+
         units.setText(SensorTypeProvider.getInstance(this).getUnitForType(sensor.type));
         value.setText(sensor.value);
 
@@ -296,7 +280,6 @@ public class SensorInfo extends FragmentActivity {
         mRenderer.setShowLabels(true);
         mRenderer.setShowGrid(true);
         mRenderer.setGridColor(0xFF505050);
-        //mRenderer.setXLabels(24);
 
         mRenderer.setXTitle(getString(R.string.text_today));
         mRenderer.setYLabels(10);
@@ -307,12 +290,10 @@ public class SensorInfo extends FragmentActivity {
         mRenderer.setLegendTextSize(10);
         mRenderer.setYLabelsPadding(-20);
         mRenderer.setXLabelsAlign(Paint.Align.CENTER);
-        //mRenderer.setShowCustomTextGrid(true);
         mRenderer.setXLabels(10);
 
         mCurrentRenderer.setColor(0xFF00FF00);
         mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
-//        mCurrentRenderer.setLineWidth(-1);
         mCurrentRenderer.setFillPoints(true);
         mCurrentRenderer.setChartValuesTextSize(15);
 
@@ -363,7 +344,6 @@ public class SensorInfo extends FragmentActivity {
                 timeSeries.add((data.time * 1000), data.value);
                 Log.d(TAG,"cur:"+data.time + " prev:" + prevTime + " diff:" + (data.time-prevTime));
                 if ((data.time - prevTime) > max_gap) {
-//                    Log.d(TAG,"add nullvalue");
                     timeSeries.add(((data.time - 1) * 1000), MathHelper.NULL_VALUE);
                 }
                 prevTime = data.time;
