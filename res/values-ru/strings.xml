@@ -64,4 +64,7 @@
     <string name="menu_settings_text">Настройки</string>
     <string name="menu_text_filter">Фильтр</string>
     <string name="menu_refresh_text">Обновить</string>
+    <string name="btn_month_text">месяц</string>
+    <string name="btn_week_text">неделя</string>
+    <string name="btn_day_text">день</string>
 </resources>
