@@ -2,7 +2,10 @@ package com.ghelius.narodmon;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.*;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
@@ -13,7 +16,7 @@ public class PreferActivity extends SherlockPreferenceActivity implements Shared
     @Override
     protected void onCreate(final Bundle savedInstanceState)
     {
-        setTheme(R.style.Theme_Sherlock);
+        setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference_screen);
     }

@@ -131,7 +131,7 @@ public class MainActivity extends SherlockFragmentActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG,"onCreate");
-        setTheme(R.style.Theme_Sherlock);
+        setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
         authorisationDone = false;
         locationSended = false;
