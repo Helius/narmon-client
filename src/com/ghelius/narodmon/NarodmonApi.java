@@ -70,6 +70,10 @@ public class NarodmonApi {
         loginer.login(login,passwd,uid);
     }
 
+	public void closeAuthorisation () {
+		loginer.logout();
+	}
+
     public void updateSensorsValue (ArrayList<Sensor> list) {
         valueUpdater.updateValue(list);
     }
@@ -267,13 +271,17 @@ public class NarodmonApi {
     * */
     private class Loginer implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
-        void login (String login, String passwd, String uid)
-        {
+        void login (String login, String passwd, String uid) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             Log.d(TAG, "password: " + passwd + " md5: " + md5(passwd));
             getter.execute(apiUrl, makeRequestHeader("login") + ",\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) +"\"}");
         }
+	    void logout () {
+		    getter = new ServerDataGetter();
+		    getter.setOnListChangeListener(this);
+		    getter.execute(apiUrl, makeRequestHeader("logout") + "}");
+	    }
         @Override
         public void onResultReceived(String result) {
             //{"error":"auth error"} or {"login":"mylogin"}
@@ -282,9 +290,9 @@ public class NarodmonApi {
                 JSONObject jObject = new JSONObject(result);
                 String login = jObject.getString("login");
                 Log.d(TAG,"Login result: " + login);
-	            if (login != null && login !="") {
+	            if (login != null) {
 		            if (listener != null) {
-		                listener.onAuthorisationResult(true, result);
+		                listener.onAuthorisationResult(true, login);
 			            return;
 		            }
 	            }
@@ -292,8 +300,7 @@ public class NarodmonApi {
                 Log.e(TAG, "Authorisation: wrong json, " + e.getMessage());
             }
             if (listener != null) {
-                listener.onAuthorisationResult(false,result);
-	            return;
+                listener.onAuthorisationResult(false, result);
             }
         }
         @Override

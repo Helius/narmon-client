@@ -67,4 +67,15 @@
     <string name="btn_month_text">месяц</string>
     <string name="btn_week_text">неделя</string>
     <string name="btn_day_text">день</string>
+    <string name="login_dialog_auto_text">Авторизироваться при старте</string>
+    <string name="login_dialog_password_text">пароль</string>
+    <string name="login_dialog_login_text">логин</string>
+    <string name="login_dialog_title">Авторизация</string>
+    <string name="menu_autorisation_name">Авторизация</string>
+    <string name="login_dialog_logout_btn_text">Разлогиниться</string>
+    <string name="login_dialog_youarelogin">Вы успешно авторизированы</string>
+    <string name="login_dialog_youarenotlogin">Вы не авторизированы</string>
+    <string name="login_dialog_autherror">Ошибка авторизации</string>
+    <string name="login_dialog_button_logout_text">Выйти</string>
+    <string name="login_dialog_button_login_text">Войти</string>
 </resources>

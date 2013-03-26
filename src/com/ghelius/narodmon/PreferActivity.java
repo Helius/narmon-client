@@ -19,9 +19,9 @@ public class PreferActivity extends SherlockPreferenceActivity implements Shared
     }
 
     public void updateSummary () {
-        Preference loginPref =  findPreference(this.getText(R.string.pref_key_login));
-        EditTextPreference el = (EditTextPreference) loginPref;
-        el.setSummary(el.getText());
+//        Preference loginPref =  findPreference(this.getText(R.string.pref_key_login));
+//        EditTextPreference el = (EditTextPreference) loginPref;
+//        el.setSummary(el.getText());
         Preference useGeoCode = findPreference(this.getText(R.string.pref_key_use_geocode));
         CheckBoxPreference cb = (CheckBoxPreference) useGeoCode;
         if (cb.isChecked())

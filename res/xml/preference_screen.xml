@@ -4,22 +4,6 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-            android:title="@string/pref_user_settings">
-        <EditTextPreference
-                android:id="@+id/login_pref"
-                android:key="@string/pref_key_login"
-                android:title="@string/text_Login_or_email"
-                android:summary="@string/text_login_or_email_summ"
-                android:dialogTitle="@string/text_Enter_Login" />
-        <EditTextPreference
-                android:id="@+id/passwd_pref"
-                android:key="@string/pref_key_passwd"
-                android:title="@string/text_password"
-                android:summary=""
-                android:inputType="textPassword"
-                android:dialogTitle="@string/text_Enter_password" />
-    </PreferenceCategory>
-    <PreferenceCategory
             android:title="@string/text_Options">
         <ListPreference
                 android:title="@string/text_Sensor_update_interval"

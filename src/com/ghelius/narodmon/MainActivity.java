@@ -19,7 +19,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -31,7 +30,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends SherlockFragmentActivity implements
-        SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener{
+        SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener {
+
+	enum LoginStatus {LOGIN,LOGOUT,ERROR}
 
     private static final String api_key = "85UneTlo8XBlA";
     private final String TAG = "narodmon-main";
@@ -42,15 +43,16 @@ public class MainActivity extends SherlockFragmentActivity implements
     private Timer updateTimer = null;
     private HorizontalPager mPager;
     private FilterDialog filterDialog;
+	private LoginDialog loginDialog;
     private UiFlags uiFlags;
     private NarodmonApi narodmonApi;
     private boolean locationSended;
     private boolean authorisationDone;
     private int oldRadiusKm;
     private String apiHeader;
-	private boolean needToRelogin = false;
+	private LoginStatus loginStatus = LoginStatus.LOGOUT;
 	String uid;
-//	private ProgressDialog progress;
+
 
 	@Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -58,8 +60,8 @@ public class MainActivity extends SherlockFragmentActivity implements
         if (key.equals(getString(R.string.pref_key_interval))) { // update interval changed
             scheduleAlarmWatcher();
             startTimer();
-        } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
-	        needToRelogin = true;
+//        } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
+//	        needToRelogin = true;
         } else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
             sendLocation();
             //updateSensorList();
@@ -107,12 +109,10 @@ public class MainActivity extends SherlockFragmentActivity implements
             mPager.setCurrentScreen(0,false);
             getSupportActionBar().setSelectedNavigationItem(0);
         }
-	    if (needToRelogin) {
-		    needToRelogin = false;
-//		    progress = ProgressDialog.show(this, "dialog title",
-//				    "dialog message", true);
-		    doAuthorisation();
-	    }
+//	    if (needToRelogin) {
+//		    needToRelogin = false;
+//		    doAuthorisation();
+//	    }
     }
 
     @Override
@@ -206,12 +206,15 @@ public class MainActivity extends SherlockFragmentActivity implements
         FilterDialog.setUiFlags(uiFlags);
         filterDialog = new FilterDialog();
         filterDialog.setOnChangeListener(this);
+	    loginDialog = new LoginDialog();
+	    loginDialog.setOnChangeListener(this);
 
         narodmonApi = new NarodmonApi(apiHeader);
         narodmonApi.setOnResultReceiveListener(this);
 
         narodmonApi.restoreSensorList(this,sensorList);
-//        doAuthorisation();
+	    if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin),false))
+            doAuthorisation();
         sendLocation();
         sendVersion();
         narodmonApi.getTypeDictionary(this);
@@ -254,6 +257,10 @@ public class MainActivity extends SherlockFragmentActivity implements
             Log.w(TAG,"login is empty, do not authorisation");
         }
     }
+
+	private void closeAutorisation () {
+		narodmonApi.closeAuthorisation();
+	}
 
     void sendLocation () {
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_use_geocode),false)) {
@@ -321,11 +328,18 @@ public class MainActivity extends SherlockFragmentActivity implements
     @Override
     public void onAuthorisationResult(boolean ok, String res) {
         if (ok) {
-            Log.d(TAG, "authorisation: ok, result:" + res);
-            Toast.makeText(this,"Authorisation successfully", Toast.LENGTH_LONG).show();
+	        if (res.equals("")) {
+				loginStatus = LoginStatus.LOGOUT;
+		        loginDialog.updateLoginStatus();
+	        } else {
+		        Log.d(TAG, "authorisation: ok, result:" + res);
+		        loginStatus = LoginStatus.LOGIN;
+		        loginDialog.updateLoginStatus();
+	        }
         } else {
             Log.e(TAG, "authorisation: fail, result: " + res);
-            Toast.makeText(this,"Authorisation fail", Toast.LENGTH_LONG).show();
+	        loginStatus = LoginStatus.ERROR;
+	        loginDialog.updateLoginStatus ();
         }
         authorisationDone = true;
         if (locationSended) // update list if both finished
@@ -466,14 +480,45 @@ public class MainActivity extends SherlockFragmentActivity implements
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+	    Log.d(TAG,"item: " + item + ", itemID: " + item.getItemId());
+
         switch (item.getItemId()) {
 	        case R.id.menu_settings :
+		        Log.d(TAG,"start settings activity");
 		        startActivity(new Intent(MainActivity.this, PreferActivity.class));
+				break;
 	        case R.id.menu_refresh :
+		        Log.d(TAG,"refresh sensor list");
 		        updateSensorList();
+				break;
+	        case R.id.menu_login :
+		        Log.d(TAG,"show login dialog");
+		        loginDialog.show(getSupportFragmentManager(), "dlg2");
+				break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+	    return false;
     }
+
+	@Override
+	public void login() {
+		doAuthorisation();
+	}
+
+	@Override
+	public void logout() {
+		closeAutorisation();
+	}
+
+	@Override
+	public SharedPreferences getPreference() {
+		return PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+	}
+
+	@Override
+	public LoginStatus loginStatus() {
+		return loginStatus;
+	}
 }
 
