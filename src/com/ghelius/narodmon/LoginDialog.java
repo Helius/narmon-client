@@ -59,6 +59,13 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 		this.listener = listener;
 	}
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
+	}
+
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		getDialog().setTitle(this.getString(R.string.login_dialog_title));
 		final View v = inflater.inflate(R.layout.login_dialog_activity, null);

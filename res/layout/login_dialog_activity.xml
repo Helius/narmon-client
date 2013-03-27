@@ -10,24 +10,34 @@
             android:layout_height="wrap_content"
             android:id="@+id/loginAsText" android:layout_gravity="center" android:textSize="18dp"
             android:singleLine="false"/>
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="login"
-            android:id="@+id/textView1"/>
-    <EditText
+    <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/login_textview"/>
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/login_dialog_password_text"
-            android:id="@+id/textView2"/>
-    <EditText
+            android:layout_height="wrap_content">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="login"
+                android:id="@+id/textView1" android:layout_marginRight="10dp"/>
+        <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/login_textview"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/passwordTextEdit" android:password="true"/>
+            android:layout_height="wrap_content">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_dialog_password_text"
+                android:id="@+id/textView2" android:layout_marginRight="10dp"/>
+        <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/passwordTextEdit" android:password="true"/>
+    </LinearLayout>
     <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

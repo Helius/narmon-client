@@ -110,10 +110,6 @@ public class MainActivity extends SherlockFragmentActivity implements
             mPager.setCurrentScreen(0,false);
             getSupportActionBar().setSelectedNavigationItem(0);
         }
-//	    if (needToRelogin) {
-//		    needToRelogin = false;
-//		    doAuthorisation();
-//	    }
     }
 
     @Override
