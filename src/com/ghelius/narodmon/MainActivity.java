@@ -5,9 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -65,7 +63,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 //	        needToRelogin = true;
         } else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
             sendLocation();
-            //updateSensorList();
+
         }
     }
 
@@ -267,42 +265,56 @@ public class MainActivity extends SherlockFragmentActivity implements
                     getString(getString(R.string.pref_key_geoloc),getString(R.string.text_Russia_novosibirsk)));
         } else {
             Log.d(TAG,"location: use gps");
-            // use gps
-            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-            String provider = lm.getBestProvider(criteria, true);
-            if (provider == null) {
-                Log.e(TAG,"location provider is NULL");
-                return;
-            }
-            Location mostRecentLocation = lm.getLastKnownLocation(provider);
-            if(mostRecentLocation == null) {
-                Log.e(TAG,"mostRecentLocation is NULL");
-//                return;
-                Location locationGPS = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                Location locationNet = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
-                long GPSLocationTime = 0;
-                if (null != locationGPS) { GPSLocationTime = locationGPS.getTime();}
-                long NetLocationTime = 0;
-                if (null != locationNet) {
-                    NetLocationTime = locationNet.getTime();
-                }
-                if ( 0 < GPSLocationTime - NetLocationTime )
-                    mostRecentLocation = locationGPS;
-                else
-                    mostRecentLocation = locationNet;
-            }
-            if (mostRecentLocation == null) {
-                Log.e(TAG,"location still null");
-                return;
-            }
-            double lat=mostRecentLocation.getLatitude();
-            double lon=mostRecentLocation.getLongitude();
-            // use API to send location
-            Log.d(TAG,"my location: " + lat +" "+lon);
-            narodmonApi.sendLocation(lat, lon);
+	        MyLocation myLocation = new MyLocation();
+	        myLocation.getLocation(this,new MyLocation.LocationResult() {
+		        @Override
+		        public void gotLocation(Location location) {
+			        double lat=location.getLatitude();
+			        double lon=location.getLongitude();
+			        // use API to send location
+			        Log.d(TAG,"my location: " + lat +" "+lon);
+			        narodmonApi.sendLocation(lat, lon);
+		        }
+	        });
+
+
+//            // use gps
+//            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//            Criteria criteria = new Criteria();
+//            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+//            String provider = lm.getBestProvider(criteria, true);
+//            if (provider == null) {
+//                Log.e(TAG,"location provider is NULL");
+//                return;
+//            }
+//            Location mostRecentLocation = lm.getLastKnownLocation(provider);
+//            if(mostRecentLocation == null) {
+//                Log.e(TAG,"mostRecentLocation is NULL");
+////                return;
+//                Location locationGPS = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//                Location locationNet = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//
+//                long GPSLocationTime = 0;
+//                if (null != locationGPS) { GPSLocationTime = locationGPS.getTime();}
+//                long NetLocationTime = 0;
+//                if (null != locationNet) {
+//                    NetLocationTime = locationNet.getTime();
+//                }
+//                if ( 0 < GPSLocationTime - NetLocationTime )
+//                    mostRecentLocation = locationGPS;
+//                else
+//                    mostRecentLocation = locationNet;
+//            }
+//            if (mostRecentLocation == null) {
+//                Log.e(TAG,"location still null");
+//                return;
+//            }
+//            double lat=mostRecentLocation.getLatitude();
+//            double lon=mostRecentLocation.getLongitude();
+//            // use API to send location
+//            Log.d(TAG,"my location: " + lat +" "+lon);
+//            narodmonApi.sendLocation(lat, lon);
         }
     }
 

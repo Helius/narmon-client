@@ -31,27 +31,26 @@ public class WatchService extends WakefulIntentService {
 
     private void checkLimits(Integer id, Float value, Long timeStamp) {
         Configuration.SensorTask task = ConfigHolder.getInstance(this).getSensorTask(id);
-        task.lastValue = value;
-        task.timestamp = timeStamp;
         if (task.job == Configuration.NOTHING) {
-            return;
         }
         if (task.job == Configuration.MORE_THAN) {
-            if (value > task.hi) {
+            if (value > task.hi && task.lastValue <= task.hi) {
                 updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_more_than), String.valueOf(task.hi));
             }
         } else if (task.job == Configuration.LESS_THAN) {
-            if (value < task.lo) {
+            if (value < task.lo && task.lastValue >= task.lo) {
                 updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_less_than), String.valueOf(task.lo));
             }
         } else if (task.job == Configuration.OUT_OF) {
-            if (value > task.hi) {
+            if (value > task.hi && task.lastValue <= task.hi) {
                 updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_more_than), String.valueOf(task.hi));
-            } else if (value < task.lo) {
+            } else if (value < task.lo && task.lastValue >= task.lo) {
                 updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_less_than), String.valueOf(task.lo));
             }
         } else if (task.job == Configuration.WITHIN_OF) {
-            if ((value > task.lo) && (value < task.hi)) {
+            if (value > task.lo && task.lastValue <= task.lo) {
+	            updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_within), String.valueOf(task.lo) + ".." + String.valueOf(task.hi));
+	        } else if (value < task.hi && task.lastValue >= task.hi) {
                 updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_within), String.valueOf(task.lo) + ".." + String.valueOf(task.hi));
             }
         }

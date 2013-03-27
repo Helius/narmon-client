@@ -14,20 +14,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3350c6f2-14af-45cb-a46f-85ec2a3dac85" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ghelius/narodmon/LoginDialog.java" afterPath="$PROJECT_DIR$/src/com/ghelius/narodmon/LoginDialog.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/ghelius/narodmon/MyLocation.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java" afterPath="$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/login_dialog_activity.xml" afterPath="$PROJECT_DIR$/res/layout/login_dialog_activity.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ghelius/narodmon/WatchService.java" afterPath="$PROJECT_DIR$/src/com/ghelius/narodmon/WatchService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="narodmon.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364353466956" ignored="false" />
+    <file path="/Dummy.txt" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364383699050" ignored="false" />
     <file path="$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/samples/fragments/project.properties" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364298400788" ignored="false" />
     <file path="$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/samples/known-bugs/project.properties" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364298400788" ignored="false" />
     <file path="$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/samples/styled/project.properties" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364298400788" ignored="false" />
     <file path="$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/samples/roboguice/project.properties" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364298400788" ignored="false" />
     <file path="$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/samples/demos/project.properties" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364298400788" ignored="false" />
     <file path="/fragment.java" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364301752622" ignored="false" />
-    <file path="$PROJECT_DIR$/.idea/workspace.xml" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364301761060" ignored="false" />
+    <file path="/WatchService.java" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364354652245" ignored="false" />
+    <file path="/MainActivity.java" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364384448072" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,16 +87,14 @@
     <favorites_list name="narodmon" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
+    <splitter split-orientation="horizontal" split-proportion="0.7337094">
       <split-first>
         <leaf>
           <file leaf-file-name="PreferActivity.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/PreferActivity.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state line="23" column="0" selection-start="801" selection-end="801" vertical-scroll-proportion="0.0">
-                  <folding>
-                    <element signature="imports" expanded="true" />
-                  </folding>
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -111,28 +111,43 @@
           <file leaf-file-name="LoginDialog.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/LoginDialog.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="66" column="4" selection-start="2161" selection-end="2161" vertical-scroll-proportion="0.0">
+                <state line="65" column="4" selection-start="2134" selection-end="2134" vertical-scroll-proportion="0.0">
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="login_dialog_activity.xml" pinned="false" current="true" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/res/layout/login_dialog_activity.xml">
-              <provider editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <file leaf-file-name="WatchService.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/WatchService.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="62" column="24" selection-start="2903" selection-end="2903" vertical-scroll-proportion="0.0">
                   <folding />
                 </state>
               </provider>
-              <provider selected="true" editor-type-id="android-designer">
-                <state />
+            </entry>
+          </file>
+          <file leaf-file-name="strings.xml" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/res/values-ru/strings.xml">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="44" column="18" selection-start="2461" selection-end="2461" vertical-scroll-proportion="0.0">
+                  <folding />
+                </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
+          <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="94" column="4" selection-start="3265" selection-end="3265" vertical-scroll-proportion="0.0">
+                <state line="332" column="20" selection-start="12827" selection-end="12827" vertical-scroll-proportion="0.591133">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="MyLocation.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/MyLocation.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="8" column="0" selection-start="207" selection-end="207" vertical-scroll-proportion="0.0">
                   <folding />
                 </state>
               </provider>
@@ -154,8 +169,11 @@
           <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="131" column="4" selection-start="4500" selection-end="4500" vertical-scroll-proportion="0.0591133">
-                  <folding />
+                <state line="278" column="14" selection-start="10623" selection-end="10623" vertical-scroll-proportion="3.7832513">
+                  <folding>
+                    <element signature="e#10258#10622#0" expanded="true" />
+                    <element signature="e#10610#10611#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -181,9 +199,11 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/PreferActivity.java" />
-        <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java" />
         <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/LoginDialog.java" />
         <option value="$PROJECT_DIR$/res/layout/login_dialog_activity.xml" />
+        <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/WatchService.java" />
+        <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/MyLocation.java" />
+        <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -252,6 +272,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="narodmon" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="narodmon" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="narodmon" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="res" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -288,34 +326,10 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="narodmon" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="library" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="narodmon" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="library" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -331,15 +345,15 @@
     <property name="AndroidLayoutSelectedEditor" value="android-designer" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="narodmon" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
-    <property name="restartRequiresConfirmation" value="true" />
     <property name="AndroidTargetDevices" value="0123456789ABCDEF" />
+    <property name="restartRequiresConfirmation" value="true" />
     <property name="MemberChooser.showClasses" value="true" />
-    <property name="GoToClass.includeLibraries" value="false" />
     <property name="GenerateAntBuildDialog.backupFiles" value="true" />
+    <property name="GoToClass.includeLibraries" value="false" />
   </component>
   <component name="RunManager" selected="Android Application.narodmon">
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
@@ -367,6 +381,19 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -392,19 +419,6 @@
       <envs />
       <properties />
       <listeners />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -492,10 +506,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="18" width="1920" height="1062" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32977587" sideWeight="0.6708075" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32977587" sideWeight="0.6708075" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -509,9 +521,11 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.14834578" sideWeight="0.6708075" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15261473" sideWeight="0.6708075" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32919255" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6708075" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6708075" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -581,9 +595,7 @@
     <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/PreferActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="12" column="0" selection-start="487" selection-end="487" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -644,34 +656,53 @@
     <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/PreferActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="23" column="0" selection-start="801" selection-end="801" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="94" column="4" selection-start="3265" selection-end="3265" vertical-scroll-proportion="0.0">
+    <entry file="file://$PROJECT_DIR$/res/layout/login_dialog_activity.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/LoginDialog.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="4" selection-start="2161" selection-end="2161" vertical-scroll-proportion="0.0">
+        <state line="65" column="4" selection-start="2134" selection-end="2134" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/login_dialog_activity.xml">
-      <provider editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+    <entry file="file://$PROJECT_DIR$/res/values-ru/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="44" column="18" selection-start="2461" selection-end="2461" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/WatchService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="62" column="24" selection-start="2903" selection-end="2903" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/MyLocation.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="0" selection-start="207" selection-end="207" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="332" column="20" selection-start="12827" selection-end="12827" vertical-scroll-proportion="0.591133">
+          <folding />
+        </state>
       </provider>
     </entry>
   </component>
