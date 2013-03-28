@@ -14,14 +14,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3350c6f2-14af-45cb-a46f-85ec2a3dac85" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/ghelius/narodmon/MyLocation.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java" afterPath="$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ghelius/narodmon/WatchService.java" afterPath="$PROJECT_DIR$/src/com/ghelius/narodmon/WatchService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AndroidManifest.xml" afterPath="$PROJECT_DIR$/AndroidManifest.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ChangeLog.txt" afterPath="$PROJECT_DIR$/ChangeLog.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/values/strings.xml" afterPath="$PROJECT_DIR$/res/values/strings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="narodmon.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364383699050" ignored="false" />
+    <file path="/Dummy.txt" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364441330129" ignored="false" />
     <file path="$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/samples/fragments/project.properties" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364298400788" ignored="false" />
     <file path="$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/samples/known-bugs/project.properties" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364298400788" ignored="false" />
     <file path="$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/samples/styled/project.properties" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364298400788" ignored="false" />
@@ -29,7 +29,8 @@
     <file path="$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/samples/demos/project.properties" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364298400788" ignored="false" />
     <file path="/fragment.java" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364301752622" ignored="false" />
     <file path="/WatchService.java" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364354652245" ignored="false" />
-    <file path="/MainActivity.java" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364384448072" ignored="false" />
+    <file path="/MainActivity.java" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364441588270" ignored="false" />
+    <file path="$USER_HOME$/Project/iptv_android/src/org/eltex/android/app/iptvplayer/MainActivity.java" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364441590558" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +88,7 @@
     <favorites_list name="narodmon" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.7337094">
+    <splitter split-orientation="horizontal" split-proportion="0.6077313">
       <split-first>
         <leaf>
           <file leaf-file-name="PreferActivity.java" pinned="false" current="false" current-in-tab="false">
@@ -135,10 +136,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
+          <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="332" column="20" selection-start="12827" selection-end="12827" vertical-scroll-proportion="0.591133">
+                <state line="329" column="0" selection-start="12703" selection-end="12703" vertical-scroll-proportion="0.21428572">
                   <folding />
                 </state>
               </provider>
@@ -166,14 +167,29 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="true">
+          <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="278" column="14" selection-start="10623" selection-end="10623" vertical-scroll-proportion="3.7832513">
-                  <folding>
-                    <element signature="e#10258#10622#0" expanded="true" />
-                    <element signature="e#10610#10611#0" expanded="true" />
-                  </folding>
+                <state line="284" column="14" selection-start="10813" selection-end="10813" vertical-scroll-proportion="0.0">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="AndroidManifest.xml" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="4" column="47" selection-start="231" selection-end="231" vertical-scroll-proportion="0.0">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="strings.xml" pinned="false" current="true" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="34" column="38" selection-start="1897" selection-end="1897" vertical-scroll-proportion="0.7389163">
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -204,6 +220,8 @@
         <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/WatchService.java" />
         <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/MyLocation.java" />
         <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java" />
+        <option value="$PROJECT_DIR$/AndroidManifest.xml" />
+        <option value="$PROJECT_DIR$/res/values/strings.xml" />
       </list>
     </option>
   </component>
@@ -244,6 +262,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -329,7 +348,6 @@
         </subPane>
       </pane>
       <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -345,15 +363,15 @@
     <property name="AndroidLayoutSelectedEditor" value="android-designer" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="GenerateAntBuildDialog.outputFileNameProperty" value="narodmon" />
     <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="GenerateAntBuildDialog.outputFileNameProperty" value="narodmon" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
-    <property name="AndroidTargetDevices" value="0123456789ABCDEF" />
     <property name="restartRequiresConfirmation" value="true" />
+    <property name="AndroidTargetDevices" value="0123456789ABCDEF" />
     <property name="MemberChooser.showClasses" value="true" />
-    <property name="GenerateAntBuildDialog.backupFiles" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
+    <property name="GenerateAntBuildDialog.backupFiles" value="true" />
   </component>
   <component name="RunManager" selected="Android Application.narodmon">
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
@@ -381,19 +399,6 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method />
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -419,6 +424,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -521,8 +539,8 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15261473" sideWeight="0.6708075" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32919255" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15795091" sideWeight="0.6708075" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32919255" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6708075" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.6708075" order="2" side_tool="false" content_ui="tabs" />
@@ -592,20 +610,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/PreferActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="0" selection-start="487" selection-end="487" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/FilterDialog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="13" selection-start="255" selection-end="255" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/LoginDialog.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="16" column="13" selection-start="466" selection-end="466" vertical-scroll-proportion="0.0">
@@ -648,9 +652,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/library/res/values/abs__themes.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="17" selection-start="553" selection-end="553" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="14" column="17" selection-start="553" selection-end="553" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/PreferActivity.java">
@@ -700,7 +702,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="332" column="20" selection-start="12827" selection-end="12827" vertical-scroll-proportion="0.591133">
+        <state line="284" column="14" selection-start="10813" selection-end="10813" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="47" selection-start="231" selection-end="231" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="38" selection-start="1897" selection-end="1897" vertical-scroll-proportion="0.7389163">
           <folding />
         </state>
       </provider>
