@@ -29,10 +29,10 @@
     <string name="text_Login_or_email">Login (or email)</string>
     <string name="text_login_or_email_summ">login or email on narodmon.ru</string>
     <string name="text_Enter_Login">Enter login</string>
-    <string name="text_sec"> sec</string>
-    <string name="text_min"> min</string>
-    <string name="text_hr"> hr</string>
-    <string name="text_days"> days</string>
+    <string name="text_sec">sec</string>
+    <string name="text_min">min</string>
+    <string name="text_hr">hr</string>
+    <string name="text_days">days</string>
     <string name="text_ago">ago</string>
     <string name="text_show">Show:</string>
     <string name="text_all">All</string>

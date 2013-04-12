@@ -254,13 +254,13 @@ public class SensorInfo extends SherlockFragmentActivity {
         long difftime = (System.currentTimeMillis() - time*1000)/1000;
         String agoText;
         if (difftime < 60) {
-            agoText = String.valueOf(difftime) + context.getString(R.string.text_sec);
+            agoText = String.valueOf(difftime) +" "+ context.getString(R.string.text_sec);
         } else if (difftime/60 < 60) {
-            agoText = String.valueOf(difftime/60) + context.getString(R.string.text_min);
+            agoText = String.valueOf(difftime/60) +" "+ context.getString(R.string.text_min);
         } else if (difftime/3600 < 24) {
-            agoText = String.valueOf(difftime/3600) + context.getString(R.string.text_hr);
+            agoText = String.valueOf(difftime/3600) +" "+ context.getString(R.string.text_hr);
         } else {
-            agoText = String.valueOf(difftime/(3600*24)) + context.getString(R.string.text_days);
+            agoText = String.valueOf(difftime/(3600*24)) +" "+ context.getString(R.string.text_days);
         }
         return agoText;
     }
