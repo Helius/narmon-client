@@ -22,6 +22,8 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 	private TextView loginStatus = null;
 
 	public void updateLoginStatus() {
+		if (listener.loginStatus() == MainActivity.LoginStatus.LOGIN)
+			dismiss();
 		Log.d(TAG,"update login status");
 		updateLoginStatusText();
 		updateButtonText();

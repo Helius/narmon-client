@@ -351,8 +351,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 	        loginDialog.updateLoginStatus ();
         }
         authorisationDone = true;
-        if (locationSended) // update list if both finished
-            updateSensorList();
+//        if (locationSended) // update list if both finished
+        updateSensorList();
     }
 
     @Override
