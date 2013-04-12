@@ -79,4 +79,6 @@
     <string name="login_dialog_button_logout_text">Выйти</string>
     <string name="login_dialog_button_login_text">Войти</string>
     <string name="menu_helppage_text">Справка</string>
+    <string name="text_by_type">тип</string>
+    <string name="text_by_time">время</string>
 </resources>
