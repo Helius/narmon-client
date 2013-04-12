@@ -72,13 +72,16 @@ public class AlarmsSetupDialog extends android.support.v4.app.DialogFragment {
             }
         });
 
+	    EditText textHi = (EditText)getView().findViewById(R.id.hiLimit);
+	    EditText textLo = (EditText)getView().findViewById(R.id.lowLimit);
+	    Spinner spinner = (Spinner)getView().findViewById(R.id.AlarmSpinner);
         if (sensorTask != null) {
-            ((EditText) getView().findViewById(R.id.hiLimit)).setText(String.valueOf(sensorTask.hi));
-            ((EditText) getView().findViewById(R.id.lowLimit)).setText(String.valueOf(sensorTask.lo));
-            ((Spinner)getView().findViewById(R.id.AlarmSpinner)).setSelection(sensorTask.job);
+            textHi.setText(String.valueOf(sensorTask.hi));
+            textLo.setText(String.valueOf(sensorTask.lo));
+            spinner.setSelection(sensorTask.job);
             if (sensorTask.job == 0) {
-                ((EditText) getView().findViewById(R.id.hiLimit)).setText(String.valueOf(currentValue+10));
-                ((EditText) getView().findViewById(R.id.lowLimit)).setText(String.valueOf(currentValue-10));
+                textHi.setText(String.valueOf(currentValue + 10.0));
+                textLo.setText(String.valueOf(currentValue - 10.0));
             }
         }
 

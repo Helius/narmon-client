@@ -131,7 +131,7 @@ public class WatchService extends WakefulIntentService {
      */
     private void showNotification(String name, String value) {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        int dash = 500;     // Length of a Morse Code "dash" in milliseconds
+        int dash = 300;     // Length of a Morse Code "dash" in milliseconds
         int gap = 200;    // Length of Gap Between dots/dashes
         long[] pattern = {
                 0, dash, gap, dash, gap, dash
@@ -144,10 +144,12 @@ public class WatchService extends WakefulIntentService {
         // Set the icon, scrolling text and timestamp
         Notification notification = new Notification(R.drawable.app_icon, "Sensor alarm",
                 System.currentTimeMillis());
+	    notification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_AUTO_CANCEL;
 
         // The PendingIntent to launch our activity if the user selects this notification
         //TODO: we must show AlarmInfo or watched list, do it later...
         Intent i = new Intent (this, MainActivity.class);
+	    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         //i.putExtra("Mode","watch");
         //i.putExtra("Sensor", watchAdapter.getItem(position));
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, i, 0);
