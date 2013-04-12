@@ -311,11 +311,11 @@ public class SensorInfo extends SherlockFragmentActivity {
         }
         int max_gap = 1000*60;
         if (period == LogPeriod.day) {
-            max_gap = 60*60;
+            max_gap = 60*60; // hour
         } else if (period == LogPeriod.week) {
             max_gap = 100*60;
         } else if (period == LogPeriod.month) {
-            max_gap = 100*60;
+            max_gap = 24*60*60; //day
         }
 
         if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format

@@ -25,13 +25,12 @@
     </option>
     <device-configurations>
       <entry key="file://$PROJECT_DIR$/res/layout-sw600dp/sensorinfo.xml" value="Landscape" />
+      <entry key="file://$PROJECT_DIR$/res/layout/sensorinfo.xml" value="Landscape" />
     </device-configurations>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3350c6f2-14af-45cb-a46f-85ec2a3dac85" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/sensorinfo.xml" afterPath="$PROJECT_DIR$/res/layout/sensorinfo.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout-land/sensorinfo.xml" afterPath="$PROJECT_DIR$/res/layout-land/sensorinfo.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/ghelius/narodmon/SensorInfo.java" afterPath="$PROJECT_DIR$/src/com/ghelius/narodmon/SensorInfo.java" />
     </list>
     <ignored path="narodmon.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,6 +46,7 @@
     <file path="$USER_HOME$/Project/iptv_android/src/org/eltex/android/app/iptvplayer/MainActivity.java" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1364456926829" ignored="false" />
     <file path="$PROJECT_DIR$/../JakeWharton-ActionBarSherlock-e5c2d1c/library/project.properties" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1365758994285" ignored="false" />
     <file path="/sensorinfo.xml" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1365760024408" ignored="false" />
+    <file path="/SensorInfo.java" changelist="3350c6f2-14af-45cb-a46f-85ec2a3dac85" time="1365760192401" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +106,7 @@
     <favorites_list name="narodmon" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.58035237">
+    <splitter split-orientation="horizontal" split-proportion="0.6679124">
       <split-first>
         <leaf>
           <file leaf-file-name="PreferActivity.java" pinned="false" current="false" current-in-tab="false">
@@ -127,10 +127,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="SensorInfo.java" pinned="false" current="false" current-in-tab="false">
+          <file leaf-file-name="SensorInfo.java" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/SensorInfo.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="273" column="29" selection-start="10722" selection-end="10722" vertical-scroll-proportion="0.0">
+                <state line="315" column="28" selection-start="12201" selection-end="12201" vertical-scroll-proportion="0.51044774">
                   <folding />
                 </state>
               </provider>
@@ -187,10 +187,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="strings.xml" pinned="false" current="true" current-in-tab="true">
+          <file leaf-file-name="strings.xml" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/res/values-ru/strings.xml">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="68" column="18" selection-start="4016" selection-end="4016" vertical-scroll-proportion="0.4520548">
+                <state line="68" column="18" selection-start="4016" selection-end="4016" vertical-scroll-proportion="0.0">
                   <folding />
                 </state>
               </provider>
@@ -242,7 +242,7 @@
           <file leaf-file-name="sensorinfo.xml" pinned="false" current="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/res/layout/sensorinfo.xml">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="173" column="51" selection-start="8688" selection-end="8688" vertical-scroll-proportion="0.60126585">
+                <state line="163" column="32" selection-start="8223" selection-end="8223" vertical-scroll-proportion="0.7420886">
                   <folding />
                 </state>
               </provider>
@@ -288,10 +288,10 @@
         <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/MainActivity.java" />
         <option value="$PROJECT_DIR$/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/res/layout-sw600dp/sensorinfo.xml" />
-        <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/SensorInfo.java" />
         <option value="$PROJECT_DIR$/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/res/layout-land/sensorinfo.xml" />
         <option value="$PROJECT_DIR$/res/layout/sensorinfo.xml" />
+        <option value="$PROJECT_DIR$/src/com/ghelius/narodmon/SensorInfo.java" />
       </list>
     </option>
   </component>
@@ -652,8 +652,8 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15376401" sideWeight="0.74300516" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2569948" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.15376401" sideWeight="0.74300516" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2569948" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -787,13 +787,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/SensorInfo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="273" column="29" selection-start="10722" selection-end="10722" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/MyLocation.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="14" column="0" selection-start="322" selection-end="322" vertical-scroll-proportion="0.0">
@@ -818,16 +811,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/sensorinfo.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="173" column="51" selection-start="8688" selection-end="8688" vertical-scroll-proportion="0.60126585">
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/layout-sw600dp/sensorinfo.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="169" column="48" selection-start="8812" selection-end="8812" vertical-scroll-proportion="-11.52">
@@ -840,7 +823,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/res/values-ru/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="68" column="18" selection-start="4016" selection-end="4016" vertical-scroll-proportion="0.4520548">
+        <state line="68" column="18" selection-start="4016" selection-end="4016" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/sensorinfo.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="163" column="32" selection-start="8223" selection-end="8223" vertical-scroll-proportion="0.7420886">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/ghelius/narodmon/SensorInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="315" column="28" selection-start="12201" selection-end="12201" vertical-scroll-proportion="0.51044774">
           <folding />
         </state>
       </provider>
