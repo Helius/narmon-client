@@ -254,13 +254,13 @@ public class SensorInfo extends SherlockFragmentActivity {
         long difftime = (System.currentTimeMillis() - time*1000)/1000;
         String agoText;
         if (difftime < 60) {
-            agoText = String.valueOf(difftime) + context.getString(R.string.text_sec);
+            agoText = String.valueOf(difftime) +" "+ context.getString(R.string.text_sec);
         } else if (difftime/60 < 60) {
-            agoText = String.valueOf(difftime/60) + context.getString(R.string.text_min);
+            agoText = String.valueOf(difftime/60) +" "+ context.getString(R.string.text_min);
         } else if (difftime/3600 < 24) {
-            agoText = String.valueOf(difftime/3600) + context.getString(R.string.text_hr);
+            agoText = String.valueOf(difftime/3600) +" "+ context.getString(R.string.text_hr);
         } else {
-            agoText = String.valueOf(difftime/(3600*24)) + context.getString(R.string.text_days);
+            agoText = String.valueOf(difftime/(3600*24)) +" "+ context.getString(R.string.text_days);
         }
         return agoText;
     }
@@ -311,11 +311,11 @@ public class SensorInfo extends SherlockFragmentActivity {
         }
         int max_gap = 1000*60;
         if (period == LogPeriod.day) {
-            max_gap = 60*60;
+            max_gap = 60*60; // hour
         } else if (period == LogPeriod.week) {
             max_gap = 100*60;
         } else if (period == LogPeriod.month) {
-            max_gap = 100*60;
+            max_gap = 24*60*60; //day
         }
 
         if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format

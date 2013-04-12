@@ -12,7 +12,7 @@ import android.widget.*;
 public class FilterDialog extends android.support.v4.app.DialogFragment implements DialogInterface.OnClickListener {
 
     final static String LOG_TAG = "narodmon-dialog";
-    private OnChangeListener listener;
+	private OnChangeListener listener;
     private static UiFlags uiFlags = null;
     private TextView radiusValue;
 
@@ -93,22 +93,86 @@ public class FilterDialog extends android.support.v4.app.DialogFragment implemen
         });
 
         RadioGroup radioGroup1 = (RadioGroup) v.findViewById(R.id.radiogroupe_sort);
-        if (uiFlags.sortingDistance)
+        if (uiFlags.sortType == UiFlags.SortType.distance)
             radioGroup1.check(R.id.radioButtonSortDistance);
-        else
+        else if (uiFlags.sortType == UiFlags.SortType.name)
             radioGroup1.check(R.id.radioButtonSortName);
-        radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                uiFlags.sortingDistance = checkedId == R.id.radioButtonSortDistance;
-                if (listener!=null)
-                    listener.onFilterChange();
-            }
-        });
+        else if (uiFlags.sortType == UiFlags.SortType.time)
+	        radioGroup1.check(R.id.radioButtonSortTime);
+        else if (uiFlags.sortType == UiFlags.SortType.type)
+	        radioGroup1.check(R.id.radioButtonSortType);
 
-        SeekBar radius = (SeekBar) v.findViewById(R.id.radius_seekerbar);
-        radius.setMax(15);
-        radius.setProgress((int) (Math.log(uiFlags.radiusKm)/Math.log(2)));
+	    RadioButton btSortDistance = (RadioButton) v.findViewById(R.id.radioButtonSortDistance);
+	    btSortDistance.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    @Override
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			    if (!isChecked)
+					return;
+			    Log.d(LOG_TAG,"check distance");
+			    uiFlags.sortType = UiFlags.SortType.distance;
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortName)).setChecked(false);
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortType)).setChecked(false);
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortTime)).setChecked(false);
+			    if (listener!=null)
+				    listener.onFilterChange();
+		    }
+	    });
+	    RadioButton btSortName = (RadioButton) v.findViewById(R.id.radioButtonSortName);
+	    btSortName.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    @Override
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			    if (!isChecked)
+				    return;
+			    Log.d(LOG_TAG,"check name");
+			    uiFlags.sortType = UiFlags.SortType.name;
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortDistance)).setChecked(false);
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortType)).setChecked(false);
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortTime)).setChecked(false);
+			    if (listener!=null)
+				    listener.onFilterChange();
+		    }
+	    });
+	    RadioButton btSortType = (RadioButton) v.findViewById(R.id.radioButtonSortType);
+	    btSortType.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    @Override
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			    if (!isChecked)
+				    return;
+			    Log.d(LOG_TAG,"check type");
+			    uiFlags.sortType = UiFlags.SortType.type;
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortName)).setChecked(false);
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortDistance)).setChecked(false);
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortTime)).setChecked(false);
+			    if (listener!=null)
+				    listener.onFilterChange();
+		    }
+	    });
+	    RadioButton btSortTime = (RadioButton) v.findViewById(R.id.radioButtonSortTime);
+	    btSortTime.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    @Override
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			    if (!isChecked)
+				    return;
+			    Log.d(LOG_TAG,"check time");
+			    uiFlags.sortType = UiFlags.SortType.time;
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortName)).setChecked(false);
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortType)).setChecked(false);
+			    ((RadioButton)v.findViewById(R.id.radioButtonSortDistance)).setChecked(false);
+			    if (listener!=null)
+				    listener.onFilterChange();
+		    }
+	    });
+
+
+//        radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+//        {
+//            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//            }
+//        });
+
+	    SeekBar radius = (SeekBar) v.findViewById(R.id.radius_seekerbar);
+	    radius.setMax(15);
+	    radius.setProgress((int) (Math.log(uiFlags.radiusKm)/Math.log(2)));
         radiusValue = (TextView) v.findViewById(R.id.radius_value);
         radiusValue.setText(String.valueOf(uiFlags.radiusKm));
         radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -137,7 +201,8 @@ public class FilterDialog extends android.support.v4.app.DialogFragment implemen
         return v;
     }
 
-    @Override
+
+	@Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         Log.d(LOG_TAG, "Dialog 1: onDismiss");

@@ -108,12 +108,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_id"
-                android:id="@+id/textView1" android:layout_marginLeft="20dp" android:layout_marginRight="10dp"/>
+                android:id="@+id/textView1" android:layout_marginLeft="20dp" android:layout_marginRight="10dp"
+                android:visibility="gone"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="123"
-                android:id="@+id/text_id"/>
+                android:id="@+id/text_id" android:visibility="gone"/>
     </LinearLayout>
     <LinearLayout android:orientation="vertical" android:layout_width="fill_parent"
                   android:layout_height="wrap_content" android:id="@+id/linearLayout"
@@ -160,17 +161,17 @@
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="day"
+                android:text="@string/btn_day_text"
                 android:id="@+id/bt_graph_day"/>
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="week"
+                android:text="@string/btn_week_text"
                 android:id="@+id/bt_graph_week"/>
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="month"
+                android:text="@string/btn_month_text"
                 android:id="@+id/bt_graph_month"/>
         <Button
                 android:layout_width="wrap_content"

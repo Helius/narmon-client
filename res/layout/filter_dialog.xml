@@ -85,12 +85,33 @@
                   android:id="@+id/textView1" android:layout_gravity="center"
                 />
         <RadioGroup android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:id="@+id/radiogroupe_sort">
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_by_name"
-                         android:id="@+id/radioButtonSortName" android:layout_marginLeft="10dp"/>
-            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_by_distance"
-                         android:id="@+id/radioButtonSortDistance" android:layout_marginLeft="10dp"/>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+                <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_by_name"
+                             android:id="@+id/radioButtonSortName"/>
+                <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_by_distance"
+                             android:id="@+id/radioButtonSortDistance"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+                <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_by_type"
+                        android:id="@+id/radioButtonSortType"/>
+                <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_by_time"
+                        android:id="@+id/radioButtonSortTime" android:singleLine="false"
+                        />
+            </LinearLayout>
         </RadioGroup>
     </LinearLayout>
     <LinearLayout

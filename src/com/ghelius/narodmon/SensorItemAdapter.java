@@ -51,138 +51,157 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         }
     }
 
-  static  class SensorDistanceComparator implements Comparator<Sensor> {
-        @Override
-        public int compare(Sensor o1, Sensor o2) {
-            return Float.valueOf(o1.distance).compareTo(o2.distance);
-        }
-    }
+	static class SensorDistanceComparator implements Comparator<Sensor> {
+		@Override
+		public int compare(Sensor o1, Sensor o2) {
+			return Float.valueOf(o1.distance).compareTo(o2.distance);
+		}
+	}
 
-    private class SensorFilter extends Filter {
-        // NOTE: this function is *always* called from a background thread, and not the UI thread.
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            Log.d(TAG,"performFiltering");
-            FilterResults filteredResult = new FilterResults();
-            ArrayList<Sensor> tempFilteredItems= new ArrayList<Sensor>();
+	static class SensorTimeComparator implements Comparator<Sensor> {
+		@Override
+		public int compare(Sensor o1, Sensor o2) {
+			return Long.valueOf(o2.time).compareTo(o1.time);
+		}
+	}
 
-            for (Sensor originItem : originItems) {
-                boolean my_match = uiFlags.showingMyOnly && originItem.my || !uiFlags.showingMyOnly;
-                boolean type_match =
-                        uiFlags.types[UiFlags.type_temperature] && (originItem.type == Sensor.TYPE_TEMPERATURE) ||
-                        uiFlags.types[UiFlags.type_humidity] && (originItem.type == Sensor.TYPE_HUMIDITY) ||
-                        uiFlags.types[UiFlags.type_pressure] && (originItem.type == Sensor.TYPE_PRESSURE) ||
-                        uiFlags.types[UiFlags.type_unknown] && (originItem.type == Sensor.TYPE_UNKNOWN);
-                if (my_match && type_match && (originItem.distance < uiFlags.radiusKm)) {
-                    tempFilteredItems.add(originItem);
-                }
-            }
-            if (uiFlags.sortingDistance) {
-                Collections.sort(tempFilteredItems, new SensorDistanceComparator());
-            } else {
-                Collections.sort(tempFilteredItems, new SensorNameComparator());
-            }
-            filteredResult.values = tempFilteredItems;
-            filteredResult.count = tempFilteredItems.size();
-            Log.d(TAG,filteredResult.count + " items");
-            return filteredResult;
-        }
+	static class SensorTypeComparator implements Comparator<Sensor> {
+		@Override
+		public int compare(Sensor o1, Sensor o2) {
+			return Integer.valueOf(o1.type).compareTo(o2.type);
+		}
+	}
 
+	private class SensorFilter extends Filter {
+		// NOTE: this function is *always* called from a background thread, and not the UI thread.
+		@Override
+		protected FilterResults performFiltering(CharSequence constraint) {
+			Log.d(TAG, "performFiltering");
+			FilterResults filteredResult = new FilterResults();
+			ArrayList<Sensor> tempFilteredItems = new ArrayList<Sensor>();
 
-        @Override
-        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            ArrayList <Sensor> res = (ArrayList<Sensor>)(filterResults.values);
-            if (res == null) {
-                return;
-            }
-            localItems.clear();
-            for (Sensor re : res) {
-                localItems.add(re);
-            }
-            notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public Filter getFilter() {
-        if (filter == null)
-            filter = new SensorFilter();
-        return filter;
-    }
-
-    @Override
-    public int getCount() {
-        return localItems.size();
-    }
-
-    @Override
-    public Sensor getItem(int position) {
-        return localItems.get(position);
-    }
-
-    @Override
-    public View getView(int position, View v, ViewGroup parent) {
-
-        if(v == null) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            v = inflater.inflate(R.layout.sensor_list_item, null);
-            ViewHolder holder = new ViewHolder();
-            holder.name = (TextView)v.findViewById(R.id.text1);
-            holder.location = (TextView)v.findViewById(R.id.text2);
-            holder.value = (TextView)v.findViewById(R.id.text3);
-            holder.icon = (ImageView)v.findViewById(R.id.img);
-            v.setTag(holder);
-        }
-
-        ViewHolder holder = (ViewHolder)v.getTag();
-        if (position < localItems.size()) {
-            Sensor sensor = localItems.get(position);
-            holder.name.setText(sensor.name);
-            holder.location.setText(sensor.location);
-            holder.value.setText(sensor.value);
-
-            if (config.isSensorWatched(sensor.id)) {
-                holder.value.setTypeface(null, Typeface.BOLD);
-            } else {
-                holder.value.setTypeface(null, Typeface.NORMAL);
-            }
-
-            if (ConfigHolder.getInstance(context).isSensorWatched(sensor.id)) {
-                holder.value.setTextColor(Color.argb(0xFF,0x00,0xFF,0x00));
-            } else {
-                holder.value.setTextColor(Color.WHITE);
-            }
-
-            if (sensor.time < System.currentTimeMillis()/1000 - 3600) {
-                holder.name.setTextColor(Color.GRAY);
-            } else {
-                holder.name.setTextColor(Color.WHITE);
-            }
+			for (Sensor originItem : originItems) {
+				boolean my_match = uiFlags.showingMyOnly && originItem.my || !uiFlags.showingMyOnly;
+				boolean type_match =
+						uiFlags.types[UiFlags.type_temperature] && (originItem.type == Sensor.TYPE_TEMPERATURE) ||
+								uiFlags.types[UiFlags.type_humidity] && (originItem.type == Sensor.TYPE_HUMIDITY) ||
+								uiFlags.types[UiFlags.type_pressure] && (originItem.type == Sensor.TYPE_PRESSURE) ||
+								uiFlags.types[UiFlags.type_unknown] && (originItem.type == Sensor.TYPE_UNKNOWN);
+				if (my_match && type_match && (originItem.distance < uiFlags.radiusKm)) {
+					tempFilteredItems.add(originItem);
+				}
+			}
+			if (uiFlags.sortType == UiFlags.SortType.distance) {
+				Collections.sort(tempFilteredItems, new SensorDistanceComparator());
+			} else if (uiFlags.sortType == UiFlags.SortType.name) {
+				Collections.sort(tempFilteredItems, new SensorNameComparator());
+			} else if (uiFlags.sortType == UiFlags.SortType.type) {
+				Collections.sort(tempFilteredItems, new SensorTypeComparator());
+			} else if (uiFlags.sortType == UiFlags.SortType.time) {
+				Collections.sort(tempFilteredItems, new SensorTimeComparator());
+			}
+			filteredResult.values = tempFilteredItems;
+			filteredResult.count = tempFilteredItems.size();
+			Log.d(TAG, filteredResult.count + " items");
+			return filteredResult;
+		}
 
 
-            switch (sensor.type) {
-                case Sensor.TYPE_TEMPERATURE:
-                    holder.icon.setImageResource(R.drawable.termo_icon);
-                    break;
-                case Sensor.TYPE_PRESSURE:
-                    holder.icon.setImageResource(R.drawable.pressure_icon);
-                    break;
-                case Sensor.TYPE_HUMIDITY:
-                    holder.icon.setImageResource(R.drawable.humid_icon);
-                    break;
-                default:
-                    holder.icon.setImageResource(R.drawable.unknown_icon);
-            }
-        } else {
-           e("PlaylistAdapter", "index out of bound results[]");
-        }
-        return v;
-    }
-    static class ViewHolder {
-        TextView  name;
-        TextView  location;
-        TextView  value;
-        ImageView icon;
-    }
+		@Override
+		protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+			ArrayList<Sensor> res = (ArrayList<Sensor>) (filterResults.values);
+			if (res == null) {
+				return;
+			}
+			localItems.clear();
+			for (Sensor re : res) {
+				localItems.add(re);
+			}
+			notifyDataSetChanged();
+		}
+	}
+
+	@Override
+	public Filter getFilter() {
+		if (filter == null)
+			filter = new SensorFilter();
+		return filter;
+	}
+
+	@Override
+	public int getCount() {
+		return localItems.size();
+	}
+
+	@Override
+	public Sensor getItem(int position) {
+		return localItems.get(position);
+	}
+
+	@Override
+	public View getView(int position, View v, ViewGroup parent) {
+
+		if (v == null) {
+			LayoutInflater inflater = LayoutInflater.from(context);
+			v = inflater.inflate(R.layout.sensor_list_item, null);
+			ViewHolder holder = new ViewHolder();
+			holder.name = (TextView) v.findViewById(R.id.text1);
+			holder.location = (TextView) v.findViewById(R.id.text2);
+			holder.value = (TextView) v.findViewById(R.id.text3);
+			holder.icon = (ImageView) v.findViewById(R.id.img);
+			v.setTag(holder);
+		}
+
+		ViewHolder holder = (ViewHolder) v.getTag();
+		if (position < localItems.size()) {
+			Sensor sensor = localItems.get(position);
+			holder.name.setText(sensor.name);
+			holder.location.setText(sensor.location);
+			holder.value.setText(sensor.value);
+
+			if (config.isSensorWatched(sensor.id)) {
+				holder.value.setTypeface(null, Typeface.BOLD);
+			} else {
+				holder.value.setTypeface(null, Typeface.NORMAL);
+			}
+
+			if (ConfigHolder.getInstance(context).isSensorWatched(sensor.id)) {
+				holder.value.setTextColor(Color.argb(0xFF, 0x00, 0xFF, 0x00));
+			} else {
+				holder.value.setTextColor(Color.WHITE);
+			}
+
+			if (sensor.time < System.currentTimeMillis() / 1000 - 3600) {
+				holder.name.setTextColor(Color.GRAY);
+			} else {
+				holder.name.setTextColor(Color.WHITE);
+			}
+
+
+			switch (sensor.type) {
+				case Sensor.TYPE_TEMPERATURE:
+					holder.icon.setImageResource(R.drawable.termo_icon);
+					break;
+				case Sensor.TYPE_PRESSURE:
+					holder.icon.setImageResource(R.drawable.pressure_icon);
+					break;
+				case Sensor.TYPE_HUMIDITY:
+					holder.icon.setImageResource(R.drawable.humid_icon);
+					break;
+				default:
+					holder.icon.setImageResource(R.drawable.unknown_icon);
+			}
+		} else {
+			e("PlaylistAdapter", "index out of bound results[]");
+		}
+		return v;
+	}
+
+	static class ViewHolder {
+		TextView name;
+		TextView location;
+		TextView value;
+		ImageView icon;
+	}
 }
 
