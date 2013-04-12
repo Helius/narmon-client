@@ -164,17 +164,17 @@
             <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="day"
+                    android:text="@string/btn_day_text"
                     android:id="@+id/bt_graph_day" android:layout_weight="0"/>
             <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="week"
+                    android:text="@string/btn_week_text"
                     android:id="@+id/bt_graph_week" android:layout_weight="0"/>
             <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="month"
+                    android:text="@string/btn_month_text"
                     android:id="@+id/bt_graph_month" android:layout_weight="0"/>
             <Button
                     android:layout_width="40dp"
