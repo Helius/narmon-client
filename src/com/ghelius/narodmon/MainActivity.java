@@ -153,13 +153,13 @@ public class MainActivity extends SherlockFragmentActivity implements
 		// get android UUID
         final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
         apiHeader = config.getApiHeader();
-        if ((apiHeader == null) || (apiHeader.length() < 2)) {
+//        if ((apiHeader == null) || (apiHeader.length() < 2)) {
 	        uid = NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID));
 	        Log.d(TAG,"android ID: " + uid);
-            apiHeader = "{\"uuid\":\"" +  NarodmonApi.md5(uid) +
+            apiHeader = "{\"uuid\":\"" +  uid +
                     "\",\"api_key\":\"" + api_key + "\",";
             config.setApiHeader(apiHeader);
-        }
+//        }
 
 
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
@@ -247,7 +247,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         String login = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
         String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)),"");
         if (!login.equals("")) {// don't try if login is empty
-            narodmonApi.doAuthorisation(login, passwd, NarodmonApi.md5(uid));
+            narodmonApi.doAuthorisation(login, passwd, uid);
         } else {
             Log.w(TAG,"login is empty, do not authorisation");
         }
