@@ -3,13 +3,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:uiOptions="splitActionBarWhenNarrow">
-    <ProgressBar android:indeterminate="true"
-                 android:layout_width="60dp"
-                 android:layout_height="60dp"
-                 android:id="@+id/marker_progress"
-                 style="?android:attr/progressBarStyle"
-                 android:indeterminateBehavior="cycle"
-                 android:layout_centerInParent="true"/>
+    <!--<ProgressBar android:indeterminate="true"-->
+                 <!--android:layout_width="60dp"-->
+                 <!--android:layout_height="60dp"-->
+                 <!--android:id="@+id/marker_progress"-->
+                 <!--style="?android:attr/progressBarStyle"-->
+                 <!--android:indeterminateBehavior="cycle"-->
+                 <!--android:layout_centerInParent="true"/>-->
     <com.ghelius.narodmon.HorizontalPager
             android:id="@+id/horizontal_pager"
             android:layout_width="fill_parent"

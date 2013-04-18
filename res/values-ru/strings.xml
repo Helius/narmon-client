@@ -81,4 +81,11 @@
     <string name="menu_helppage_text">Справка</string>
     <string name="text_by_type">тип</string>
     <string name="text_by_time">время</string>
+    <string name="text_days_ago">дн. назад</string>
+    <string name="text_this_week">текущая неделя</string>
+    <string name="text_weeks_ago">нед. назад</string>
+    <string name="text_this_month">текущий месяц</string>
+    <string name="text_month_ago">мес. назад</string>
+    <string name="text_this_year">текущий год</string>
+    <string name="text_yars_ago">г. назад</string>
 </resources>

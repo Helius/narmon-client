@@ -31,6 +31,9 @@ import java.util.TimerTask;
 public class MainActivity extends SherlockFragmentActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener {
 
+	private Menu mOptionsMenu = null;
+	private boolean showProgress;
+
 	enum LoginStatus {LOGIN,LOGOUT,ERROR}
 
     private static final String api_key = "85UneTlo8XBlA";
@@ -59,8 +62,6 @@ public class MainActivity extends SherlockFragmentActivity implements
         if (key.equals(getString(R.string.pref_key_interval))) { // update interval changed
             scheduleAlarmWatcher();
             startTimer();
-//        } else if (key.equals(getString(R.string.pref_key_login)) || key.equals(getString(R.string.pref_key_passwd))) {
-//	        needToRelogin = true;
         } else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
             sendLocation();
 
@@ -95,7 +96,8 @@ public class MainActivity extends SherlockFragmentActivity implements
     @Override
     public void onResume () {
         super.onResume();
-        findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
+//        findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
+//	    setSupportProgressBarIndeterminateVisibility(true);
         Log.d(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         listAdapter.notifyDataSetChanged();
@@ -108,6 +110,7 @@ public class MainActivity extends SherlockFragmentActivity implements
             mPager.setCurrentScreen(0,false);
             getSupportActionBar().setSelectedNavigationItem(0);
         }
+	    showProgress = true;
     }
 
     @Override
@@ -185,10 +188,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-//        actionBar.setCustomView(R.layout.actionbar_top); //load our layout
         actionBar.setDisplayShowTitleEnabled(false);
 
-        actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
                 android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
             @Override
@@ -226,13 +227,13 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     public void updateSensorList () {
         Log.d(TAG,"------------ update sensor list ---------------");
-        findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
+	    setRefreshProgress(true);
         narodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
     }
 
     public void updateSensorsValue () {
         Log.d(TAG,"------------ update sensor value ---------------");
-        findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
+	    setRefreshProgress(true);
         narodmonApi.updateSensorsValue(sensorList);
     }
 
@@ -362,7 +363,9 @@ public class MainActivity extends SherlockFragmentActivity implements
     @Override
     public void onSensorListResult(boolean ok, String res) {
         Log.d(TAG,"---------------- List updated --------------");
-        findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+//        findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+	    setRefreshProgress(false);
+//	    setSupportProgressBarIndeterminateVisibility(false);
         listAdapter.update();
         updateWatchedList();
     }
@@ -418,16 +421,28 @@ public class MainActivity extends SherlockFragmentActivity implements
         startActivity(i);
     }
 
-
-    public void actionBtnClick (View view)
-    {
-        if (view == findViewById(R.id.btn_sort)) {
-        }
-    }
-
 	// called by action (define via xml onClick)
 	public void showFilterDialog (MenuItem item) {
 		filterDialog.show(getSupportFragmentManager(), "dlg1");
+	}
+
+	// called by pressing refresh button (define via xml onClick)
+	public void onUpdateBtnPress (MenuItem item) {
+		setRefreshProgress(true);
+		updateSensorsValue();
+	}
+
+	private void setRefreshProgress (boolean refreshing) {
+		if (mOptionsMenu != null) {
+			final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
+			if (refreshItem != null) {
+				if (refreshing) {
+					refreshItem.setActionView(R.layout.actionbar_indeterminate_progress);
+				} else {
+					refreshItem.setActionView(null);
+				}
+			}
+		}
 	}
 
     final Handler h = new Handler(new Handler.Callback() {
@@ -438,6 +453,7 @@ public class MainActivity extends SherlockFragmentActivity implements
             return false;
         }
     });
+
     void startTimer () {
         stopTimer();
         updateTimer = new Timer("updateTimer",true);
@@ -446,10 +462,11 @@ public class MainActivity extends SherlockFragmentActivity implements
             public void run() {
                 h.sendEmptyMessage(0);
             }
-        }, 10000, 60000*Integer.valueOf(PreferenceManager.
+        }, 60000, 60000*Integer.valueOf(PreferenceManager.
                 getDefaultSharedPreferences(this).
                 getString(getString(R.string.pref_key_interval),"5")));
     }
+
     void stopTimer () {
         if (updateTimer != null) {
             updateTimer.cancel();
@@ -458,7 +475,8 @@ public class MainActivity extends SherlockFragmentActivity implements
         }
     }
 
-    void scheduleAlarmWatcher () {
+
+	void scheduleAlarmWatcher () {
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, OnAlarmReceiver.class);
         PendingIntent pi=PendingIntent.getBroadcast(this, 0, i, 0);
@@ -483,8 +501,13 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+	    mOptionsMenu = menu;
         final MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.icon_menu, menu);
+	    if (showProgress) {
+		    setRefreshProgress(true);
+		    showProgress = false;
+	    }
         return super.onCreateOptionsMenu(menu);
     }
     @Override

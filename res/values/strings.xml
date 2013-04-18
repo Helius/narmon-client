@@ -87,4 +87,11 @@
     <string name="menu_helppage_text">Help page</string>
     <string name="text_by_type">type</string>
     <string name="text_by_time">time</string>
+    <string name="text_days_ago">days ago</string>
+    <string name="text_this_week">this week</string>
+    <string name="text_weeks_ago">weeks ago</string>
+    <string name="text_this_month">this month</string>
+    <string name="text_month_ago">months ago</string>
+    <string name="text_this_year">this year</string>
+    <string name="text_yars_ago">years ago</string>
 </resources>

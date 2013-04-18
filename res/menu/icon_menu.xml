@@ -2,13 +2,18 @@
     <item android:id="@+id/item1"
           android:title="@string/menu_text_filter"
           android:icon="@android:drawable/ic_menu_sort_by_size"
-          android:showAsAction="ifRoom|withText"
+          android:showAsAction="always|withText"
           android:onClick="showFilterDialog"
           />
-<group android:id="@+id/group">
     <item android:id="@+id/menu_refresh"
-          android:title="@string/menu_refresh_text"
-          />
+          android:title="Refresh"
+          android:icon="@android:drawable/ic_menu_rotate"
+          android:onClick="onUpdateBtnPress"
+          android:showAsAction="always|withText"/>
+<group android:id="@+id/group">
+    <!--<item android:id="@+id/menu_refresh"-->
+          <!--android:title="@string/menu_refresh_text"-->
+          <!--/>-->
     <item android:id="@+id/menu_login"
           android:title="@string/menu_autorisation_name"
             />

@@ -221,27 +221,27 @@ public class SensorInfo extends SherlockFragmentActivity {
         switch (period) {
             case day:
                 if (offset == 0)
-                    title = "today";
+                    title = getString(R.string.text_today);
                 else
-                    title = String.valueOf(offset) + " days ago";
+                    title = String.valueOf(offset) + " " + getString(R.string.text_days_ago);
                 break;
             case week:
                 if (offset == 0)
-                    title = "this week";
+                    title = getString(R.string.text_this_week);
                 else
-                    title = String.valueOf(offset) + " weeks ago";
+                    title = String.valueOf(offset) + " " + getString(R.string.text_weeks_ago);
                 break;
             case month:
                 if (offset == 0)
-                    title = "this month";
+                    title = getString(R.string.text_this_month);
                 else
-                    title = String.valueOf(offset) + " months ago";
+                    title = String.valueOf(offset) + " " + getString(R.string.text_month_ago);
                 break;
             case year:
                 if (offset == 0)
-                    title = "this year";
+                    title = getString(R.string.text_this_year);
                 else
-                    title = String.valueOf(offset) + " years ago";
+                    title = String.valueOf(offset) + " " + getString(R.string.text_yars_ago);
                 break;
         }
         if (offset == 0) {

@@ -357,6 +357,7 @@ public class NarodmonApi {
     private class SensorTypeDictionaryGetter implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
         void getDictionary () {
+	        Log.d(TAG,"getDictionary");
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             getter.execute(apiUrl, makeRequestHeader("sensorType") + "}");
