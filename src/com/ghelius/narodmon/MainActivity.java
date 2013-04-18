@@ -271,6 +271,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	        myLocation.getLocation(this,new MyLocation.LocationResult() {
 		        @Override
 		        public void gotLocation(Location location) {
+			        if (location == null) return;
 			        double lat=location.getLatitude();
 			        double lon=location.getLongitude();
 			        // use API to send location
@@ -363,9 +364,7 @@ public class MainActivity extends SherlockFragmentActivity implements
     @Override
     public void onSensorListResult(boolean ok, String res) {
         Log.d(TAG,"---------------- List updated --------------");
-//        findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
 	    setRefreshProgress(false);
-//	    setSupportProgressBarIndeterminateVisibility(false);
         listAdapter.update();
         updateWatchedList();
     }
