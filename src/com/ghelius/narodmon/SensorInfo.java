@@ -115,7 +115,7 @@ public class SensorInfo extends SherlockFragmentActivity {
 
 
         if (config.isSensorWatched(sensor.id)) {
-            monitor.setImageResource(R.drawable.yey_blue);
+            monitor.setImageResource(R.drawable.btn_star_big_on);
             alarm.setVisibility(View.VISIBLE);
             if (config.isSensorWatchJob(sensor.id)) {
                 alarm.setImageResource(R.drawable.alarm_blue);
@@ -123,7 +123,7 @@ public class SensorInfo extends SherlockFragmentActivity {
                 alarm.setImageResource(R.drawable.alarm_gray);
             }
         } else {
-            monitor.setImageResource(R.drawable.yey_gray);
+            monitor.setImageResource(R.drawable.btn_star_big_off);
             alarm.setVisibility(View.INVISIBLE);
         }
 
@@ -139,9 +139,9 @@ public class SensorInfo extends SherlockFragmentActivity {
                     alarm.setVisibility(View.VISIBLE);
                 }
                 if (config.isSensorWatched(sensor.id)) {
-                    monitor.setImageResource(R.drawable.yey_blue);
+                    monitor.setImageResource(R.drawable.btn_star_big_on);
                 } else {
-                    monitor.setImageResource(R.drawable.yey_gray);
+                    monitor.setImageResource(R.drawable.btn_star_big_off);
                 }
                 if (config.isSensorWatchJob(sensor.id)) {
                     alarm.setImageResource(R.drawable.alarm_blue);
@@ -216,6 +216,7 @@ public class SensorInfo extends SherlockFragmentActivity {
     }
 
     private void updateGraph() {
+	    findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
         logGetter.getLog(id, period, offset);
         String title = "";
         switch (period) {
@@ -353,6 +354,7 @@ public class SensorInfo extends SherlockFragmentActivity {
             mRenderer.setYAxisMax(max + (max-min)/10);
         }
         mChart.repaint();
+	    findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
     }
 
     @Override

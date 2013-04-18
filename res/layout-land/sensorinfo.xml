@@ -43,7 +43,7 @@
                         android:layout_width="40dp"
                         android:layout_height="30dp"
                         android:id="@+id/addMonitoring"
-                        android:src="@drawable/yey_blue"
+                        android:src="@drawable/btn_star_big_off"
                         android:layout_gravity="center"
                         android:layout_marginRight="10dp" android:clickable="true" android:background="#000000FF"
                         android:adjustViewBounds="false" android:scaleType="fitCenter" android:layout_marginLeft="10dp"
@@ -145,12 +145,24 @@
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id="@+id/sensorInfoChart" android:layout_weight="1">
-        </LinearLayout>
+        <FrameLayout android:layout_width="fill_parent"
+                     android:layout_height="fill_parent"
+                     android:layout_weight="1"
+                >
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/sensorInfoChart">
+            </LinearLayout>
+            <ProgressBar android:indeterminate="true"
+                         android:layout_width="60dp"
+                         android:layout_height="60dp"
+                         android:id="@+id/marker_progress"
+                         style="?android:attr/progressBarStyle"
+                         android:indeterminateBehavior="cycle"
+                         android:layout_centerInParent="true" android:layout_gravity="center"/>
+        </FrameLayout>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
