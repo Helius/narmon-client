@@ -2,6 +2,7 @@ package com.ghelius.narodmon;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,11 @@ public class WatchedItemAdapter extends ArrayAdapter<Sensor> {
         if (!sensor.online) {
             holder.name.setEnabled(false);
         }
+	    if (sensor.my) {
+		    holder.value.setTextColor(Color.argb(0xFF, 0x33, 0xb5, 0xe5));
+	    } else {
+		    holder.value.setTextColor(Color.WHITE);
+	    }
         holder.bottomText.setText (vv + " (" + SensorInfo.getTimeSince(context, sensor.time) + ")");
         switch (sensor.type) {
             case 1:

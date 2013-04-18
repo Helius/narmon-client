@@ -165,6 +165,12 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 				holder.value.setTypeface(null, Typeface.NORMAL);
 			}
 
+			if (sensor.my) {
+				holder.name.setTextColor(Color.argb(0xFF, 0x33, 0xb5, 0xe5));
+			} else {
+				holder.name.setTextColor(Color.WHITE);
+			}
+
 			if (ConfigHolder.getInstance(context).isSensorWatched(sensor.id)) {
 				holder.value.setTextColor(Color.argb(0xFF, 0x00, 0xFF, 0x00));
 			} else {
