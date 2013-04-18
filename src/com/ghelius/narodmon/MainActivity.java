@@ -96,8 +96,6 @@ public class MainActivity extends SherlockFragmentActivity implements
     @Override
     public void onResume () {
         super.onResume();
-//        findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
-//	    setSupportProgressBarIndeterminateVisibility(true);
         Log.d(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         listAdapter.notifyDataSetChanged();
