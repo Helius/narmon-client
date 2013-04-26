@@ -95,4 +95,8 @@ public class SensorTypeProvider {
         Log.d(TAG,"unknown type: " + type);
         return "?";
     }
+
+	public ArrayList<SensorType> getTypesList ()  {
+		return typesList;
+	}
 }
