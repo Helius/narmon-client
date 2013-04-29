@@ -177,11 +177,11 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 				holder.value.setTextColor(Color.WHITE);
 			}
 
-			if (sensor.time < System.currentTimeMillis() / 1000 - 3600) {
-				holder.name.setTextColor(Color.GRAY);
-			} else {
-				holder.name.setTextColor(Color.WHITE);
-			}
+//			if (sensor.time < System.currentTimeMillis() / 1000 - 3600) {
+//				holder.name.setTextColor(Color.GRAY);
+//			} else {
+//				holder.name.setTextColor(Color.WHITE);
+//			}
 
 
 			switch (sensor.type) {

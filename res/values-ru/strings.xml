@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">narodmon</string>
+    <string name="app_name">Народный мониторинг</string>
     <string name="type_termometr">Температура</string>
     <string name="type_pressure">Давление</string>
     <string name="type_humidity">Влажность</string>

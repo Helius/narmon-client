@@ -187,7 +187,6 @@ public class MainActivity extends SherlockFragmentActivity implements
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionBar.setDisplayShowTitleEnabled(false);
-
         actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
                 android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
             @Override
@@ -269,6 +268,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	        myLocation.getLocation(this,new MyLocation.LocationResult() {
 		        @Override
 		        public void gotLocation(Location location) {
+			        Log.d(TAG,"got location");
 			        if (location == null) return;
 			        double lat=location.getLatitude();
 			        double lon=location.getLongitude();
@@ -324,7 +324,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     @Override
     public void onLocationResult(boolean ok, String addr) {
-        Log.d(TAG, "location sended");
+        Log.d(TAG, "on Location Result");
         if (ok) {
             PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString(getString(R.string.pref_key_geoloc), addr).commit();
         }
