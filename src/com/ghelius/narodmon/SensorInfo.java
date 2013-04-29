@@ -37,6 +37,7 @@ public class SensorInfo extends SherlockFragmentActivity {
     private LogPeriod oldPeriod;
 
     public void onCreate(Bundle savedInstanceState) {
+	    setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sensorinfo);
         final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
