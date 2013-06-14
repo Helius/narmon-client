@@ -13,14 +13,17 @@ public class UiFlags implements Serializable {
     final public static int type_temperature = 1;
     final public static int type_pressure = 2;
     final public static int type_humidity = 3;
+
+	// class fields to save
     boolean showingMyOnly;
     SortType sortType;
     boolean types [] = new boolean[4];
     UiMode uiMode;
     int radiusKm;
-
     enum UiMode {list, watched}
 	enum SortType {name, distance, type, time}
+	//----------------------
+
     UiFlags() {
         showingMyOnly = false;
         sortType = SortType.distance;

@@ -51,46 +51,46 @@ public class FilterDialog extends android.support.v4.app.DialogFragment implemen
             }
         });
 
-        CheckBox cb1 = (CheckBox) v.findViewById(R.id.checkBoxTemperature);
-        cb1.setChecked(uiFlags.types[UiFlags.type_temperature]);
-        cb1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                uiFlags.types[UiFlags.type_temperature] = isChecked;
-                if (listener!=null)
-                    listener.onFilterChange();
-            }
-        });
-        CheckBox cb2 = (CheckBox) v.findViewById(R.id.checkBoxPressure);
-        cb2.setChecked(uiFlags.types[UiFlags.type_pressure]);
-        cb2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                uiFlags.types[UiFlags.type_pressure] = isChecked;
-                if (listener!=null)
-                    listener.onFilterChange();
-            }
-        });
-        CheckBox cb3 = (CheckBox) v.findViewById(R.id.checkBoxHumidity);
-        cb3.setChecked(uiFlags.types[UiFlags.type_humidity]);
-        cb3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                uiFlags.types[UiFlags.type_humidity] = isChecked;
-                if (listener!=null)
-                    listener.onFilterChange();
-            }
-        });
-        CheckBox cb4 = (CheckBox) v.findViewById(R.id.checkBoxOtherType);
-        cb4.setChecked(uiFlags.types[UiFlags.type_unknown]);
-        cb4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                uiFlags.types[UiFlags.type_unknown] = isChecked;
-                if (listener!=null)
-                    listener.onFilterChange();
-            }
-        });
+//        CheckBox cb1 = (CheckBox) v.findViewById(R.id.checkBoxTemperature);
+//        cb1.setChecked(uiFlags.types[UiFlags.type_temperature]);
+//        cb1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                uiFlags.types[UiFlags.type_temperature] = isChecked;
+//                if (listener!=null)
+//                    listener.onFilterChange();
+//            }
+//        });
+//        CheckBox cb2 = (CheckBox) v.findViewById(R.id.checkBoxPressure);
+//        cb2.setChecked(uiFlags.types[UiFlags.type_pressure]);
+//        cb2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                uiFlags.types[UiFlags.type_pressure] = isChecked;
+//                if (listener!=null)
+//                    listener.onFilterChange();
+//            }
+//        });
+//        CheckBox cb3 = (CheckBox) v.findViewById(R.id.checkBoxHumidity);
+//        cb3.setChecked(uiFlags.types[UiFlags.type_humidity]);
+//        cb3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                uiFlags.types[UiFlags.type_humidity] = isChecked;
+//                if (listener!=null)
+//                    listener.onFilterChange();
+//            }
+//        });
+//        CheckBox cb4 = (CheckBox) v.findViewById(R.id.checkBoxOtherType);
+//        cb4.setChecked(uiFlags.types[UiFlags.type_unknown]);
+//        cb4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                uiFlags.types[UiFlags.type_unknown] = isChecked;
+//                if (listener!=null)
+//                    listener.onFilterChange();
+//            }
+//        });
 
         RadioGroup radioGroup1 = (RadioGroup) v.findViewById(R.id.radiogroupe_sort);
         if (uiFlags.sortType == UiFlags.SortType.distance)

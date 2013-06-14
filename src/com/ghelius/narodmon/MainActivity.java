@@ -420,7 +420,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 	// called by action (define via xml onClick)
 	public void showFilterDialog (MenuItem item) {
-		filterDialog.show(getSupportFragmentManager(), "dlg1");
+//		filterDialog.show(getSupportFragmentManager(), "dlg1");
+		startActivity(new Intent(this, FilterDialogActivity.class));
 	}
 
 	// called by pressing refresh button (define via xml onClick)

@@ -2,12 +2,12 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content">
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent">
 
     <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal">
         <TextView
@@ -34,51 +34,20 @@
     </LinearLayout>
     <LinearLayout
             android:orientation="vertical"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content" android:layout_marginBottom="10dp"
-            android:layout_gravity="center_horizontal">
+            android:layout_gravity="center_horizontal" android:layout_weight="1">
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/text_filte_type"
                 android:id="@+id/textView2" android:layout_gravity="center_horizontal"/>
-        <LinearLayout
-                android:orientation="horizontal"
+        <ListView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Temperature"
-                        android:id="@+id/checkBoxTemperature"/>
-                <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pressure"
-                        android:id="@+id/checkBoxPressure"/>
-            </LinearLayout>
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Humidity"
-                        android:id="@+id/checkBoxHumidity"/>
-                <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Other type"
-                        android:id="@+id/checkBoxOtherType"/>
-            </LinearLayout>
-        </LinearLayout>
+                android:layout_height="fill_parent"
+                android:id="@+id/typeListView" android:layout_marginLeft="30dp" android:layout_marginTop="10dp"/>
     </LinearLayout>
-    <LinearLayout android:orientation="vertical" android:layout_width="wrap_content"
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent"
                   android:layout_height="wrap_content" android:id="@+id/linearLayout"
                   android:layout_gravity="center_horizontal">
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_sort_by"
@@ -117,7 +86,7 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" android:layout_gravity="center_horizontal">
+            android:layout_height="wrap_content" android:layout_gravity="center_horizontal">
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -128,7 +97,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
             <SeekBar
-                    android:layout_width="fill_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/radius_seekerbar" android:progress="50" android:layout_weight="0.5"/>
             <TextView
