@@ -88,4 +88,6 @@
     <string name="text_month_ago">мес. назад</string>
     <string name="text_this_year">текущий год</string>
     <string name="text_yars_ago">г. назад</string>
+    <string name="text_select_clear">ничего</string>
+    <string name="text_select_all">все</string>
 </resources>

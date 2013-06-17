@@ -82,11 +82,14 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
 			for (Sensor originItem : originItems) {
 				boolean my_match = uiFlags.showingMyOnly && originItem.my || !uiFlags.showingMyOnly;
-				boolean type_match =
-						uiFlags.types[UiFlags.type_temperature] && (originItem.type == Sensor.TYPE_TEMPERATURE) ||
-								uiFlags.types[UiFlags.type_humidity] && (originItem.type == Sensor.TYPE_HUMIDITY) ||
-								uiFlags.types[UiFlags.type_pressure] && (originItem.type == Sensor.TYPE_PRESSURE) ||
-								uiFlags.types[UiFlags.type_unknown] && (originItem.type == Sensor.TYPE_UNKNOWN);
+
+				boolean type_match = true;
+				for (int i = 0; i < uiFlags.hidenTypes.size(); i++) {
+					if (uiFlags.hidenTypes.get(i) == originItem.type) {
+						type_match = false;
+					}
+				}
+
 				if (my_match && type_match && (originItem.distance < uiFlags.radiusKm)) {
 					tempFilteredItems.add(originItem);
 				}
@@ -176,27 +179,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			} else {
 				holder.value.setTextColor(Color.WHITE);
 			}
+			holder.icon.setImageDrawable(SensorTypeProvider.getInstance(context).getIcon(sensor.type));
 
-//			if (sensor.time < System.currentTimeMillis() / 1000 - 3600) {
-//				holder.name.setTextColor(Color.GRAY);
-//			} else {
-//				holder.name.setTextColor(Color.WHITE);
-//			}
-
-
-			switch (sensor.type) {
-				case Sensor.TYPE_TEMPERATURE:
-					holder.icon.setImageResource(R.drawable.termo_icon);
-					break;
-				case Sensor.TYPE_PRESSURE:
-					holder.icon.setImageResource(R.drawable.pressure_icon);
-					break;
-				case Sensor.TYPE_HUMIDITY:
-					holder.icon.setImageResource(R.drawable.humid_icon);
-					break;
-				default:
-					holder.icon.setImageResource(R.drawable.unknown_icon);
-			}
 		} else {
 			e("PlaylistAdapter", "index out of bound results[]");
 		}

@@ -14,10 +14,9 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.*;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -29,10 +28,23 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends SherlockFragmentActivity implements
-        SharedPreferences.OnSharedPreferenceChangeListener, FilterDialog.OnChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener {
+        SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface {
 
 	private Menu mOptionsMenu = null;
 	private boolean showProgress;
+	private CheckedListItemAdapter typeAdapter;
+	private int prevScreen = 1;
+
+	@Override
+	public boolean isItemChecked(int position) {
+//		Log.d(TAG, "isItemChecked: " + position + ", in " + uiFlags.hidenTypes);
+		for (int i = 0; i < uiFlags.hidenTypes.size(); i++) {
+			if (typeAdapter.getItem(position).code == uiFlags.hidenTypes.get(i)) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	enum LoginStatus {LOGIN,LOGOUT,ERROR}
 
@@ -44,7 +56,7 @@ public class MainActivity extends SherlockFragmentActivity implements
     private WatchedItemAdapter watchAdapter;
     private Timer updateTimer = null;
     private HorizontalPager mPager;
-    private FilterDialog filterDialog;
+//    private FilterDialog filterDialog;
 	private LoginDialog loginDialog;
     private UiFlags uiFlags;
     private NarodmonApi narodmonApi;
@@ -68,45 +80,46 @@ public class MainActivity extends SherlockFragmentActivity implements
         }
     }
 
-    @Override
-    public void onFilterChange() {
-        Log.d(TAG,"new Radius is " + uiFlags.radiusKm);
-        listAdapter.update();
-    }
+//    @Override
+//    public void onFilterChange() {
+//        Log.d(TAG,"new Radius is " + uiFlags.radiusKm);
+//        listAdapter.update();
+//    }
 
-    @Override
-    public void onDialogClose() {
-        Log.d(TAG, "onDialogClose, new radius: " + uiFlags.radiusKm + " saved: " + oldRadiusKm);
-        if (uiFlags.radiusKm > oldRadiusKm) {
-            Log.d(TAG,"update sensor list");
-            updateSensorList();
-            oldRadiusKm = uiFlags.radiusKm;
-        }
-    }
+//    @Override
+//    public void onDialogClose() {
+//        Log.d(TAG, "onDialogClose, new radius: " + uiFlags.radiusKm + " saved: " + oldRadiusKm);
+//        if (uiFlags.radiusKm > oldRadiusKm) {
+//            Log.d(TAG,"update sensor list");
+//            updateSensorList();
+//            oldRadiusKm = uiFlags.radiusKm;
+//        }
+//    }
 
     @Override
     public void onPause ()
     {
-        Log.i(TAG,"onPause");
+        Log.i(TAG, "onPause");
         stopTimer();
-        uiFlags.save(this);
         super.onPause();
     }
 
     @Override
     public void onResume () {
         super.onResume();
-        Log.d(TAG,"onResume");
+	    Log.d(TAG,"onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
         listAdapter.notifyDataSetChanged();
         updateSensorList();
         startTimer();
         if (uiFlags.uiMode == UiFlags.UiMode.watched) {
+	        Log.d(TAG, "switch to watched");
+            mPager.setCurrentScreen(2,false);
+            getSupportActionBar().setSelectedNavigationItem(2);
+        } else {
+	        Log.d(TAG, "switch to list");
             mPager.setCurrentScreen(1,false);
             getSupportActionBar().setSelectedNavigationItem(1);
-        } else {
-            mPager.setCurrentScreen(0,false);
-            getSupportActionBar().setSelectedNavigationItem(0);
         }
 	    showProgress = true;
     }
@@ -119,6 +132,19 @@ public class MainActivity extends SherlockFragmentActivity implements
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroy();
     }
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch (keyCode) {
+			case KeyEvent.KEYCODE_BACK:
+			case KeyEvent.KEYCODE_ESCAPE:
+				if (prevScreen == 0) {
+					mPager.setCurrentScreen(1, true);
+					return true;
+				}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
     /**
      * Called when the activity is first created.
@@ -135,12 +161,22 @@ public class MainActivity extends SherlockFragmentActivity implements
         mPager.setOnScreenSwitchListener(new HorizontalPager.OnScreenSwitchListener() {
             @Override
             public void onScreenSwitched(int screen) {
+	            Log.d(TAG,"onScreenSwitch: " + screen);
                 getSupportActionBar().setSelectedNavigationItem(screen);
-                if (screen == 1) {
+                if (screen == 2) {
                     uiFlags.uiMode = UiFlags.UiMode.watched;
-                } else {
+	                if (prevScreen == 0)
+		                listAdapter.update();
+
+                } else if (screen == 1) {
                     uiFlags.uiMode = UiFlags.UiMode.list;
+	                if (prevScreen == 0)
+		                listAdapter.update();
+
+                } else if (screen == 0) {
+	                setFilterData();
                 }
+	            prevScreen = screen;
             }
         });
 
@@ -196,9 +232,6 @@ public class MainActivity extends SherlockFragmentActivity implements
             }
         });
 
-        FilterDialog.setUiFlags(uiFlags);
-        filterDialog = new FilterDialog();
-        filterDialog.setOnChangeListener(this);
 	    loginDialog = new LoginDialog();
 	    loginDialog.setOnChangeListener(this);
 
@@ -215,14 +248,155 @@ public class MainActivity extends SherlockFragmentActivity implements
         Intent i = new Intent(this, OnBootReceiver.class);
         sendBroadcast(i);
         scheduleAlarmWatcher();
+
+	    typeAdapter = new CheckedListItemAdapter (this, SensorTypeProvider.getInstance(this).getTypesList());
+	    typeAdapter.setItemChangeInterface(this);
+	    ListView typeListView = (ListView) findViewById(R.id.typeListView);
+	    typeListView.setAdapter(typeAdapter);
+	    typeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		    @Override
+		    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			    if (uiFlags.hidenTypes.contains(typeAdapter.getItem(position).code)) {
+				    uiFlags.hidenTypes.remove((Integer) typeAdapter.getItem(position).code);
+			    } else {
+				    uiFlags.hidenTypes.add((Integer) typeAdapter.getItem(position).code);
+			    }
+			    typeAdapter.notifyDataSetChanged();
+			    listAdapter.update();
+		    }
+	    });
     }
 
+	// init filter ui from uiFlags
+	private void setFilterData() {
+		RadioGroup radioGroup1 = (RadioGroup) findViewById(R.id.radiogroupe_sort);
+		if (uiFlags.sortType == UiFlags.SortType.distance)
+			radioGroup1.check(R.id.radioButtonSortDistance);
+		else if (uiFlags.sortType == UiFlags.SortType.name)
+			radioGroup1.check(R.id.radioButtonSortName);
+		else if (uiFlags.sortType == UiFlags.SortType.time)
+			radioGroup1.check(R.id.radioButtonSortTime);
+		else if (uiFlags.sortType == UiFlags.SortType.type)
+			radioGroup1.check(R.id.radioButtonSortType);
+
+		RadioButton btSortDistance = (RadioButton) findViewById(R.id.radioButtonSortDistance);
+		btSortDistance.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (!isChecked)
+					return;
+				Log.d(TAG,"check distance");
+				uiFlags.sortType = UiFlags.SortType.distance;
+				((RadioButton)findViewById(R.id.radioButtonSortName)).setChecked(false);
+				((RadioButton)findViewById(R.id.radioButtonSortType)).setChecked(false);
+				((RadioButton)findViewById(R.id.radioButtonSortTime)).setChecked(false);
+				listAdapter.update();
+			}
+		});
+		RadioButton btSortName = (RadioButton) findViewById(R.id.radioButtonSortName);
+		btSortName.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (!isChecked)
+					return;
+				Log.d(TAG,"check name");
+				uiFlags.sortType = UiFlags.SortType.name;
+				((RadioButton)findViewById(R.id.radioButtonSortDistance)).setChecked(false);
+				((RadioButton)findViewById(R.id.radioButtonSortType)).setChecked(false);
+				((RadioButton)findViewById(R.id.radioButtonSortTime)).setChecked(false);
+				listAdapter.update();
+			}
+		});
+		RadioButton btSortType = (RadioButton) findViewById(R.id.radioButtonSortType);
+		btSortType.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (!isChecked)
+					return;
+				Log.d(TAG,"check type");
+				uiFlags.sortType = UiFlags.SortType.type;
+				((RadioButton)findViewById(R.id.radioButtonSortName)).setChecked(false);
+				((RadioButton)findViewById(R.id.radioButtonSortDistance)).setChecked(false);
+				((RadioButton)findViewById(R.id.radioButtonSortTime)).setChecked(false);
+				listAdapter.update();
+			}
+		});
+		RadioButton btSortTime = (RadioButton) findViewById(R.id.radioButtonSortTime);
+		btSortTime.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (!isChecked)
+					return;
+				Log.d(TAG,"check time");
+				uiFlags.sortType = UiFlags.SortType.time;
+				((RadioButton)findViewById(R.id.radioButtonSortName)).setChecked(false);
+				((RadioButton)findViewById(R.id.radioButtonSortType)).setChecked(false);
+				((RadioButton)findViewById(R.id.radioButtonSortDistance)).setChecked(false);
+				listAdapter.update();
+			}
+		});
 
 
+		SeekBar radius = (SeekBar) findViewById(R.id.radius_seekerbar);
+		radius.setMax(15);
+		radius.setProgress((int) (Math.log(uiFlags.radiusKm)/Math.log(2)));
+		final TextView radiusValue = (TextView) findViewById(R.id.radius_value);
+		radiusValue.setText(String.valueOf(uiFlags.radiusKm));
+		radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				int distance = (int) Math.pow(2,progress);
+				radiusValue.setText(String.valueOf(distance));
+				if (distance != 0)
+					uiFlags.radiusKm = distance;
+				else
+					uiFlags.radiusKm = 1;
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				listAdapter.update();
+			}
+		});
+
+		RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radiogroupe_All_My);
+		if (uiFlags.showingMyOnly)
+			radioGroup.check(R.id.radioButtonMyOnly);
+		else
+			radioGroup.check(R.id.radioButtonAll);
+		radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				uiFlags.showingMyOnly = checkedId == R.id.radioButtonMyOnly;
+				listAdapter.update();
+			}
+		});
+
+		((Button)findViewById(R.id.filter_select_all)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				uiFlags.hidenTypes.clear();
+				typeAdapter.notifyDataSetChanged();
+				listAdapter.update();
+			}
+		});
+		((Button)findViewById(R.id.filter_select_none)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				for (int i = 0; i < SensorTypeProvider.getInstance(getApplicationContext()).getTypesList().size(); i++) {
+					uiFlags.hidenTypes.add(SensorTypeProvider.getInstance(getApplicationContext()).getTypesList().get(i).code);
+				}
+				typeAdapter.notifyDataSetChanged();
+				listAdapter.update();
+			}
+		});
+	}
 
 
-
-    public void updateSensorList () {
+	public void updateSensorList () {
         Log.d(TAG,"------------ update sensor list ---------------");
 	    setRefreshProgress(true);
         narodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
@@ -420,8 +594,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 	// called by action (define via xml onClick)
 	public void showFilterDialog (MenuItem item) {
-//		filterDialog.show(getSupportFragmentManager(), "dlg1");
-		startActivity(new Intent(this, FilterDialogActivity.class));
+		mPager.setCurrentScreen (0, true);
 	}
 
 	// called by pressing refresh button (define via xml onClick)

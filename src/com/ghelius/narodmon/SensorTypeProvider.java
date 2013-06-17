@@ -1,6 +1,7 @@
 package com.ghelius.narodmon;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,5 +101,19 @@ public class SensorTypeProvider {
 
 	public ArrayList<SensorType> getTypesList ()  {
 		return typesList;
+	}
+
+	public Drawable getIcon(int code) {
+		switch (code) {
+			case 0:
+				return context.getResources().getDrawable(R.drawable.unknown_icon);
+			case 1:
+				return context.getResources().getDrawable(R.drawable.termo_icon);
+			case 2:
+				return context.getResources().getDrawable(R.drawable.humid_icon);
+			case 3:
+				return context.getResources().getDrawable(R.drawable.pressure_icon);
+		}
+		return context.getResources().getDrawable(R.drawable.unknown_icon);
 	}
 }

@@ -94,4 +94,6 @@
     <string name="text_month_ago">months ago</string>
     <string name="text_this_year">this year</string>
     <string name="text_yars_ago">years ago</string>
+    <string name="text_select_clear">none</string>
+    <string name="text_select_all">all</string>
 </resources>
