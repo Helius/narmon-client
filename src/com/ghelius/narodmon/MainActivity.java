@@ -183,8 +183,17 @@ public class MainActivity extends SherlockFragmentActivity implements
         uiFlags = UiFlags.load(this);
         oldRadiusKm = uiFlags.radiusKm;
 
-        ListView fullListView = (ListView) findViewById(R.id.fullListView);
-        ListView watchedListView = (ListView) findViewById(R.id.watchedListView);
+        ListView fullListView = new ListView (this);
+	    View filterView = View.inflate(this, R.layout.filter_dialog, null);
+
+	    mPager.addView(filterView);
+	    mPager.addView(fullListView);
+	    mPager.addView(View.inflate(getApplicationContext(),R.layout.watched_screen,null));
+	    mPager.addView(View.inflate(getApplicationContext(),R.layout.my_sensor_screen,null));
+
+	    ListView watchedListView = (ListView)mPager.findViewById(R.id.watchedListView);
+	    ListView myListView = (ListView)mPager.findViewById(R.id.myListView);
+
         sensorList = new ArrayList<Sensor>();
 
 		// get android UUID
