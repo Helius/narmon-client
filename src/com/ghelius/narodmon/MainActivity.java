@@ -51,9 +51,9 @@ public class MainActivity extends SherlockFragmentActivity implements
     private static final String api_key = "85UneTlo8XBlA";
     private final String TAG = "narodmon-main";
     private ArrayList<Sensor> sensorList;
-    private ArrayList<Sensor> watchedList;
     private SensorItemAdapter listAdapter;
     private WatchedItemAdapter watchAdapter;
+	private WatchedItemAdapter mySensorsAdapter;
     private Timer updateTimer = null;
     private HorizontalPager mPager;
 //    private FilterDialog filterDialog;
@@ -218,8 +218,7 @@ public class MainActivity extends SherlockFragmentActivity implements
                 sensorItemClick(position);
             }
         });
-        watchedList = new ArrayList<Sensor>();
-        watchAdapter = new WatchedItemAdapter(getApplicationContext(), watchedList);
+        watchAdapter = new WatchedItemAdapter(getApplicationContext(), new ArrayList<Sensor>());
         watchedListView.setAdapter(watchAdapter);
         watchedListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         watchedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -228,6 +227,8 @@ public class MainActivity extends SherlockFragmentActivity implements
                 watchedItemClick(position);
             }
         });
+	    mySensorsAdapter = new WatchedItemAdapter(getApplicationContext(), new ArrayList<Sensor>());
+	    myListView.setAdapter(mySensorsAdapter);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -258,7 +259,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         sendBroadcast(i);
         scheduleAlarmWatcher();
 
-	    typeAdapter = new CheckedListItemAdapter (this, SensorTypeProvider.getInstance(this).getTypesList());
+	    typeAdapter = new CheckedListItemAdapter (this, SensorTypeProvider.getInstance(getApplicationContext()).getTypesList());
 	    typeAdapter.setItemChangeInterface(this);
 	    ListView typeListView = (ListView) findViewById(R.id.typeListView);
 	    typeListView.setAdapter(typeAdapter);
@@ -372,17 +373,18 @@ public class MainActivity extends SherlockFragmentActivity implements
 			}
 		});
 
-		RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radiogroupe_All_My);
-		if (uiFlags.showingMyOnly)
-			radioGroup.check(R.id.radioButtonMyOnly);
-		else
-			radioGroup.check(R.id.radioButtonAll);
-		radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				uiFlags.showingMyOnly = checkedId == R.id.radioButtonMyOnly;
-				listAdapter.update();
-			}
-		});
+// ----- disable my/all filter because 'my sensors' screen was added -------------
+//		RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radiogroupe_All_My);
+//		if (uiFlags.showingMyOnly)
+//			radioGroup.check(R.id.radioButtonMyOnly);
+//		else
+//			radioGroup.check(R.id.radioButtonAll);
+//		radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//			public void onCheckedChanged(RadioGroup group, int checkedId) {
+//				uiFlags.showingMyOnly = checkedId == R.id.radioButtonMyOnly;
+//				listAdapter.update();
+//			}
+//		});
 
 		((Button)findViewById(R.id.filter_select_all)).setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -555,15 +557,15 @@ public class MainActivity extends SherlockFragmentActivity implements
         //parse res to container
         Log.d(TAG,"---------------- TypeDict updated --------------");
         if (!ok) return;
-        SensorTypeProvider.getInstance(this).setTypesFromString(res);
+        SensorTypeProvider.getInstance(getApplicationContext()).setTypesFromString(res);
         listAdapter.notifyDataSetChanged();
         watchAdapter.notifyDataSetChanged();
     }
 
 
     private void updateWatchedList() {
-        watchedList.clear();
-        for (Configuration.SensorTask storedItem : ConfigHolder.getInstance(this).getConfig().watchedId) {
+        ArrayList<Sensor> watchedList = new ArrayList<Sensor>();
+        for (Configuration.SensorTask storedItem : ConfigHolder.getInstance(getApplicationContext()).getConfig().watchedId) {
             boolean found = false;
             for (Sensor aSensorList : sensorList) {
                 if (storedItem.id == aSensorList.id) {
@@ -586,6 +588,28 @@ public class MainActivity extends SherlockFragmentActivity implements
             watchAdapter.add(aWatchedList);
         }
         watchAdapter.notifyDataSetChanged();
+
+		// fill my sensors screen
+	    mySensorsAdapter.clear();
+	    Log.d(TAG,"find `my` sensors");
+	    for (int i = 0; i < sensorList.size(); i++) {
+		    Log.d(TAG, " " + sensorList.get(i).id +": "+ sensorList.get(i).my);
+		    if (sensorList.get(i).my) {
+			    Log.d(TAG, "Yeaah, it`s my!!!");
+			    mySensorsAdapter.add(sensorList.get(i));
+		    }
+	    }
+	    mySensorsAdapter.notifyDataSetChanged();
+
+	    if (watchAdapter.isEmpty())
+		    findViewById(R.id.watchedListEmptyMsg).setVisibility(View.VISIBLE);
+	    else
+		    findViewById(R.id.watchedListEmptyMsg).setVisibility(View.INVISIBLE);
+
+	    if (mySensorsAdapter.isEmpty())
+		    findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.VISIBLE);
+	    else
+		    findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.INVISIBLE);
     }
 
     private void watchedItemClick(int position) {

@@ -67,15 +67,15 @@ public class SensorTypeProvider {
     public void setTypesFromString (String res) {
 	    Log.d(TAG,"update types");
         if (parseString(res)) {
-            try {
-                FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
-                fos.write(res.getBytes());
-                fos.close();
-            } catch (FileNotFoundException e) {
-                Log.e(TAG,e.getMessage());
-            } catch (IOException e) {
-                Log.e(TAG,e.getMessage());
-            }
+//            try {
+//                FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
+//                fos.write(res.getBytes());
+//                fos.close();
+//            } catch (FileNotFoundException e) {
+//                Log.e(TAG,e.getMessage());
+//            } catch (IOException e) {
+//                Log.e(TAG,e.getMessage());
+//            }
         }
     }
 

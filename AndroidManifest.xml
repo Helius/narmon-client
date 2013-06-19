@@ -37,6 +37,5 @@
         </activity>
         <activity android:name=".SensorInfo"/>
         <activity android:name=".PreferActivity"/>
-        <activity android:name=".FilterDialogActivity"/>
     </application>
 </manifest>
