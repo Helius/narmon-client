@@ -33,7 +33,13 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private Menu mOptionsMenu = null;
 	private boolean showProgress;
 	private CheckedListItemAdapter typeAdapter;
-	private int prevScreen = 1;
+	private int prevScreen = SCR_MAINLIST;
+	private boolean selectMode = false;
+	private static final int SCR_FILTER = 0;
+	private static final int SCR_MAINLIST = 1;
+	private static final int SCR_WATCHEDLIST = 2;
+	private static final int SCR_MYLIST = 3;
+	private static final int SCR_GRAPHLIST = 4;
 
 	@Override
 	public boolean isItemChecked(int position) {
@@ -114,12 +120,12 @@ public class MainActivity extends SherlockFragmentActivity implements
         startTimer();
         if (uiFlags.uiMode == UiFlags.UiMode.watched) {
 	        Log.d(TAG, "switch to watched");
-            mPager.setCurrentScreen(2,false);
-            getSupportActionBar().setSelectedNavigationItem(2);
+            mPager.setCurrentScreen(SCR_WATCHEDLIST,false);
+            getSupportActionBar().setSelectedNavigationItem(SCR_WATCHEDLIST);
         } else {
 	        Log.d(TAG, "switch to list");
-            mPager.setCurrentScreen(1,false);
-            getSupportActionBar().setSelectedNavigationItem(1);
+            mPager.setCurrentScreen(SCR_MAINLIST,false);
+            getSupportActionBar().setSelectedNavigationItem(SCR_MAINLIST);
         }
 	    showProgress = true;
     }
@@ -138,12 +144,27 @@ public class MainActivity extends SherlockFragmentActivity implements
 		switch (keyCode) {
 			case KeyEvent.KEYCODE_BACK:
 			case KeyEvent.KEYCODE_ESCAPE:
-				if (prevScreen == 0) {
-					mPager.setCurrentScreen(1, true);
+				if (prevScreen == SCR_FILTER) {
+					mPager.setCurrentScreen(SCR_MAINLIST, true);
 					return true;
+				} else if (prevScreen == SCR_MAINLIST && selectMode) {
+					leaveSensorSelectMode();
 				}
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+
+	private void leaveSensorSelectMode () {
+		selectMode = false;
+		mPager.findViewById(R.id.newGraphBtn).setVisibility(View.VISIBLE);
+		mPager.findViewById(R.id.selectSensorComplite).setVisibility(View.GONE);
+	}
+
+	private void enterSensorSelectMode () {
+		selectMode = true;
+		mPager.findViewById(R.id.newGraphBtn).setVisibility(View.INVISIBLE);
+		mPager.findViewById(R.id.selectSensorComplite).setVisibility(View.VISIBLE);
+		mPager.setCurrentScreen(SCR_MAINLIST, true);
 	}
 
     /**
@@ -163,17 +184,17 @@ public class MainActivity extends SherlockFragmentActivity implements
             public void onScreenSwitched(int screen) {
 	            Log.d(TAG,"onScreenSwitch: " + screen);
                 getSupportActionBar().setSelectedNavigationItem(screen);
-                if (screen == 2) {
+                if (screen == SCR_WATCHEDLIST) {
                     uiFlags.uiMode = UiFlags.UiMode.watched;
-	                if (prevScreen == 0)
+	                if (prevScreen == SCR_FILTER)
 		                listAdapter.update();
 
-                } else if (screen == 1) {
+                } else if (screen == SCR_MAINLIST) {
                     uiFlags.uiMode = UiFlags.UiMode.list;
-	                if (prevScreen == 0)
+	                if (prevScreen == SCR_FILTER)
 		                listAdapter.update();
 
-                } else if (screen == 0) {
+                } else if (screen == SCR_FILTER) {
 	                setFilterData();
                 }
 	            prevScreen = screen;
@@ -196,22 +217,14 @@ public class MainActivity extends SherlockFragmentActivity implements
 		addGraphBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				addGraphBtn.setVisibility(View.INVISIBLE);
-				// show Clear and MakeGraph button
-				final Button selectCancel = (Button)mPager.findViewById(R.id.selectSensorCancelBtn);
-				selectCancel.setVisibility(View.VISIBLE);
+				enterSensorSelectMode();
+				final Button selectCancel = (Button)mPager.findViewById(R.id.selectSensorComplite);
 				selectCancel.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						selectCancel.setVisibility(View.GONE);
-						addGraphBtn.setVisibility(View.VISIBLE);
+						leaveSensorSelectMode();
 					}
 				});
-				mPager.setCurrentScreen(1,true);
-				// open screen with sensor
-				// change adapter (or add adapter flag) with checkboxes
-				// place Ready btn below list, and onClick it, hide own and go to the graph list screen
-
 			}
 		});
 
@@ -651,7 +664,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 	// called by action (define via xml onClick)
 	public void showFilterDialog (MenuItem item) {
-		mPager.setCurrentScreen (0, true);
+		mPager.setCurrentScreen (SCR_FILTER, true);
 	}
 
 	// called by pressing refresh button (define via xml onClick)

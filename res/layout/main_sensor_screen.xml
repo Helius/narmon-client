@@ -16,12 +16,12 @@
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content" android:layout_gravity="center_horizontal">
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Button"
-                android:id="@+id/selectSensorCancelBtn"
-                android:visibility="gone"/>
+                android:text="Create chart"
+                android:id="@+id/selectSensorComplite"
+                android:visibility="visible"/>
     </LinearLayout>
 </LinearLayout>
