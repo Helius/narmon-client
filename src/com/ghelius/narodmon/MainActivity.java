@@ -183,13 +183,37 @@ public class MainActivity extends SherlockFragmentActivity implements
         uiFlags = UiFlags.load(this);
         oldRadiusKm = uiFlags.radiusKm;
 
-        ListView fullListView = new ListView (this);
-	    View filterView = View.inflate(this, R.layout.filter_dialog, null);
 
-	    mPager.addView(filterView);
-	    mPager.addView(fullListView);
+	    mPager.addView(View.inflate(this, R.layout.filter_dialog, null));
+	    mPager.addView(View.inflate(getApplicationContext(),R.layout.main_sensor_screen,null));
 	    mPager.addView(View.inflate(getApplicationContext(),R.layout.watched_screen,null));
 	    mPager.addView(View.inflate(getApplicationContext(),R.layout.my_sensor_screen,null));
+	    mPager.addView(View.inflate(getApplicationContext(),R.layout.multi_graph_menu,null));
+
+	    ListView fullListView = (ListView)mPager.findViewById(R.id.fullListView);
+
+	    final Button addGraphBtn = (Button) mPager.findViewById(R.id.newGraphBtn);
+		addGraphBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				addGraphBtn.setVisibility(View.INVISIBLE);
+				// show Clear and MakeGraph button
+				final Button selectCancel = (Button)mPager.findViewById(R.id.selectSensorCancelBtn);
+				selectCancel.setVisibility(View.VISIBLE);
+				selectCancel.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						selectCancel.setVisibility(View.GONE);
+						addGraphBtn.setVisibility(View.VISIBLE);
+					}
+				});
+				mPager.setCurrentScreen(1,true);
+				// open screen with sensor
+				// change adapter (or add adapter flag) with checkboxes
+				// place Ready btn below list, and onClick it, hide own and go to the graph list screen
+
+			}
+		});
 
 	    ListView watchedListView = (ListView)mPager.findViewById(R.id.watchedListView);
 	    ListView myListView = (ListView)mPager.findViewById(R.id.myListView);

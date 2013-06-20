@@ -21,6 +21,7 @@
         <item>Online</item>
         <item>Watched</item>
         <item>My</item>
+        <item>Charts</item>
     </string-array>
     <string-array name="alarms_list">
         <item>None</item>

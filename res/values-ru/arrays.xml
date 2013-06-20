@@ -21,6 +21,7 @@
         <item>Все</item>
         <item>Выбранные</item>
         <item>Мои</item>
+        <item>Графики</item>
     </string-array>
     <string-array name="alarms_list">
         <item>Нет</item>
