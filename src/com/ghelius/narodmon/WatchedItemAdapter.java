@@ -58,19 +58,7 @@ public class WatchedItemAdapter extends ArrayAdapter<Sensor> {
 		    holder.value.setTextColor(Color.WHITE);
 	    }
         holder.bottomText.setText (vv + " (" + SensorInfo.getTimeSince(context, sensor.time) + ")");
-        switch (sensor.type) {
-            case 1:
-                holder.icon.setImageResource(R.drawable.termo_icon);
-                break;
-            case 2:
-                holder.icon.setImageResource(R.drawable.pressure_icon);
-                break;
-            case 3:
-                holder.icon.setImageResource(R.drawable.humid_icon);
-                break;
-            default:
-                holder.icon.setImageResource(R.drawable.unknown_icon);
-        }
+	    holder.icon.setImageDrawable(SensorTypeProvider.getInstance(context).getIcon(sensor.type));
         return v;
     }
 

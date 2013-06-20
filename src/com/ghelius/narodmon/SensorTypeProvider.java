@@ -113,6 +113,16 @@ public class SensorTypeProvider {
 				return context.getResources().getDrawable(R.drawable.humid_icon);
 			case 3:
 				return context.getResources().getDrawable(R.drawable.pressure_icon);
+			case 4:
+				return context.getResources().getDrawable(R.drawable.wind_icon);
+			case 5:
+				return context.getResources().getDrawable(R.drawable.compas_icon);
+			case 6:
+				return context.getResources().getDrawable(R.drawable.lamp_icon);
+			case 7:
+				return context.getResources().getDrawable(R.drawable.storage_icon);
+			case 8:
+				return context.getResources().getDrawable(R.drawable.ethernet_icon);
 		}
 		return context.getResources().getDrawable(R.drawable.unknown_icon);
 	}
