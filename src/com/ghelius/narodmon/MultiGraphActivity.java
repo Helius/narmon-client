@@ -25,7 +25,7 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 	private int offset = 0;
 	private LogPeriod period = LogPeriod.day;
 	private final static String TAG = "narodmon-multGactivity";
-	MultiGraph graph;
+	MultiGraph multiGraph;
 	private ArrayList<Point> logData = new ArrayList<Point>();
 	private LogPeriod oldPeriod;
 
@@ -36,6 +36,18 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 	private TimeSeries timeSeries;
 	private XYSeriesRenderer mCurrentRenderer;
 
+	private ArrayList<Graph> graphs = new ArrayList<Graph>();
+
+	class Graph {
+		int id;
+		SensorLogGetter logGetter;
+		String name;
+		public Graph (int id) {
+			this.id = id;
+			logGetter = new SensorLogGetter(id);
+		}
+		boolean show = true;
+	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
@@ -46,8 +58,11 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 		if (extras == null)
 			finish();
 
-		graph = (MultiGraph)extras.getSerializable("Graph");
-		logGetter = new SensorLogGetter();
+		multiGraph = (MultiGraph)extras.getSerializable("Graph");
+
+		for (int i = 0; i < multiGraph.ids.size(); i++) {
+			graphs.add(new Graph(multiGraph.ids.get(i)));
+		}
 
 
 		findViewById(R.id.bt_graph_prev).setOnClickListener(new View.OnClickListener() {
@@ -121,7 +136,7 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 
 	private void updateGraph() {
 		findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
-		logGetter.getLog(graph.ids.get(0), period, offset);
+		logGetter.getLog( period, offset);
 		String title = "";
 		switch (period) {
 			case day:
@@ -213,8 +228,12 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 
 	enum LogPeriod {day,week,month,year}
 	private class SensorLogGetter implements ServerDataGetter.OnResultListener {
+		private int id;
+		public SensorLogGetter (int id) {
+			this.id = id;
+		}
 		ServerDataGetter getter;
-		void getLog (int id, LogPeriod period, int offset) {
+		void getLog (LogPeriod period, int offset) {
 			if (getter != null) {
 				getter.cancel(true);
 			}
@@ -239,7 +258,6 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 					"\"id\":\""+id+"\",\"period\":\"" + sPeriod + "\",\"offset\":\""+ offset +"\"}");
 		}
 
-
 		@Override
 		public void onResultReceived(String result) {
 			logData.clear();
@@ -255,7 +273,6 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 				Log.e(TAG,"SensorLog: Wrong JSON " + e.getMessage());
 			}
 			// now we have full data, paint graph
-			Log.d(TAG,"add log data to graph, items count: " + logData.size());
 			addSampleData();
 			getter = null;
 		}
