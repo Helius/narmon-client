@@ -17,8 +17,10 @@
         <item>30</item>
     </string-array>
     <string-array name="action_list">
+        <item>Filter</item>
         <item>Online</item>
         <item>Watched</item>
+        <item>My</item>
     </string-array>
     <string-array name="alarms_list">
         <item>None</item>

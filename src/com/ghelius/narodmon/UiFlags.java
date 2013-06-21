@@ -4,30 +4,25 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class UiFlags implements Serializable {
     final static private String TAG = "narodmon-filter";
     final static private String fileName = "filter";
 
-    final public static int type_unknown = 0;
-    final public static int type_temperature = 1;
-    final public static int type_pressure = 2;
-    final public static int type_humidity = 3;
+	// class fields to save
     boolean showingMyOnly;
     SortType sortType;
-    boolean types [] = new boolean[4];
+	ArrayList<Integer> hidenTypes = new ArrayList<Integer>();
     UiMode uiMode;
     int radiusKm;
-
     enum UiMode {list, watched}
 	enum SortType {name, distance, type, time}
+	//----------------------
+
     UiFlags() {
         showingMyOnly = false;
         sortType = SortType.distance;
-        types[type_unknown] = true;
-        types[type_temperature] = true;
-        types[type_pressure] = true;
-        types[type_humidity] = true;
         uiMode = UiMode.list;
         radiusKm=20000;
     }

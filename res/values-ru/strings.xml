@@ -88,4 +88,10 @@
     <string name="text_month_ago">мес. назад</string>
     <string name="text_this_year">текущий год</string>
     <string name="text_yars_ago">г. назад</string>
+    <string name="text_select_clear">ничего</string>
+    <string name="text_select_all">все</string>
+    <string name="empty_watched_msg">Датчики для наблюдения не выбраны. Для добавления датчика, нажмите звездочку на экране информации.
+    </string>
+    <string name="empty_my_list">У вас нет датчиков. Подключите датчики к http://narodmon.ru и авторизируйтесь в приложении.
+    </string>
 </resources>

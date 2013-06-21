@@ -44,7 +44,7 @@
     <string name="pref_key_use_geocode">pref_key_use_geoloc</string>
     <string name="text_dont_use_navig_summary">Use address string below instead navigation</string>
     <string name="text_dont_use_navigation_checkbox">Don\'t use gps location</string>
-    <string name="app_version_name">2.0</string>
+    <string name="app_version_name">2.1</string>
     <string name="text_notify_more_than">more than</string>
     <string name="text_notify_less_than">less than</string>
     <string name="text_notify_within">within</string>
@@ -94,4 +94,10 @@
     <string name="text_month_ago">months ago</string>
     <string name="text_this_year">this year</string>
     <string name="text_yars_ago">years ago</string>
+    <string name="text_select_clear">none</string>
+    <string name="text_select_all">all</string>
+    <string name="empty_watched_msg">There is no watched sensors. To add sensor, press \'star\' in sensor info screen.
+    </string>
+    <string name="empty_my_list">There is no Your sensors. Connect your sensor to http://narodmon.ru and do login.
+    </string>
 </resources>

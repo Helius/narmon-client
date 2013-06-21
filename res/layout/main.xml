@@ -7,16 +7,17 @@
             android:id="@+id/horizontal_pager"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
-        <ListView
-                android:layout_height="fill_parent"
-                android:layout_width="fill_parent"
-                android:layout_weight = "1"
-                android:id="@+id/fullListView"/>
-        <ListView
-                android:layout_height="fill_parent"
-                android:layout_width="fill_parent"
-                android:layout_weight = "1"
-                android:id="@+id/watchedListView" />
+        <!--<include layout="@layout/filter_dialog"/>-->
+        <!--<ListView-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_weight = "1"-->
+                <!--android:id="@+id/fullListView"/>-->
+        <!--<ListView-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_weight = "1"-->
+                <!--android:id="@+id/watchedListView" />-->
     </com.ghelius.narodmon.HorizontalPager>
 </RelativeLayout>
 

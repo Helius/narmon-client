@@ -6,10 +6,6 @@ import java.io.Serializable;
 public class Sensor implements Serializable {
     public int id;
     public int type;
-    final static int TYPE_UNKNOWN     = 0;
-    final static int TYPE_TEMPERATURE = 1;
-    final static int TYPE_HUMIDITY    = 2;
-    final static int TYPE_PRESSURE    = 3;
     public String location;
     public String name;
     public String value;
@@ -18,7 +14,6 @@ public class Sensor implements Serializable {
     public boolean my;
     public boolean pub;
     public boolean online;
-
 
     // constructor
     Sensor (int id,

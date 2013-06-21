@@ -85,20 +85,7 @@ public class SensorInfo extends SherlockFragmentActivity {
         String typeString = SensorTypeProvider.getInstance(this).getNameForType(sensor.type);
         type.setText(typeString);
         setTitle(typeString);
-        switch (sensor.type) {
-            case Sensor.TYPE_TEMPERATURE:
-                icon.setImageResource(R.drawable.termo_icon);
-                break;
-            case Sensor.TYPE_PRESSURE:
-                icon.setImageResource(R.drawable.pressure_icon);
-                break;
-            case Sensor.TYPE_HUMIDITY:
-                icon.setImageResource(R.drawable.humid_icon);
-                break;
-            default:
-                icon.setImageResource(R.drawable.unknown_icon);
-                break;
-        }
+	    icon.setImageDrawable(SensorTypeProvider.getInstance(this).getIcon(sensor.type));
 
         units.setText(SensorTypeProvider.getInstance(this).getUnitForType(sensor.type));
         value.setText(sensor.value);

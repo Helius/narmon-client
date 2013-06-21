@@ -1,6 +1,7 @@
 package com.ghelius.narodmon;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,15 +67,15 @@ public class SensorTypeProvider {
     public void setTypesFromString (String res) {
 	    Log.d(TAG,"update types");
         if (parseString(res)) {
-            try {
-                FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
-                fos.write(res.getBytes());
-                fos.close();
-            } catch (FileNotFoundException e) {
-                Log.e(TAG,e.getMessage());
-            } catch (IOException e) {
-                Log.e(TAG,e.getMessage());
-            }
+//            try {
+//                FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
+//                fos.write(res.getBytes());
+//                fos.close();
+//            } catch (FileNotFoundException e) {
+//                Log.e(TAG,e.getMessage());
+//            } catch (IOException e) {
+//                Log.e(TAG,e.getMessage());
+//            }
         }
     }
 
@@ -100,5 +101,31 @@ public class SensorTypeProvider {
 
 	public ArrayList<SensorType> getTypesList ()  {
 		return typesList;
+	}
+
+	public Drawable getIcon(int code) {
+		switch (code) {
+			case 0:
+				return context.getResources().getDrawable(R.drawable.unknown_icon);
+			case 1:
+				return context.getResources().getDrawable(R.drawable.termo_icon);
+			case 2:
+				return context.getResources().getDrawable(R.drawable.humid_icon);
+			case 3:
+				return context.getResources().getDrawable(R.drawable.pressure_icon);
+			case 4:
+				return context.getResources().getDrawable(R.drawable.wind_icon);
+			case 5:
+				return context.getResources().getDrawable(R.drawable.compas_icon);
+			case 6:
+				return context.getResources().getDrawable(R.drawable.lamp_icon);
+			case 7:
+				return context.getResources().getDrawable(R.drawable.storage_icon);
+			case 8:
+				return context.getResources().getDrawable(R.drawable.ethernet_icon);
+			case 9:
+				return context.getResources().getDrawable(R.drawable.rain_icon);
+		}
+		return context.getResources().getDrawable(R.drawable.unknown_icon);
 	}
 }
