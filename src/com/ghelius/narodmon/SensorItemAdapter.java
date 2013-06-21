@@ -44,7 +44,23 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         getFilter().filter("");
     }
 
-    static class SensorNameComparator implements Comparator<Sensor> {
+	public void clearSelection () {
+		for (int i = 0; i < localItems.size(); i++) {
+			localItems.get(i).selected = false;
+		}
+		notifyDataSetChanged();
+	}
+
+	public void toggleSelected(int id) {
+		for (int i = 0; i < localItems.size(); i++) {
+			if (localItems.get(i).id == id) {
+				localItems.get(i).selected = !localItems.get(i).selected;
+			}
+		}
+		notifyDataSetChanged();
+	}
+
+	static class SensorNameComparator implements Comparator<Sensor> {
         @Override
         public int compare(Sensor o1, Sensor o2) {
             return o1.name.compareToIgnoreCase(o2.name);
@@ -178,6 +194,12 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 				holder.value.setTextColor(Color.argb(0xFF, 0x00, 0xFF, 0x00));
 			} else {
 				holder.value.setTextColor(Color.WHITE);
+			}
+
+			if (sensor.selected) {
+				v.setBackgroundColor(0xFF405060);
+			} else {
+				v.setBackgroundColor(0x00000000);
 			}
 			holder.icon.setImageDrawable(SensorTypeProvider.getInstance(context).getIcon(sensor.type));
 

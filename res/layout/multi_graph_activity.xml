@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <ListView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/listView" android:layout_weight="2"/>
+    <FrameLayout android:layout_width="fill_parent"
+                 android:layout_height="fill_parent"
+                 android:layout_weight="1"
+            >
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/sensorInfoChart"
+                >
+        </LinearLayout>
+        <ProgressBar android:indeterminate="true"
+                     android:layout_width="60dp"
+                     android:layout_height="60dp"
+                     android:id="@+id/marker_progress"
+                     style="?android:attr/progressBarStyle"
+                     android:indeterminateBehavior="cycle"
+                     android:layout_centerInParent="true" android:layout_gravity="center"/>
+    </FrameLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:gravity="center_vertical|center_horizontal" android:layout_gravity="center_horizontal">
+        <Button
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:text="\u003c"
+                android:layout_weight="0"
+                android:id="@+id/bt_graph_prev"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_day_text"
+                android:layout_weight="0"
+                android:id="@+id/bt_graph_day"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_week_text"
+                android:layout_weight="0"
+                android:id="@+id/bt_graph_week"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_month_text"
+                android:layout_weight="0"
+                android:id="@+id/bt_graph_month"/>
+        <Button
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:text="\u003e"
+                android:layout_weight="0"
+                android:id="@+id/bt_graph_next"/>
+    </LinearLayout>
+</LinearLayout>

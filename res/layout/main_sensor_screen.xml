@@ -22,6 +22,6 @@
                 android:layout_height="wrap_content"
                 android:text="Create chart"
                 android:id="@+id/selectSensorComplite"
-                android:visibility="visible"/>
+                android:visibility="gone"/>
     </LinearLayout>
 </LinearLayout>

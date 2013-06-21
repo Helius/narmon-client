@@ -33,6 +33,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private Menu mOptionsMenu = null;
 	private boolean showProgress;
 	private CheckedListItemAdapter typeAdapter;
+	private MultiGraphListAdapter multiGraphListAdapter;
 	private int prevScreen = SCR_MAINLIST;
 	private boolean selectMode = false;
 	private static final int SCR_FILTER = 0;
@@ -40,6 +41,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private static final int SCR_WATCHEDLIST = 2;
 	private static final int SCR_MYLIST = 3;
 	private static final int SCR_GRAPHLIST = 4;
+	private ArrayList<Integer> selectedSensor = new ArrayList<Integer>();
 
 	@Override
 	public boolean isItemChecked(int position) {
@@ -149,6 +151,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 					return true;
 				} else if (prevScreen == SCR_MAINLIST && selectMode) {
 					leaveSensorSelectMode();
+					return true;
 				}
 		}
 		return super.onKeyDown(keyCode, event);
@@ -158,13 +161,17 @@ public class MainActivity extends SherlockFragmentActivity implements
 		selectMode = false;
 		mPager.findViewById(R.id.newGraphBtn).setVisibility(View.VISIBLE);
 		mPager.findViewById(R.id.selectSensorComplite).setVisibility(View.GONE);
+		listAdapter.clearSelection();
+		Log.d(TAG,"selected sensor id: " + selectedSensor );
 	}
 
 	private void enterSensorSelectMode () {
 		selectMode = true;
 		mPager.findViewById(R.id.newGraphBtn).setVisibility(View.INVISIBLE);
 		mPager.findViewById(R.id.selectSensorComplite).setVisibility(View.VISIBLE);
-		mPager.setCurrentScreen(SCR_MAINLIST, true);
+		mPager.setCurrentScreen(SCR_MAINLIST, false);
+		listAdapter.clearSelection();
+		selectedSensor.clear();
 	}
 
     /**
@@ -211,6 +218,18 @@ public class MainActivity extends SherlockFragmentActivity implements
 	    mPager.addView(View.inflate(getApplicationContext(),R.layout.my_sensor_screen,null));
 	    mPager.addView(View.inflate(getApplicationContext(),R.layout.multi_graph_menu,null));
 
+	    multiGraphListAdapter = new MultiGraphListAdapter(getApplicationContext(),MultiGraphHolder.getInstance(getApplicationContext()).getGraphs());
+	    ListView graphListView = (ListView)mPager.findViewById(R.id.sensorGraphList);
+	    graphListView.setAdapter(multiGraphListAdapter);
+	    graphListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		    @Override
+		    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			    Intent i = new Intent(MainActivity.this, MultiGraphActivity.class);
+			    i.putExtra("Graph", multiGraphListAdapter.getItem(position));
+			    startActivity(i);
+		    }
+	    });
+
 	    ListView fullListView = (ListView)mPager.findViewById(R.id.fullListView);
 
 	    final Button addGraphBtn = (Button) mPager.findViewById(R.id.newGraphBtn);
@@ -223,6 +242,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 					@Override
 					public void onClick(View v) {
 						leaveSensorSelectMode();
+						if (!selectedSensor.isEmpty()) {
+							MultiGraphHolder.getInstance(getApplicationContext()).getGraphs().add(new MultiGraph("Graph 1", selectedSensor));
+							Log.d(TAG,"MultiGraphHolder contain: " + MultiGraphHolder.getInstance(getApplicationContext()).getGraphs());
+							multiGraphListAdapter.notifyDataSetChanged();
+							mPager.setCurrentScreen(SCR_GRAPHLIST, false);
+						}
 					}
 				});
 			}
@@ -657,9 +682,14 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     private void sensorItemClick (int position)
     {
-        Intent i = new Intent (this, SensorInfo.class);
-        i.putExtra("Sensor", listAdapter.getItem(position));
-        startActivity(i);
+	    if (selectMode) {
+			selectedSensor.add(listAdapter.getItem(position).id);
+		    listAdapter.toggleSelected(listAdapter.getItem(position).id);
+	    } else {
+		    Intent i = new Intent(this, SensorInfo.class);
+		    i.putExtra("Sensor", listAdapter.getItem(position));
+		    startActivity(i);
+	    }
     }
 
 	// called by action (define via xml onClick)
