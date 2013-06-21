@@ -123,6 +123,8 @@ public class SensorTypeProvider {
 				return context.getResources().getDrawable(R.drawable.storage_icon);
 			case 8:
 				return context.getResources().getDrawable(R.drawable.ethernet_icon);
+			case 9:
+				return context.getResources().getDrawable(R.drawable.rain_icon);
 		}
 		return context.getResources().getDrawable(R.drawable.unknown_icon);
 	}
