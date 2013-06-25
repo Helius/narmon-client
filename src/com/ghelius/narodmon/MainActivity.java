@@ -235,15 +235,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 			    startActivity(i);
 		    }
 	    });
-//	    graphListView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-//		    @Override
-//		    public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-//			    android.view.MenuInflater inflater = getMenuInflater();
-//			    inflater.inflate(R.menu.lot_menu, contextMenu);
-//		    }
-//	    });
 	    registerForContextMenu(graphListView);
-
 
 	    ListView fullListView = (ListView)mPager.findViewById(R.id.fullListView);
 
@@ -382,14 +374,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 		}
 	}
 
-//	@Override
-//	public boolean onContextItemSelected(android.view.MenuItem item) {
-//		if (item.getItemId() == R.id.graph_menu_delete) {
-//			MultiGraphHolder.getInstance(getApplicationContext()).delete(123);
-//			return true;
-//		} else
-//			return super.onContextItemSelected(item);
-//	}
 
 	// init filter ui from uiFlags
 	private void setFilterData() {
@@ -577,43 +561,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 		        }
 	        });
 
-
-//            // use gps
-//            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//            Criteria criteria = new Criteria();
-//            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-//            String provider = lm.getBestProvider(criteria, true);
-//            if (provider == null) {
-//                Log.e(TAG,"location provider is NULL");
-//                return;
-//            }
-//            Location mostRecentLocation = lm.getLastKnownLocation(provider);
-//            if(mostRecentLocation == null) {
-//                Log.e(TAG,"mostRecentLocation is NULL");
-////                return;
-//                Location locationGPS = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//                Location locationNet = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//
-//                long GPSLocationTime = 0;
-//                if (null != locationGPS) { GPSLocationTime = locationGPS.getTime();}
-//                long NetLocationTime = 0;
-//                if (null != locationNet) {
-//                    NetLocationTime = locationNet.getTime();
-//                }
-//                if ( 0 < GPSLocationTime - NetLocationTime )
-//                    mostRecentLocation = locationGPS;
-//                else
-//                    mostRecentLocation = locationNet;
-//            }
-//            if (mostRecentLocation == null) {
-//                Log.e(TAG,"location still null");
-//                return;
-//            }
-//            double lat=mostRecentLocation.getLatitude();
-//            double lon=mostRecentLocation.getLongitude();
-//            // use API to send location
-//            Log.d(TAG,"my location: " + lat +" "+lon);
-//            narodmonApi.sendLocation(lat, lon);
         }
     }
 
