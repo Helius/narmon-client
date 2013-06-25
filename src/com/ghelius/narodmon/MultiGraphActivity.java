@@ -21,32 +21,141 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class MultiGraphActivity extends SherlockFragmentActivity {
-	private SensorLogGetter logGetter;
 	private int offset = 0;
 	private LogPeriod period = LogPeriod.day;
 	private final static String TAG = "narodmon-multGactivity";
 	MultiGraph multiGraph;
-	private ArrayList<Point> logData = new ArrayList<Point>();
 	private LogPeriod oldPeriod;
-
-
-	private GraphicalView mChart;
+	private GraphicalView mChart = null;
 	private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
 	private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
-	private TimeSeries timeSeries;
-	private XYSeriesRenderer mCurrentRenderer;
-
 	private ArrayList<Graph> graphs = new ArrayList<Graph>();
+	private int colors [] = {0xFFFF0000, 0xFF00FF00, 0xFF00FFFF, 0xFF8144E3, 0xFF3EF0E4, 0xFFEAF03E};
+	float global_min = 0;
+	float global_max = 0;
+	private int max_gap = 1000*60;
+
+	void timeSeriesReady (float min, float max) {
+		int ready_cnt = 0;
+
+		for (Graph graph : graphs) {
+			if (graph.ready) ready_cnt++;
+		}
+
+		if (ready_cnt == 1) { // init range with first graph value
+			global_max = max;
+			global_min = min;
+		} else {
+			if (global_min > min) global_min = min;
+			if (global_max < max) global_max = max;
+		}
+
+		if (ready_cnt == graphs.size()) {
+			mRenderer.initAxesRange(1);
+			mRenderer.setYAxisMin(global_min - (global_max - global_min) / 10);
+			mRenderer.setYAxisMax(global_max + (global_max - global_min) / 10);
+			findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+			mChart.repaint();
+		}
+	}
 
 	class Graph {
 		int id;
-		SensorLogGetter logGetter;
+		SensorLogParser logGetter;
 		String name;
+		boolean show = true;
+		TimeSeries timeSeries = new TimeSeries("");
+		private boolean ready = false;
+
 		public Graph (int id) {
 			this.id = id;
-			logGetter = new SensorLogGetter(id);
+			logGetter = new SensorLogParser(id);
 		}
-		boolean show = true;
+
+		void dataReceived(ArrayList<Point> logData) {
+			timeSeries.clear();
+			if (logData != null && !logData.isEmpty()) {
+				long prevTime = logData.get(0).time;
+				float max = logData.get(0).value;
+				float min = logData.get(0).value;
+				for (Point data : logData) {
+					if (data.value > max) max = data.value;
+					if (data.value < min) min = data.value;
+					timeSeries.add((data.time * 1000), data.value);
+					Log.d(TAG, "cur:" + data.time + " prev:" + prevTime + " diff:" + (data.time - prevTime));
+					if ((data.time - prevTime) > max_gap) {
+						timeSeries.add(((data.time - 1) * 1000), MathHelper.NULL_VALUE);
+					}
+					prevTime = data.time;
+				}
+				ready = true;
+				timeSeriesReady(min, max);
+			} else
+				timeSeriesReady(0, 0);
+		}
+
+		public void getLog(LogPeriod period, int offset) {
+			ready = false;
+			logGetter.getLog(period, offset);
+		}
+
+		private class SensorLogParser implements ServerDataGetter.OnResultListener {
+			private int id;
+			private ArrayList<Point> logData = new ArrayList<Point>();
+
+			public SensorLogParser(int id) {
+				this.id = id;
+			}
+			ServerDataGetter getter;
+			void getLog (LogPeriod period, int offset) {
+				if (getter != null) {
+					getter.cancel(true);
+				}
+				Log.d(TAG, "Getting log for id:" + id + " period:" + period.name() + " offset:" + offset);
+				getter = new ServerDataGetter();
+				getter.setOnListChangeListener(this);
+				String sPeriod = "";
+				switch (period) {
+					case day:
+						sPeriod = "day";
+						break;
+					case week:
+						sPeriod = "week";
+						break;
+					case month:
+						sPeriod = "month";
+						break;
+					default:
+						break;
+				}
+				getter.execute(NarodmonApi.apiUrl, ConfigHolder.getInstance(getApplicationContext()).getApiHeader() + "\"cmd\":\"sensorLog\"," +
+						"\"id\":\""+id+"\",\"period\":\"" + sPeriod + "\",\"offset\":\""+ offset +"\"}");
+			}
+
+			@Override
+			public void onResultReceived(String result) {
+				logData.clear();
+				Log.d(TAG,"sensorLog received: " + result);
+				try {
+					JSONObject jsonObject = new JSONObject(result);
+					JSONArray arr = jsonObject.getJSONArray("data");
+					for (int i = 0; i < arr.length(); i++) {
+						logData.add(new Point(Long.valueOf(arr.getJSONObject(i).getString("time")),
+								Float.valueOf(arr.getJSONObject(i).getString("value"))));
+					}
+				} catch (JSONException e) {
+					Log.e(TAG,"SensorLog: Wrong JSON " + e.getMessage());
+				}
+				// now we have full data, paint graph
+				dataReceived(logData);
+				getter = null;
+			}
+
+			@Override
+			public void onNoResult() {
+				Log.e(TAG, "getLog: no data");
+			}
+		}
 	}
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,10 +164,10 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.multi_graph_activity);
 
 		Bundle extras = getIntent().getExtras();
-		if (extras == null)
+		multiGraph = (MultiGraph) (extras != null ? extras.getSerializable("Graph") : null);
+		if (multiGraph == null) {
 			finish();
-
-		multiGraph = (MultiGraph)extras.getSerializable("Graph");
+		}
 
 		for (int i = 0; i < multiGraph.ids.size(); i++) {
 			graphs.add(new Graph(multiGraph.ids.get(i)));
@@ -107,36 +216,21 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 		});
 	}
 
-	private void initChart() {
-		timeSeries = new TimeSeries ("");
-		mDataset.addSeries(timeSeries);
-		mCurrentRenderer = new XYSeriesRenderer();
-
-		mRenderer.addSeriesRenderer(mCurrentRenderer);
-		mRenderer.setShowLabels(true);
-		mRenderer.setShowGrid(true);
-		mRenderer.setGridColor(0xFF505050);
-
-		mRenderer.setXTitle(getString(R.string.text_today));
-		mRenderer.setYLabels(10);
-		mRenderer.setPointSize(2f);
-		mRenderer.setAxisTitleTextSize(20);
-		mRenderer.setChartTitleTextSize(20);
-		mRenderer.setLabelsTextSize(15);
-		mRenderer.setLegendTextSize(10);
-		mRenderer.setYLabelsPadding(-20);
-		mRenderer.setXLabelsAlign(Paint.Align.CENTER);
-		mRenderer.setXLabels(10);
-
-		mCurrentRenderer.setColor(0xFF00FF00);
-		mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
-		mCurrentRenderer.setFillPoints(true);
-		mCurrentRenderer.setChartValuesTextSize(15);
-	}
-
 	private void updateGraph() {
+
+		max_gap = 1000*60;
+		if (period == LogPeriod.day) {
+			max_gap = 60*60; // hour
+		} else if (period == LogPeriod.week) {
+			max_gap = 100*60;
+		} else if (period == LogPeriod.month) {
+			max_gap = 24*60*60; //day
+		}
+
 		findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
-		logGetter.getLog( period, offset);
+		for (Graph graph : graphs) {
+			graph.getLog(period, offset);
+		}
 		String title = "";
 		switch (period) {
 			case day:
@@ -164,29 +258,7 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 					title = String.valueOf(offset) + " " + getString(R.string.text_yars_ago);
 				break;
 		}
-		if (offset == 0) {
-
-		}
 		mRenderer.setXTitle(title);
-	}
-
-
-	private void addSampleData() {
-		if (mChart == null) {
-			LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
-			initChart();
-			mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
-			layout.addView(mChart);
-			oldPeriod = period;
-		}
-		int max_gap = 1000*60;
-		if (period == LogPeriod.day) {
-			max_gap = 60*60; // hour
-		} else if (period == LogPeriod.week) {
-			max_gap = 100*60;
-		} else if (period == LogPeriod.month) {
-			max_gap = 24*60*60; //day
-		}
 
 		if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format
 			LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
@@ -203,85 +275,109 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 			oldPeriod = period;
 			layout.addView(mChart);
 		}
-		timeSeries.clear();
-		if (!logData.isEmpty()) {
-			long prevTime = logData.get(0).time;
-			float max = logData.get(0).value;
-			float min = logData.get(0).value;
-			for (Point data : logData) {
-				if (data.value > max) max = data.value;
-				if (data.value < min) min = data.value;
-				timeSeries.add((data.time * 1000), data.value);
-				Log.d(TAG,"cur:"+data.time + " prev:" + prevTime + " diff:" + (data.time-prevTime));
-				if ((data.time - prevTime) > max_gap) {
-					timeSeries.add(((data.time - 1) * 1000), MathHelper.NULL_VALUE);
-				}
-				prevTime = data.time;
-			}
-			mRenderer.initAxesRange(1);
-			mRenderer.setYAxisMin(min - (max-min)/10);
-			mRenderer.setYAxisMax(max + (max-min)/10);
-		}
-		mChart.repaint();
-		findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
 	}
+
+	private void initChart() {
+		for (int i = 0; i < graphs.size(); i++) {
+			Graph graph = graphs.get(i);
+			mDataset.addSeries(graph.timeSeries);
+			XYSeriesRenderer mCurrentRenderer = new XYSeriesRenderer();
+			mCurrentRenderer.setColor(colors[i%6]);
+			mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
+			mCurrentRenderer.setFillPoints(true);
+			mCurrentRenderer.setChartValuesTextSize(15);
+			mRenderer.addSeriesRenderer(mCurrentRenderer);
+		}
+
+		mRenderer.setShowLabels(true);
+		mRenderer.setShowGrid(true);
+		mRenderer.setGridColor(0xFF505050);
+
+		mRenderer.setXTitle(getString(R.string.text_today));
+		mRenderer.setYLabels(10);
+		mRenderer.setPointSize(2f);
+		mRenderer.setAxisTitleTextSize(20);
+		mRenderer.setChartTitleTextSize(20);
+		mRenderer.setLabelsTextSize(15);
+		mRenderer.setLegendTextSize(10);
+		mRenderer.setYLabelsPadding(-20);
+		mRenderer.setXLabelsAlign(Paint.Align.CENTER);
+		mRenderer.setXLabels(10);
+
+	}
+
+	@Override
+	public void onResume () {
+		super.onResume();
+		if (mChart == null) {
+			LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
+			initChart();
+			mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
+			layout.addView(mChart);
+			oldPeriod = period;
+			updateGraph();
+		}
+	}
+
+//	private void addSampleData() {
+////		if (mChart == null) {
+////			LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
+////			initChart();
+////			mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
+////			layout.addView(mChart);
+////			oldPeriod = period;
+////		}
+//
+////		if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format
+////			LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
+////			layout.removeAllViews();
+////			if (period == LogPeriod.day) {
+////				mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
+////			} else if (period == LogPeriod.week) {
+////				mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "E");
+////			} else if (period == LogPeriod.month) {
+////				mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "d");
+////			} else if (period == LogPeriod.year) {
+////				mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "M.d");
+////			}
+////			oldPeriod = period;
+////			layout.addView(mChart);
+////		}
+//
+////		int max_gap = 1000*60;
+////		if (period == LogPeriod.day) {
+////			max_gap = 60*60; // hour
+////		} else if (period == LogPeriod.week) {
+////			max_gap = 100*60;
+////		} else if (period == LogPeriod.month) {
+////			max_gap = 24*60*60; //day
+////		}
+//
+//		timeSeries.clear();
+//		if (!logData.isEmpty()) {
+//			long prevTime = logData.get(0).time;
+//			float max = logData.get(0).value;
+//			float min = logData.get(0).value;
+//			for (Point data : logData) {
+//				if (data.value > max) max = data.value;
+//				if (data.value < min) min = data.value;
+//				timeSeries.add((data.time * 1000), data.value);
+//				Log.d(TAG,"cur:"+data.time + " prev:" + prevTime + " diff:" + (data.time-prevTime));
+//				if ((data.time - prevTime) > max_gap) {
+//					timeSeries.add(((data.time - 1) * 1000), MathHelper.NULL_VALUE);
+//				}
+//				prevTime = data.time;
+//			}
+//			mRenderer.initAxesRange(1);
+//			mRenderer.setYAxisMin(min - (max-min)/10);
+//			mRenderer.setYAxisMax(max + (max-min)/10);
+//		}
+//		mChart.repaint();
+//		findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+//	}
 
 	enum LogPeriod {day,week,month,year}
-	private class SensorLogGetter implements ServerDataGetter.OnResultListener {
-		private int id;
-		public SensorLogGetter (int id) {
-			this.id = id;
-		}
-		ServerDataGetter getter;
-		void getLog (LogPeriod period, int offset) {
-			if (getter != null) {
-				getter.cancel(true);
-			}
-			Log.d(TAG, "Getting log for id:" + id + " period:" + period.name() + " offset:" + offset);
-			getter = new ServerDataGetter();
-			getter.setOnListChangeListener(this);
-			String sPeriod = "";
-			switch (period) {
-				case day:
-					sPeriod = "day";
-					break;
-				case week:
-					sPeriod = "week";
-					break;
-				case month:
-					sPeriod = "month";
-					break;
-				default:
-					break;
-			}
-			getter.execute(NarodmonApi.apiUrl, ConfigHolder.getInstance(getApplicationContext()).getApiHeader() + "\"cmd\":\"sensorLog\"," +
-					"\"id\":\""+id+"\",\"period\":\"" + sPeriod + "\",\"offset\":\""+ offset +"\"}");
-		}
 
-		@Override
-		public void onResultReceived(String result) {
-			logData.clear();
-			Log.d(TAG,"sensorLog received: " + result);
-			try {
-				JSONObject jsonObject = new JSONObject(result);
-				JSONArray arr = jsonObject.getJSONArray("data");
-				for (int i = 0; i < arr.length(); i++) {
-					logData.add(new Point(Long.valueOf(arr.getJSONObject(i).getString("time")),
-							Float.valueOf(arr.getJSONObject(i).getString("value"))));
-				}
-			} catch (JSONException e) {
-				Log.e(TAG,"SensorLog: Wrong JSON " + e.getMessage());
-			}
-			// now we have full data, paint graph
-			addSampleData();
-			getter = null;
-		}
-
-		@Override
-		public void onNoResult() {
-			Log.e(TAG, "getLog: no data");
-		}
-	}
 
 	class Point {
 		public long time;

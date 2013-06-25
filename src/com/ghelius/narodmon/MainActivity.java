@@ -14,6 +14,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.*;
@@ -162,7 +163,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 		mPager.findViewById(R.id.newGraphBtn).setVisibility(View.VISIBLE);
 		mPager.findViewById(R.id.selectSensorComplite).setVisibility(View.GONE);
 		listAdapter.clearSelection();
-		Log.d(TAG,"selected sensor id: " + selectedSensor );
+		Log.d(TAG, "selected sensor id: " + selectedSensor);
 	}
 
 	private void enterSensorSelectMode () {
@@ -203,6 +204,11 @@ public class MainActivity extends SherlockFragmentActivity implements
 
                 } else if (screen == SCR_FILTER) {
 	                setFilterData();
+                } else if (screen == SCR_GRAPHLIST) {
+	                if (multiGraphListAdapter.getCount() == 0)
+		                findViewById(R.id.sensorGraphListEmptyMsg).setVisibility(View.VISIBLE);
+	                 else
+		                findViewById(R.id.sensorGraphListEmptyMsg).setVisibility(View.INVISIBLE);
                 }
 	            prevScreen = screen;
             }
@@ -229,6 +235,15 @@ public class MainActivity extends SherlockFragmentActivity implements
 			    startActivity(i);
 		    }
 	    });
+//	    graphListView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+//		    @Override
+//		    public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+//			    android.view.MenuInflater inflater = getMenuInflater();
+//			    inflater.inflate(R.menu.lot_menu, contextMenu);
+//		    }
+//	    });
+	    registerForContextMenu(graphListView);
+
 
 	    ListView fullListView = (ListView)mPager.findViewById(R.id.fullListView);
 
@@ -237,15 +252,18 @@ public class MainActivity extends SherlockFragmentActivity implements
 			@Override
 			public void onClick(View v) {
 				enterSensorSelectMode();
-				final Button selectCancel = (Button)mPager.findViewById(R.id.selectSensorComplite);
+				final Button selectCancel = (Button) mPager.findViewById(R.id.selectSensorComplite);
 				selectCancel.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						leaveSensorSelectMode();
 						if (!selectedSensor.isEmpty()) {
-							MultiGraphHolder.getInstance(getApplicationContext()).getGraphs().add(new MultiGraph("Graph 1", selectedSensor));
-							Log.d(TAG,"MultiGraphHolder contain: " + MultiGraphHolder.getInstance(getApplicationContext()).getGraphs());
+							MultiGraphHolder.getInstance(getApplicationContext()).add(new MultiGraph("Graph 1", selectedSensor));
 							multiGraphListAdapter.notifyDataSetChanged();
+							if (multiGraphListAdapter.getCount() == 0)
+								findViewById(R.id.sensorGraphListEmptyMsg).setVisibility(View.VISIBLE);
+							else
+								findViewById(R.id.sensorGraphListEmptyMsg).setVisibility(View.INVISIBLE);
 							mPager.setCurrentScreen(SCR_GRAPHLIST, false);
 						}
 					}
@@ -299,7 +317,7 @@ public class MainActivity extends SherlockFragmentActivity implements
                 android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-                mPager.setCurrentScreen(itemPosition, true);
+                mPager.setCurrentScreen(itemPosition, false);
                 return true;
             }
         });
@@ -338,6 +356,40 @@ public class MainActivity extends SherlockFragmentActivity implements
 		    }
 	    });
     }
+
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		if (v == mPager.findViewById(R.id.sensorGraphList)) {
+//			android.view.MenuInflater inflater = getMenuInflater();
+//			inflater.inflate(R.menu.lot_menu, menu);
+			menu.add("Delete").setOnMenuItemClickListener(new android.view.MenuItem.OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(android.view.MenuItem item) {
+					AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+					Log.d(TAG,"remove graph item: position=" + info.position + ", id=" + info.id);
+					MultiGraphHolder.getInstance(getApplicationContext()).delete(info.position);
+					multiGraphListAdapter.notifyDataSetChanged();
+					if (multiGraphListAdapter.getCount() == 0)
+						findViewById(R.id.sensorGraphListEmptyMsg).setVisibility(View.VISIBLE);
+					else
+						findViewById(R.id.sensorGraphListEmptyMsg).setVisibility(View.INVISIBLE);
+
+					return true;
+				}
+			});
+		}
+	}
+
+//	@Override
+//	public boolean onContextItemSelected(android.view.MenuItem item) {
+//		if (item.getItemId() == R.id.graph_menu_delete) {
+//			MultiGraphHolder.getInstance(getApplicationContext()).delete(123);
+//			return true;
+//		} else
+//			return super.onContextItemSelected(item);
+//	}
 
 	// init filter ui from uiFlags
 	private void setFilterData() {
@@ -654,11 +706,9 @@ public class MainActivity extends SherlockFragmentActivity implements
 		// fill my sensors screen
 	    mySensorsAdapter.clear();
 	    Log.d(TAG,"find `my` sensors");
-	    for (int i = 0; i < sensorList.size(); i++) {
-		    Log.d(TAG, " " + sensorList.get(i).id +": "+ sensorList.get(i).my);
-		    if (sensorList.get(i).my) {
-			    Log.d(TAG, "Yeaah, it`s my!!!");
-			    mySensorsAdapter.add(sensorList.get(i));
+	    for (Sensor aSensorList : sensorList) {
+		    if (aSensorList.my) {
+			    mySensorsAdapter.add(aSensorList);
 		    }
 	    }
 	    mySensorsAdapter.notifyDataSetChanged();

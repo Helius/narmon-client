@@ -20,7 +20,7 @@
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Create chart"
+                android:text="@string/create_graph_btn"
                 android:id="@+id/selectSensorComplite"
                 android:visibility="gone"/>
     </LinearLayout>

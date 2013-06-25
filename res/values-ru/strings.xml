@@ -94,4 +94,8 @@
     </string>
     <string name="empty_my_list">У вас нет датчиков. Подключите датчики к http://narodmon.ru и авторизируйтесь в приложении.
     </string>
+    <string name="menu_delete">Удалить</string>
+    <string name="empty_graphs_msg">Графики еще не созданы, нажмите "Добавить" и выберите датчики</string>
+    <string name="new_graph_btn">Добавить</string>
+    <string name="create_graph_btn">Создать график</string>
 </resources>

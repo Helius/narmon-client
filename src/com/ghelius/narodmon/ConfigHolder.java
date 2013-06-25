@@ -16,9 +16,7 @@ public class ConfigHolder {
 
     public static ConfigHolder getInstance (Context context)
     {
-        //Log.d("narodmon-config","get instance");
         if (ourInstance == null) {
-          //  Log.d("narodmon-config","no instance, create now...");
             ourInstance = new ConfigHolder(context);
         }
         return ourInstance;
