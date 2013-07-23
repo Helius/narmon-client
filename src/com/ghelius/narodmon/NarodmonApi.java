@@ -13,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class NarodmonApi {
 
@@ -275,7 +276,8 @@ public class NarodmonApi {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             Log.d(TAG, "password: " + passwd + " md5: " + md5(passwd));
-            getter.execute(apiUrl, makeRequestHeader("login") + ",\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) +"\"}");
+//            getter.execute(apiUrl, makeRequestHeader("login") + ",\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) +"\"}");
+	        getter.execute(apiUrl, makeRequestHeader("login") + ",\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) + "\",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
         }
 	    void logout () {
 		    getter = new ServerDataGetter();
