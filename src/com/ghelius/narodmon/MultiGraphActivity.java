@@ -158,6 +158,15 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 		}
 	}
 
+//	class MultiGraphListItemAdapter extends ArrayAdapter<Integer> {
+//
+//		MultiGraphListItemAdapter(Context context, ArrayList<Integer> items) {
+//			super(context, R.layout.bla, items);
+//		}
+//
+//
+//	}
+
 	public void onCreate(Bundle savedInstanceState) {
 		setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
 		super.onCreate(savedInstanceState);
@@ -172,6 +181,9 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 		for (int i = 0; i < multiGraph.ids.size(); i++) {
 			graphs.add(new Graph(multiGraph.ids.get(i)));
 		}
+
+//		ListView graphList = (ListView)findViewById(R.id.graphsListOnChart);
+//		graphList.setAdapter();
 
 
 		findViewById(R.id.bt_graph_prev).setOnClickListener(new View.OnClickListener() {
@@ -300,6 +312,7 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 		mRenderer.setChartTitleTextSize(20);
 		mRenderer.setLabelsTextSize(15);
 		mRenderer.setLegendTextSize(10);
+		mRenderer.setShowLegend(true);
 		mRenderer.setYLabelsPadding(-20);
 		mRenderer.setXLabelsAlign(Paint.Align.CENTER);
 		mRenderer.setXLabels(10);
@@ -319,65 +332,7 @@ public class MultiGraphActivity extends SherlockFragmentActivity {
 		}
 	}
 
-//	private void addSampleData() {
-////		if (mChart == null) {
-////			LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
-////			initChart();
-////			mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
-////			layout.addView(mChart);
-////			oldPeriod = period;
-////		}
-//
-////		if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format
-////			LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
-////			layout.removeAllViews();
-////			if (period == LogPeriod.day) {
-////				mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "H:mm");
-////			} else if (period == LogPeriod.week) {
-////				mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "E");
-////			} else if (period == LogPeriod.month) {
-////				mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "d");
-////			} else if (period == LogPeriod.year) {
-////				mChart = ChartFactory.getTimeChartView(this, mDataset, mRenderer, "M.d");
-////			}
-////			oldPeriod = period;
-////			layout.addView(mChart);
-////		}
-//
-////		int max_gap = 1000*60;
-////		if (period == LogPeriod.day) {
-////			max_gap = 60*60; // hour
-////		} else if (period == LogPeriod.week) {
-////			max_gap = 100*60;
-////		} else if (period == LogPeriod.month) {
-////			max_gap = 24*60*60; //day
-////		}
-//
-//		timeSeries.clear();
-//		if (!logData.isEmpty()) {
-//			long prevTime = logData.get(0).time;
-//			float max = logData.get(0).value;
-//			float min = logData.get(0).value;
-//			for (Point data : logData) {
-//				if (data.value > max) max = data.value;
-//				if (data.value < min) min = data.value;
-//				timeSeries.add((data.time * 1000), data.value);
-//				Log.d(TAG,"cur:"+data.time + " prev:" + prevTime + " diff:" + (data.time-prevTime));
-//				if ((data.time - prevTime) > max_gap) {
-//					timeSeries.add(((data.time - 1) * 1000), MathHelper.NULL_VALUE);
-//				}
-//				prevTime = data.time;
-//			}
-//			mRenderer.initAxesRange(1);
-//			mRenderer.setYAxisMin(min - (max-min)/10);
-//			mRenderer.setYAxisMax(max + (max-min)/10);
-//		}
-//		mChart.repaint();
-//		findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
-//	}
-
 	enum LogPeriod {day,week,month,year}
-
 
 	class Point {
 		public long time;
