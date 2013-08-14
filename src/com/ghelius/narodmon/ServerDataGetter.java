@@ -46,7 +46,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         try {
             while ((line = rd.readLine()) != null) { s += line; }
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
         return s;
     }
@@ -59,6 +59,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         try {
             HttpPost httpPost = new HttpPost(uri);
             httpPost.setEntity(new StringEntity(json));
+	        Log.d(TAG,json);
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             return new DefaultHttpClient().execute(httpPost);

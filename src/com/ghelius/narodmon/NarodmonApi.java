@@ -29,9 +29,14 @@ public class NarodmonApi {
     private final String fileName = "sensorList.obj";
     private String apiHeader;
 
+	public void setLocation(Float lat, Float lng) {
+		Log.d(TAG,"got new location " + lat +" " + lng);
+		listUpdater.setLocation (lat, lng);
+	}
 
-    interface onResultReceiveListener {
-        void onLocationResult (boolean ok, String addr);
+
+	interface onResultReceiveListener {
+        void onLocationResult (boolean ok, String addr, Float lat, Float lng);
         void onAuthorisationResult (boolean ok, String res);
         void onSendVersionResult (boolean ok, String res);
         void onSensorListResult (boolean ok, String res);
@@ -98,8 +103,10 @@ public class NarodmonApi {
         ServerDataGetter getter;
         ArrayList<Sensor> sensorList;
         Context context;
+	    private Float lat;
+	    private Float lng;
 
-        void restoreList (Context context, ArrayList<Sensor> sensorList) {
+	    void restoreList (Context context, ArrayList<Sensor> sensorList) {
             this.context = context;
             this.sensorList = sensorList;
             Log.d(TAG,"------restore list start-------");
@@ -126,7 +133,7 @@ public class NarodmonApi {
             getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.setAsyncJobCallback(this);
-            getter.execute(apiUrl, makeRequestHeader("sensorList") + ",\"radius\":\""+ String.valueOf(radius) +"\"}");
+            getter.execute(apiUrl, makeRequestHeader("sensorNear") + ",\"radius\":"+ String.valueOf(radius) + ",\"lat\":" + String.valueOf(lat) + ",\"lng\":" + String.valueOf(lng) + "}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -189,6 +196,11 @@ public class NarodmonApi {
                 }
             }
         }
+
+	    public void setLocation(Float lat, Float lng) {
+		    this.lat = lat;
+		    this.lng = lng;
+	    }
     }
 
     /*
@@ -277,7 +289,7 @@ public class NarodmonApi {
             getter.setOnListChangeListener(this);
             Log.d(TAG, "password: " + passwd + " md5: " + md5(passwd));
 //            getter.execute(apiUrl, makeRequestHeader("login") + ",\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) +"\"}");
-	        getter.execute(apiUrl, makeRequestHeader("login") + ",\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) + "\",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
+	        getter.execute(apiUrl, makeRequestHeader("login") + ",\"login\":\"" + login + "\",\"hash\":\"" + md5(uid + md5(passwd)) + "\",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
         }
 	    void logout () {
 		    getter = new ServerDataGetter();
@@ -331,24 +343,27 @@ public class NarodmonApi {
         @Override
         public void onResultReceived(String result) {
             JSONObject jsonObject;
+	        Log.d(TAG,result);
             try {
                 jsonObject = new JSONObject(result);
                 String addr = jsonObject.getString("addr");
+	            Float lat = (float)jsonObject.getDouble("lat");
+	            Float lng = (float)jsonObject.getDouble("lng");
                 Log.d(TAG, "location result, addr: " + addr);
                 if (listener!=null) {
-                    listener.onLocationResult(true,addr);
+                    listener.onLocationResult(true,addr,lat,lng);
                 }
             } catch (JSONException e) {
-                Log.e(TAG,"location result: wrong json - " + e.getMessage());
+                Log.e(TAG,"location result: wrong json - " + e.getMessage() + " ["+result+"]");
                 if (listener!=null) {
-                    listener.onLocationResult(false,"");
+                    listener.onLocationResult(false,"",0.0f,0.0f);
                 }
             }
         }
         @Override
         public void onNoResult() {
             if (listener!=null) {
-                listener.onLocationResult(false,"");
+                listener.onLocationResult(false,"",0.0f,0.0f);
             }
         }
     }
