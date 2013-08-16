@@ -133,7 +133,7 @@ public class NarodmonApi {
             getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.setAsyncJobCallback(this);
-            getter.execute(apiUrl, makeRequestHeader("sensorNear") + ",\"radius\":"+ String.valueOf(radius) + ",\"lat\":" + String.valueOf(lat) + ",\"lng\":" + String.valueOf(lng) + "}");
+            getter.execute(apiUrl, makeRequestHeader("sensorNear") + ",\"radius\":"+ String.valueOf(radius) + ",\"lat\":" + String.valueOf(lat) + ",\"lng\":" + String.valueOf(lng) +",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -377,7 +377,7 @@ public class NarodmonApi {
 	        Log.d(TAG,"getDictionary");
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            getter.execute(apiUrl, makeRequestHeader("sensorType") + "}");
+            getter.execute(apiUrl, makeRequestHeader("sensorType") +",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
         }
         @Override
         public void onResultReceived(String result) {

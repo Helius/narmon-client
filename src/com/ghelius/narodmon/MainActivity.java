@@ -61,9 +61,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private LoginDialog loginDialog;
 	private UiFlags uiFlags;
 	private NarodmonApi narodmonApi;
-	private boolean locationSended;
-	private boolean authorisationDone;
-	private int oldRadiusKm;
 	private String apiHeader;
 	private LoginStatus loginStatus = LoginStatus.LOGOUT;
 	String uid;
@@ -90,22 +87,20 @@ public class MainActivity extends SherlockFragmentActivity implements
 		super.onPause();
 	}
 
-	void initLocationUpdater () {
+	void initLocationUpdater() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		boolean useGps = !prefs.getBoolean(getString(R.string.pref_key_use_geocode), false);
+		Float lat = prefs.getFloat("lat", 0.0f);
+		Float lng = prefs.getFloat("lng", 0.0f);
+		// it's first start, gps data may be not ready or gps not used, so we use prev coordinates always first time
+		if (lat != 0.0f && lng != 0.0f)
+			narodmonApi.setLocation(lat, lng);
 		if (useGps) { // if use gps, just update location periodically, set to api, don't use saved value
-			Log.d(TAG,"location: we use gps");
-			prefs.edit().putFloat("lat", 0.0f).putFloat("lng",0.0f).commit();
+			Log.d(TAG, "location: we use gps");
 			startGpsTimer();
 		} else { // if use address, use this value and set to api, this value update and save in location result callback
-			Log.d(TAG,"location: we use address");
-			Float lat = prefs.getFloat("lat", 0.0f);
-			Float lng = prefs.getFloat("lng", 0.0f);
-			if (lat != 0.0f && lng != 0.0f) {
-				narodmonApi.setLocation (lat, lng);
-			} else { // update via Api sendLocation
-				narodmonApi.sendLocation(prefs.getString(getString(R.string.pref_key_geoloc), ""));
-			}
+			Log.d(TAG, "location: we use address");
+			narodmonApi.sendLocation(prefs.getString(getString(R.string.pref_key_geoloc), ""));
 		}
 	}
 
@@ -118,7 +113,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 		initLocationUpdater();
 
-		updateSensorList();
+		updateSensorsList();
 		startTimer();
 		if (uiFlags.uiMode == UiFlags.UiMode.watched) {
 			Log.d(TAG, "switch to watched");
@@ -163,8 +158,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 		setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
 		super.onCreate(savedInstanceState);
 
-		authorisationDone = false;
-		locationSended = false;
 		setContentView(R.layout.main);
 		mPager = (HorizontalPager) findViewById(R.id.horizontal_pager);
 		mPager.setOnScreenSwitchListener(new HorizontalPager.OnScreenSwitchListener() {
@@ -190,7 +183,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 		});
 
 		uiFlags = UiFlags.load(this);
-		oldRadiusKm = uiFlags.radiusKm;
 
 		ListView fullListView = new ListView(this);
 		View filterView = View.inflate(this, R.layout.filter_dialog, null);
@@ -403,7 +395,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	}
 
 
-	public void updateSensorList() {
+	public void updateSensorsList() {
 		Log.d(TAG, "------------ update sensor list ---------------");
 		setRefreshProgress(true);
 		narodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
@@ -446,32 +438,35 @@ public class MainActivity extends SherlockFragmentActivity implements
 				double lat = location.getLatitude();
 				double lon = location.getLongitude();
 				// use API to send location
-				Log.d(TAG, "my location: " + lat + " " + lon);
+				Log.d(TAG, "location was updated and set into api : " + lat + " " + lon);
 				narodmonApi.setLocation((float)lat, (float)lon);
-				narodmonApi.sendLocation(lat,lon);
-//				Toast.makeText(getApplicationContext(),"bla",Toast.LENGTH_LONG);
+				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+				pref.edit().putFloat("lat",(float)lat).putFloat("lng",(float)lon).commit();
 			}
 		});
 	}
 
-
+	/**
+	 * <p>Calls for result on sending address string (Russia, Moscow, Lenina 1) to server</p>
+	 * @param ok
+	 * @param addr - contain address (if lat/lng was sended), empty if address was sended
+	 * @param lat,lng - contain coordinates, if address string was sended
+	 */
 	@Override
 	public void onLocationResult(boolean ok, String addr, Float lat, Float lng) {
-		Log.d(TAG, "on Location Result: " + addr);
+		Log.d(TAG, "on location Result: " + addr);
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		// if use gps save address
 		if (ok && pref.getBoolean(getString(R.string.pref_key_use_geocode),false)) {
 			pref.edit().putString(getString(R.string.pref_key_geoloc), addr).commit();
 			Toast.makeText(getApplicationContext(), addr, Toast.LENGTH_SHORT);
-		} else if (ok) { // if use address save coordinates
-			// if use address save coordinates and set to api
+		} else if (ok) { // if use address, save coordinates and set it to api
 			pref.edit().putFloat("lat",lat).putFloat("lng",lng).commit();
-			narodmonApi.setLocation (lat, lng);
-			Toast.makeText(getApplicationContext(), "geocod " + lat + ":" + lng, Toast.LENGTH_SHORT);
+			narodmonApi.setLocation(lat, lng);
 		}
-		locationSended = true;
-		if (authorisationDone) // update list if both finished
-			updateSensorList();
+//		locationSended = true;
+//		if (authorisationDone) // update list if both finished
+//			updateSensorsList();
 	}
 
 	@Override
@@ -490,9 +485,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 			loginStatus = LoginStatus.ERROR;
 			loginDialog.updateLoginStatus();
 		}
-		authorisationDone = true;
-//        if (locationSended) // update list if both finished
-		updateSensorList();
+		updateSensorsList();
 	}
 
 	@Override
@@ -584,8 +577,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 	// called by pressing refresh button (define via xml onClick)
 	public void onUpdateBtnPress(MenuItem item) {
-		setRefreshProgress(true);
-		updateSensorsValue();
+		updateSensorsList();
 	}
 
 	private void setRefreshProgress(boolean refreshing) {
@@ -635,8 +627,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 			public void run() {
 				gpsTimerHandler.sendEmptyMessage(0);
 			}
-//		}, 0, 20*60*1000);
-		}, 0, 30*1000);
+		}, 0, 10*60*1000); // update gps data timeout 10 min
+//		}, 0, 30*1000);
 
 	}
 
@@ -709,7 +701,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 				break;
 			case R.id.menu_refresh:
 				Log.d(TAG, "refresh sensor list");
-				updateSensorList();
+				updateSensorsList();
 				break;
 			case R.id.menu_login:
 				Log.d(TAG, "show login dialog");
