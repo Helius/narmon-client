@@ -204,6 +204,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 		ListView watchedListView = (ListView) mPager.findViewById(R.id.watchedListView);
 		ListView myListView = (ListView) mPager.findViewById(R.id.myListView);
+		myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				myItemClick(position);
+			}
+		});
 
 		sensorList = new ArrayList<Sensor>();
 
@@ -568,6 +574,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 			findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.VISIBLE);
 		else
 			findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.INVISIBLE);
+	}
+
+	private void myItemClick(int position) {
+		Intent i = new Intent(this, SensorInfo.class);
+		i.putExtra("Sensor", mySensorsAdapter.getItem(position));
+		startActivity(i);
 	}
 
 	private void watchedItemClick(int position) {
