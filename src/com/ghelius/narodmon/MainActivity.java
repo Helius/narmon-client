@@ -59,7 +59,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private Timer updateTimer = null;
 	private Timer gpsUpdateTimer = null;
 	private HorizontalPager mPager;
-	//    private FilterDialog filterDialog;
 	private LoginDialog loginDialog;
 	private UiFlags uiFlags;
 	private NarodmonApi narodmonApi;
@@ -75,7 +74,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 			scheduleAlarmWatcher();
 			startUpdateTimer();
 		} else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
-//			sendLocation();
 			initLocationUpdater();
 		}
 	}
@@ -85,7 +83,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 		Log.i(TAG, "onPause");
 		stopUpdateTimer();
 		stopGpsTimer();
-//		lastUpdateTime = System.currentTimeMillis();
 		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 		super.onPause();
 	}
@@ -483,9 +480,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 			pref.edit().putFloat("lat",lat).putFloat("lng",lng).commit();
 			narodmonApi.setLocation(lat, lng);
 		}
-//		locationSended = true;
-//		if (authorisationDone) // update list if both finished
-//			updateSensorsList();
 	}
 
 	@Override
@@ -550,7 +544,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 		}
 		watchAdapter.clear();
 		// for compatibility reason
-//        watchAdapter.addAll(watchedList);
 		for (Sensor aWatchedList : watchedList) {
 			watchAdapter.add(aWatchedList);
 		}
