@@ -331,7 +331,7 @@ public class SensorInfo extends SherlockFragmentActivity {
                 if (data.value > max) max = data.value;
                 if (data.value < min) min = data.value;
                 timeSeries.add((data.time * 1000), data.value);
-                Log.d(TAG,"cur:"+data.time + " prev:" + prevTime + " diff:" + (data.time-prevTime));
+//                Log.d(TAG,"cur:"+data.time + " prev:" + prevTime + " diff:" + (data.time-prevTime));
                 if ((data.time - prevTime) > max_gap) {
                     timeSeries.add(((data.time - 1) * 1000), MathHelper.NULL_VALUE);
                 }

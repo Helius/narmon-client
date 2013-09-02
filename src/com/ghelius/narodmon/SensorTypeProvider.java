@@ -54,7 +54,7 @@ public class SensorTypeProvider {
                 int type = Integer.valueOf(types.getJSONObject(i).getString("type"));
                 String name = types.getJSONObject(i).getString("name");
                 String unit = types.getJSONObject(i).getString("unit");
-                Log.d(TAG, "add type: " + type + ", " + name + ", " + unit);
+//                Log.d(TAG, "add type: " + type + ", " + name + ", " + unit);
                 typesList.add(new SensorType(type, name, unit));
             }
             return true;

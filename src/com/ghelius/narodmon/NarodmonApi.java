@@ -230,14 +230,14 @@ public class NarodmonApi {
         }
         @Override
         public void onResultReceived(String result) {
-            Log.d(TAG,"listUpdate: result receive");
+            Log.d(TAG,"valueUpdate: result receive");
             if (listener != null)
                 listener.onSensorListResult(true, "");
         }
         @Override
         public void onNoResult() {
             getter = null;
-            Log.w(TAG, "listUpdater: Server not responds");
+            Log.w(TAG, "valueUpdater: Server not responds");
             if (listener != null)
                 listener.onSensorListResult(false, "");
         }
