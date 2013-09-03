@@ -34,6 +34,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private boolean showProgress;
 	private CheckedListItemAdapter typeAdapter;
 	private int prevScreen = 1;
+	private long lastUpdateTime;
+	private final static int gpsUpdateIntervalMs = 10*60*1000; // time interval for update coordinates and sensor list
 
 	@Override
 	public boolean isItemChecked(int position) {
@@ -57,7 +59,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private Timer updateTimer = null;
 	private Timer gpsUpdateTimer = null;
 	private HorizontalPager mPager;
-	//    private FilterDialog filterDialog;
 	private LoginDialog loginDialog;
 	private UiFlags uiFlags;
 	private NarodmonApi narodmonApi;
@@ -71,9 +72,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 		Log.d(TAG, "onSharedPreferenceChanged " + key);
 		if (key.equals(getString(R.string.pref_key_interval))) { // update interval changed
 			scheduleAlarmWatcher();
-			startTimer();
+			startUpdateTimer();
 		} else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
-//			sendLocation();
 			initLocationUpdater();
 		}
 	}
@@ -81,7 +81,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onPause() {
 		Log.i(TAG, "onPause");
-		stopTimer();
+		stopUpdateTimer();
 		stopGpsTimer();
 		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 		super.onPause();
@@ -107,14 +107,14 @@ public class MainActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(TAG, "onResume");
+		Log.d(TAG, "onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis()-lastUpdateTime));
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 		listAdapter.notifyDataSetChanged();
 
 		initLocationUpdater();
+		updateSensorsList(false);
 
-		updateSensorsList();
-		startTimer();
+		startUpdateTimer();
 		if (uiFlags.uiMode == UiFlags.UiMode.watched) {
 			Log.d(TAG, "switch to watched");
 			mPager.setCurrentScreen(2, false);
@@ -131,7 +131,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy");
 		uiFlags.save(this);
-		stopTimer();
+		stopUpdateTimer();
 		stopGpsTimer();
 		super.onDestroy();
 	}
@@ -147,6 +147,16 @@ public class MainActivity extends SherlockFragmentActivity implements
 				}
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+//		savedInstanceState.putBoolean("MyBoolean", true);
+//		savedInstanceState.putDouble("myDouble", 1.9);
+//		savedInstanceState.putInt("MyInt", 1);
+//		savedInstanceState.putString("MyString", "Welcome back to Android");
+//		savedInstanceState.putLong("lastTime" ,System.currentTimeMillis());
 	}
 
 	/**
@@ -194,6 +204,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 		ListView watchedListView = (ListView) mPager.findViewById(R.id.watchedListView);
 		ListView myListView = (ListView) mPager.findViewById(R.id.myListView);
+		myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				myItemClick(position);
+			}
+		});
 
 		sensorList = new ArrayList<Sensor>();
 
@@ -395,10 +411,16 @@ public class MainActivity extends SherlockFragmentActivity implements
 	}
 
 
-	public void updateSensorsList() {
+	public void updateSensorsList(boolean force) {
+		if (!force) {
+			if (System.currentTimeMillis()-lastUpdateTime < gpsUpdateIntervalMs) {
+				return;
+			}
+		}
 		Log.d(TAG, "------------ update sensor list ---------------");
 		setRefreshProgress(true);
 		narodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
+		lastUpdateTime = System.currentTimeMillis();
 	}
 
 	public void updateSensorsValue() {
@@ -464,9 +486,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 			pref.edit().putFloat("lat",lat).putFloat("lng",lng).commit();
 			narodmonApi.setLocation(lat, lng);
 		}
-//		locationSended = true;
-//		if (authorisationDone) // update list if both finished
-//			updateSensorsList();
 	}
 
 	@Override
@@ -485,7 +504,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 			loginStatus = LoginStatus.ERROR;
 			loginDialog.updateLoginStatus();
 		}
-		updateSensorsList();
+		updateSensorsList(true);
 	}
 
 	@Override
@@ -531,7 +550,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 		}
 		watchAdapter.clear();
 		// for compatibility reason
-//        watchAdapter.addAll(watchedList);
 		for (Sensor aWatchedList : watchedList) {
 			watchAdapter.add(aWatchedList);
 		}
@@ -558,6 +576,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 			findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.INVISIBLE);
 	}
 
+	private void myItemClick(int position) {
+		Intent i = new Intent(this, SensorInfo.class);
+		i.putExtra("Sensor", mySensorsAdapter.getItem(position));
+		startActivity(i);
+	}
+
 	private void watchedItemClick(int position) {
 		Intent i = new Intent(this, SensorInfo.class);
 		i.putExtra("Sensor", watchAdapter.getItem(position));
@@ -577,7 +601,9 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 	// called by pressing refresh button (define via xml onClick)
 	public void onUpdateBtnPress(MenuItem item) {
-		updateSensorsList();
+		/*now we update only sensor value, not full list for traffic economy*/
+//		updateSensorsList(true);
+		updateSensorsValue();
 	}
 
 	private void setRefreshProgress(boolean refreshing) {
@@ -627,13 +653,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 			public void run() {
 				gpsTimerHandler.sendEmptyMessage(0);
 			}
-		}, 0, 10*60*1000); // update gps data timeout 10 min
-//		}, 0, 30*1000);
+		}, 0, gpsUpdateIntervalMs); // update gps data timeout 10 min
 
 	}
 
-	void startTimer() {
-		stopTimer();
+	void startUpdateTimer() {
+		stopUpdateTimer();
 		updateTimer = new Timer("updateTimer", true);
 		updateTimer.schedule(new TimerTask() {
 			@Override
@@ -646,7 +671,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 	}
 
-	void stopTimer() {
+	void stopUpdateTimer() {
 		if (updateTimer != null) {
 			updateTimer.cancel();
 			updateTimer.purge();
@@ -701,7 +726,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 				break;
 			case R.id.menu_refresh:
 				Log.d(TAG, "refresh sensor list");
-				updateSensorsList();
+				updateSensorsList(true);
 				break;
 			case R.id.menu_login:
 				Log.d(TAG, "show login dialog");

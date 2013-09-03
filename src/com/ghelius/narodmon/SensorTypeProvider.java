@@ -54,7 +54,7 @@ public class SensorTypeProvider {
                 int type = Integer.valueOf(types.getJSONObject(i).getString("type"));
                 String name = types.getJSONObject(i).getString("name");
                 String unit = types.getJSONObject(i).getString("unit");
-                Log.d(TAG, "add type: " + type + ", " + name + ", " + unit);
+//                Log.d(TAG, "add type: " + type + ", " + name + ", " + unit);
                 typesList.add(new SensorType(type, name, unit));
             }
             return true;
@@ -66,17 +66,7 @@ public class SensorTypeProvider {
 
     public void setTypesFromString (String res) {
 	    Log.d(TAG,"update types");
-        if (parseString(res)) {
-//            try {
-//                FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
-//                fos.write(res.getBytes());
-//                fos.close();
-//            } catch (FileNotFoundException e) {
-//                Log.e(TAG,e.getMessage());
-//            } catch (IOException e) {
-//                Log.e(TAG,e.getMessage());
-//            }
-        }
+        parseString(res);
     }
 
     public String getNameForType (int type) {
