@@ -42,13 +42,14 @@ public class MyWidgetProvider extends AppWidgetProvider {
 		TIME.set(Calendar.MILLISECOND, 0);
 
 		final Intent i = new Intent(context, UpdateWidgetService.class);
+		i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
 
 		if (service == null)
 		{
 			service = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
 		}
 
-		m.setRepeating(AlarmManager.RTC, TIME.getTime().getTime(), 1000 * 60, service);
+		m.setRepeating(AlarmManager.RTC, TIME.getTime().getTime(), 1000 * 20, service);
 	}
 
 	@Override

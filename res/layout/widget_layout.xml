@@ -8,6 +8,6 @@
     <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="fuck, widget!"
-            android:id="@+id/update" android:gravity="center_vertical|center_horizontal"/>
+            android:text="--"
+            android:id="@+id/value" android:gravity="center_vertical|center_horizontal" android:textSize="36dp"/>
 </LinearLayout>
