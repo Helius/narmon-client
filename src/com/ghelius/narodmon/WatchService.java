@@ -3,10 +3,13 @@ package com.ghelius.narodmon;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Vibrator;
 import android.util.Log;
+import android.widget.RemoteViews;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -123,6 +126,35 @@ public class WatchService extends WakefulIntentService {
         } else {
             Log.d(TAG, "no watched id, just exit");
         }
+
+	    RemoteViews remoteViews = new RemoteViews(this
+			    .getApplicationContext().getPackageName(),
+			    R.layout.widget_layout);
+	    int number = 11;
+	    Log.d(TAG, "update widget content");
+	    // Set the text
+	    remoteViews.setTextViewText(R.id.value,
+			    String.valueOf(number));
+
+	    // Register an onClickListener
+//	    Intent clickIntent = new Intent(this.getApplicationContext(),
+//			    MyWidgetProvider.class);
+//	    clickIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+//	    clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,allWidgetIds);
+//
+//	    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+//			    getApplicationContext(), 0, clickIntent,
+//			    PendingIntent.FLAG_UPDATE_CURRENT);
+//	    remoteViews.setOnClickPendingIntent(R.id.value, pendingIntent);
+	    AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+	    ComponentName thisWidget = new ComponentName(getApplicationContext(),
+			    MyWidgetProvider.class);
+	    int[] allWidgetIds2 = appWidgetManager.getAppWidgetIds(thisWidget);
+	    Log.w(TAG, "widgets number:" + String.valueOf(allWidgetIds2.length));
+	    for (int w: allWidgetIds2) {
+		    Log.d(TAG,":"+ w);
+		    appWidgetManager.updateAppWidget(w, remoteViews);
+	    }
     }
 
 
