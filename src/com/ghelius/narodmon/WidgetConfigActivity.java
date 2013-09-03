@@ -3,15 +3,19 @@ package com.ghelius.narodmon;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 public class WidgetConfigActivity extends SherlockFragmentActivity {
+	private final static String TAG = "narodmon-widgetConfig";
 	private int mAppWidgetId;
 	public void onCreate(Bundle savedInstanceState) {
 		setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
@@ -21,7 +25,8 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 		setResult(RESULT_CANCELED);
 		Intent intent = getIntent();
 		ListView list = (ListView) findViewById(R.id.listView);
-		SensorItemAdapter adapter = new SensorItemAdapter(getApplicationContext(), new ArrayList<Sensor>());
+		SensorItemAdapter adapter = new SensorItemAdapter(getApplicationContext(), getSavedList());
+
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -43,5 +48,24 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 					AppWidgetManager.EXTRA_APPWIDGET_ID,
 					AppWidgetManager.INVALID_APPWIDGET_ID);
 		}
+	}
+
+	ArrayList<Sensor> getSavedList () {
+		final String fileName = "sensorList.obj";
+			ArrayList<Sensor> sensorList = new ArrayList<Sensor>();
+			Log.d(TAG, "------restore list start-------");
+			FileInputStream fis;
+			try {
+				fis = getApplicationContext().openFileInput(fileName);
+				ObjectInputStream is = new ObjectInputStream(fis);
+				sensorList.addAll((ArrayList<Sensor>) is.readObject());
+				is.close();
+				fis.close();
+				for (Sensor aSensorList : sensorList) aSensorList.value = "--";
+				Log.d(TAG,"------restored list end------- " + sensorList.size());
+			} catch (Exception e) {
+				Log.e(TAG,"Can't read sensorList: " + e.getMessage());
+			}
+		return sensorList;
 	}
 }
