@@ -100,4 +100,6 @@
     </string>
     <string name="empty_my_list">There is no Your sensors. Connect your sensor to http://narodmon.ru and do login.
     </string>
+    <string name="select_sensor_text">Select sensor</string>
+    <string name="enter_widget_name_text">Enter widget name:</string>
 </resources>
