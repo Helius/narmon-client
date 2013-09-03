@@ -601,7 +601,9 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 	// called by pressing refresh button (define via xml onClick)
 	public void onUpdateBtnPress(MenuItem item) {
-		updateSensorsList(true);
+		/*now we update only sensor value, not full list for traffic economy*/
+//		updateSensorsList(true);
+		updateSensorsValue();
 	}
 
 	private void setRefreshProgress(boolean refreshing) {
