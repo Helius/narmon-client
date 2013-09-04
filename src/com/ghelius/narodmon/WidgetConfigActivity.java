@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 public class WidgetConfigActivity extends SherlockFragmentActivity {
 	private final static String TAG = "narodmon-widgetConfig";
 	private int mAppWidgetId;
+	private SensorItemAdapter adapter;
+	private DatabaseHandler dbh;
 	public void onCreate(Bundle savedInstanceState) {
 		setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
 		super.onCreate(savedInstanceState);
@@ -25,16 +28,18 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 		setResult(RESULT_CANCELED);
 		Intent intent = getIntent();
 		ListView list = (ListView) findViewById(R.id.listView);
-		SensorItemAdapter adapter = new SensorItemAdapter(getApplicationContext(), getSavedList());
+		adapter = new SensorItemAdapter(getApplicationContext(), getSavedList());
+		adapter.update();
+		dbh = new DatabaseHandler(getApplicationContext());
 
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-				RemoteViews views = new RemoteViews(getApplicationContext().getPackageName(),
-						R.layout.widget_layout);
+				RemoteViews views = new RemoteViews(getApplicationContext().getPackageName(),R.layout.widget_layout);
 				appWidgetManager.updateAppWidget(mAppWidgetId, views);
+				dbh.addWidget(new Widget(mAppWidgetId, adapter.getItem(position).id, ((EditText) findViewById(R.id.editName)).getText().toString()));
 				Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
 				setResult(RESULT_OK, resultValue);

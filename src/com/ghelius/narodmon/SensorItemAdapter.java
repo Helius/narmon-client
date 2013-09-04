@@ -34,11 +34,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         this.originItems = values;
         this.localItems = new ArrayList<Sensor>();
         config = ConfigHolder.getInstance(context);
-	    uiFlags.sortType = UiFlags.SortType.distance;
-	    uiFlags.radiusKm = 10000;
-	    uiFlags.showingMyOnly = false;
-	    uiFlags.hidenTypes = new ArrayList<Integer>();
-	    uiFlags.uiMode = UiFlags.UiMode.list;
+	    uiFlags = new UiFlags();
     }
 
     public void setUiFlags(UiFlags uiFlags) {

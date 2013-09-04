@@ -5,12 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 	// All Static variables
+	private final static String TAG = "narodmon-dbh";
 	// Database Version
 	private static final int DATABASE_VERSION = 1;
 	// Database Name
@@ -25,11 +27,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		Log.d(TAG,"create db helper");
 	}
 
 	// Creating Tables
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		Log.d(TAG,"on create");
 		String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_WIDGETS + "("
 				+ KEY_WIDGET_ID + " INTEGER," + KEY_SENSOR_ID + " INTEGER,"
 				+ KEY_NAME + " TEXT" + ")";
@@ -39,6 +43,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Upgrading database
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		Log.d(TAG,"on upgrade");
 		// Drop older table if existed
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WIDGETS);
 
@@ -52,6 +57,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Adding new contact
 	void addWidget(Widget widget) {
+		Log.d(TAG, "added widget: " + widget.widgetId + ", " + widget.sensorId + ", " + widget.screenName);
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
@@ -65,19 +71,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	// Getting single contact
-	Widget getWidget(int id) {
+	Widget getWidgetBySensorId(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		Cursor cursor = db.query(TABLE_WIDGETS, new String[] { KEY_WIDGET_ID,
-				KEY_SENSOR_ID, KEY_NAME }, KEY_WIDGET_ID + "=?",
+				KEY_SENSOR_ID, KEY_NAME }, KEY_SENSOR_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
-		if (cursor != null)
+		Widget widget = new Widget();
+		if (cursor != null) {
 			cursor.moveToFirst();
-
-		Widget widget = new Widget(Integer.parseInt(cursor.getString(0)),
-				Integer.parseInt(cursor.getString(1)), cursor.getString(2));
-		// return contact
+			if (cursor.getCount() != 0)
+				widget = new Widget(Integer.parseInt(cursor.getString(0)),Integer.parseInt(cursor.getString(1)), cursor.getString(2));
+			cursor.close();
+		}
 		db.close();
+		Log.d(TAG, "return widget by id: " + widget.widgetId + ", " + widget.sensorId + ", " + widget.screenName);
 		return widget;
 	}
 
@@ -91,14 +99,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		// looping through all rows and adding to list
-		if (cursor.moveToFirst()) {
+		if (cursor != null && cursor.getCount()!= 0 && cursor.moveToFirst()) {
 			do {
 				// Adding widgets to list
 				widgetList.add(new Widget(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2)));
 			} while (cursor.moveToNext());
+			cursor.close();
 		}
-		// return contact list
-		cursor.close();
 		db.close();
 		return widgetList;
 	}
