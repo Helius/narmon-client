@@ -3,26 +3,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent" android:padding="5dp" android:background="#0d131c"
+              android:layout_height="match_parent" android:padding="3dp"
               android:id="@+id/widget_body">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" android:background="#0d131c" android:gravity="center">
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/name" android:textSize="14dp" android:singleLine="true" android:layout_marginBottom="5dp"/>
+            android:id="@+id/name" android:textSize="14dp" android:singleLine="true" android:layout_marginBottom="5dp"
+            android:paddingLeft="3dp" android:paddingRight="3dp"/>
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content" android:paddingLeft="3dp" android:paddingRight="3dp">
         <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:id="@+id/imageView" android:src="@drawable/lamp_icon" android:scaleType="fitCenter"/>
+                android:id="@+id/imageView" android:src="@drawable/lamp_icon" android:scaleType="fitCenter"
+                />
         <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:text="↓↑"
-                android:id="@+id/textView1" android:gravity="center" android:textColor="#0178be"
+                android:id="@+id/textView1" android:gravity="center|right" android:textColor="#0178be"
                 android:textStyle="bold"/>
     </LinearLayout>
     <TextView
@@ -30,4 +36,5 @@
             android:layout_height="match_parent"
             android:text="--"
             android:id="@+id/value" android:gravity="center_vertical|center_horizontal" android:textSize="28dp"/>
+    </LinearLayout>
 </LinearLayout>
