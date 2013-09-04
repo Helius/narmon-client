@@ -48,7 +48,13 @@ public class MyWidgetProvider extends AppWidgetProvider {
 //
 //		m.setRepeating(AlarmManager.RTC, TIME.getTime().getTime(), 1000 * 20, service);
 	}
-
+	@Override
+	public void onDeleted(Context context, int[] appWidgetIds) {
+		super.onDeleted(context, appWidgetIds);
+		DatabaseHandler dbh = new DatabaseHandler(context);
+		dbh.deleteWidgetByWidgetId(appWidgetIds[0]);
+		dbh.close();
+	}
 //	@Override
 //	public void onDisabled(Context context)
 //	{
