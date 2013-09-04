@@ -99,13 +99,14 @@ public class WatchService extends WakefulIntentService {
 	                    if (ConfigHolder.getInstance(getApplicationContext()).isSensorWatched(id))
 	                        checkLimits(id, Float.valueOf(value), Long.valueOf(time));
 	                    // update widgets
+	                    //TODO: we must check all widgets for this sensor id (just return widgets[] from db)
 	                    Log.d(TAG,"check sensor is widget:" + id);
 	                    Widget widget = dbh.getWidgetBySensorId(id);
 	                    if (widget.sensorId != -1) {
 		                    Log.d(TAG,"sensor is widget, update: " + widget.screenName);
-							//TODO: need to update one
+
 		                    remoteViews.setTextViewText(R.id.value, value);
-		                    remoteViews.setTextViewText(R.id.name, widget.screenName);
+//		                    remoteViews.setTextViewText(R.id.name, widget.screenName);
 		                    appWidgetManager.updateAppWidget(widget.widgetId, remoteViews);
 	                    }
                     }

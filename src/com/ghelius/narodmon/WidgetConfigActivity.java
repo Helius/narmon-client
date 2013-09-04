@@ -3,6 +3,7 @@ package com.ghelius.narodmon;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -40,6 +41,10 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
 				RemoteViews views = new RemoteViews(getApplicationContext().getPackageName(),R.layout.widget_layout);
+
+				// set up widget icon and name
+				views.setTextViewText(R.id.name, ((EditText)findViewById(R.id.editName)).getText().toString());
+				views.setImageViewBitmap(R.id.imageView,((BitmapDrawable)SensorTypeProvider.getInstance(getApplicationContext()).getIcon(adapter.getItem(position).type)).getBitmap());
 
 				// When we click the widget, we want to open our main activity.
 				Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
