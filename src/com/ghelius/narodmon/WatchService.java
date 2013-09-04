@@ -102,9 +102,10 @@ public class WatchService extends WakefulIntentService {
 	                    Log.d(TAG,"check sensor is widget:" + id);
 	                    Widget widget = dbh.getWidgetBySensorId(id);
 	                    if (widget.sensorId != -1) {
-		                    Log.d(TAG,"sensor is widget, update:" + widget.widgetId);
+		                    Log.d(TAG,"sensor is widget, update: " + widget.screenName);
 							//TODO: need to update one
 		                    remoteViews.setTextViewText(R.id.value, value);
+		                    remoteViews.setTextViewText(R.id.name, widget.screenName);
 		                    appWidgetManager.updateAppWidget(widget.widgetId, remoteViews);
 	                    }
                     }
@@ -112,28 +113,6 @@ public class WatchService extends WakefulIntentService {
                     Log.e(TAG,"Wrong JSON");
                 }
             }
-
-
-
-
-//	        RemoteViews remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
-//	        int number = 11;
-//	        Log.d(TAG, "update widget content");
-	        // Set the text
-//	        remoteViews.setTextViewText(R.id.value, String.valueOf(number));
-
-//	        ComponentName thisWidget = new ComponentName(getApplicationContext(),
-//			        MyWidgetProvider.class);
-//	        int[] allWidgetIds2 = appWidgetManager.getAppWidgetIds(thisWidget);
-//	        Log.w(TAG, "widgets number:" + String.valueOf(allWidgetIds2.length));
-
-//	        for (int w: allWidgetIds2) {
-//		        Log.d(TAG,":"+ w);
-//	        }
-
-
-
-
         }
 
         @Override

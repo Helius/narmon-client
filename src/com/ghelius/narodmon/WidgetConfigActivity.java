@@ -1,5 +1,6 @@
 package com.ghelius.narodmon;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.commonsware.cwac.wakeful.WakefulIntentService;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -38,8 +40,22 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
 				RemoteViews views = new RemoteViews(getApplicationContext().getPackageName(),R.layout.widget_layout);
+
+				// When we click the widget, we want to open our main activity.
+				Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
+				launchActivity.putExtra("widgetId", mAppWidgetId);
+				PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, launchActivity, 0);
+				views.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
 				appWidgetManager.updateAppWidget(mAppWidgetId, views);
+
+				// save to db
 				dbh.addWidget(new Widget(mAppWidgetId, adapter.getItem(position).id, ((EditText) findViewById(R.id.editName)).getText().toString()));
+				dbh.close();
+
+				// start watch service for update data
+				WakefulIntentService.sendWakefulWork(getApplicationContext(), WatchService.class);
+
+				// config done
 				Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
 				setResult(RESULT_OK, resultValue);

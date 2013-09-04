@@ -25,7 +25,7 @@ public class MyWidgetProvider extends AppWidgetProvider {
 
 		// Build the intent to call the service
 		Intent intent = new Intent(context.getApplicationContext(),
-				UpdateWidgetService.class);
+				WatchService.class);
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
 
 		// Update the widgets via the service

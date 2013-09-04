@@ -38,6 +38,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_WIDGET_ID + " INTEGER," + KEY_SENSOR_ID + " INTEGER,"
 				+ KEY_NAME + " TEXT" + ")";
 		db.execSQL(CREATE_CONTACTS_TABLE);
+		db.enableWriteAheadLogging();
 	}
 
 	// Upgrading database
@@ -63,7 +64,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put(KEY_WIDGET_ID, widget.widgetId);
 		values.put(KEY_SENSOR_ID, widget.sensorId);
-		values.put(KEY_NAME, widget.widgetId);
+		values.put(KEY_NAME, widget.screenName);
 
 		// Inserting Row
 		db.insert(TABLE_WIDGETS, null, values);
@@ -130,14 +131,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public void deleteWidget(int widgetId) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete(TABLE_WIDGETS, KEY_WIDGET_ID + " = ?",
-				new String[] { String.valueOf(widgetId) });
-		db.close();
-	}
-
-
 	// Getting widgetCount
 	public int getWidgetCount() {
 		String countQuery = "SELECT  * FROM " + TABLE_WIDGETS;
@@ -147,5 +140,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		cursor.close();
 		db.close();
 		return count;
+	}
+
+	public void deleteWidgetByWidgetId(int w) {
+		Log.d(TAG, "widget with widgetId " + w + "was deleted");
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_WIDGETS, KEY_WIDGET_ID + " = ?",
+				new String[] { String.valueOf(w) });
+		db.close();
 	}
 }

@@ -10,11 +10,13 @@ public class Widget {
 	String screenName;
 	int widgetId;
 	int sensorId;
+	float lastValue;
 
 	Widget() {
 		screenName = "sensor";
 		widgetId = -1;
 		sensorId = -1;
+		lastValue = 0;
 	}
 	Widget(int widgetId, int sensorId, String screenName) {
 		this.widgetId = widgetId;

@@ -26,7 +26,7 @@
         </receiver>
         <receiver
                 android:icon="@drawable/app_icon"
-                android:label="Narodmon Widget"
+                android:label="narodmon"
                 android:name="MyWidgetProvider" >
             <intent-filter >
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -38,8 +38,8 @@
         </receiver>
         <service android:name=".WatchService">
         </service>
-        <service android:name=".UpdateWidgetService">
-        </service>
+        <!--<service android:name=".UpdateWidgetService">-->
+        <!--</service>-->
 
 
         <activity android:name="com.ghelius.narodmon.MainActivity"
