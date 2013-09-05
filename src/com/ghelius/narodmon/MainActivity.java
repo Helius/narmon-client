@@ -35,7 +35,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private CheckedListItemAdapter typeAdapter;
 	private int prevScreen = 1;
 	private long lastUpdateTime;
-	private final static int gpsUpdateIntervalMs = 10*60*1000; // time interval for update coordinates and sensor list
+	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for update coordinates and sensor list
 
 	@Override
 	public boolean isItemChecked(int position) {
@@ -75,6 +75,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 			startUpdateTimer();
 		} else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
 			initLocationUpdater();
+			updateSensorsList(true);
 		}
 	}
 
@@ -83,7 +84,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 		Log.i(TAG, "onPause");
 		stopUpdateTimer();
 		stopGpsTimer();
-		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 		super.onPause();
 	}
 
@@ -96,10 +96,11 @@ public class MainActivity extends SherlockFragmentActivity implements
 		if (lat != 0.0f && lng != 0.0f)
 			narodmonApi.setLocation(lat, lng);
 		if (useGps) { // if use gps, just update location periodically, set to api, don't use saved value
-			Log.d(TAG, "location: we use gps");
+			Log.d(TAG, "init location updater: we use gps");
 			startGpsTimer();
+			updateLocation();
 		} else { // if use address, use this value and set to api, this value update and save in location result callback
-			Log.d(TAG, "location: we use address");
+			Log.d(TAG, "init location updater: we use address");
 			narodmonApi.sendLocation(prefs.getString(getString(R.string.pref_key_geoloc), ""));
 		}
 	}
@@ -108,10 +109,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 	public void onResume() {
 		super.onResume();
 		Log.d(TAG, "onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis()-lastUpdateTime));
-		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 		listAdapter.notifyDataSetChanged();
 
-		initLocationUpdater();
 		updateSensorsList(false);
 
 		startUpdateTimer();
@@ -125,6 +124,10 @@ public class MainActivity extends SherlockFragmentActivity implements
 			getSupportActionBar().setSelectedNavigationItem(1);
 		}
 		showProgress = true;
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		if (!pref.getBoolean(getString(R.string.pref_key_use_geocode),false)) {
+			startGpsTimer();
+		}
 	}
 
 	@Override
@@ -132,6 +135,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 		Log.i(TAG, "onDestroy");
 		uiFlags.save(this);
 		stopUpdateTimer();
+		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 		stopGpsTimer();
 		super.onDestroy();
 	}
@@ -201,6 +205,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 		mPager.addView(fullListView);
 		mPager.addView(View.inflate(getApplicationContext(), R.layout.watched_screen, null));
 		mPager.addView(View.inflate(getApplicationContext(), R.layout.my_sensor_screen, null));
+
+		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
 		ListView watchedListView = (ListView) mPager.findViewById(R.id.watchedListView);
 		ListView myListView = (ListView) mPager.findViewById(R.id.myListView);
@@ -291,6 +297,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 				listAdapter.update();
 			}
 		});
+		initLocationUpdater();
 	}
 
 	// init filter ui from uiFlags
@@ -412,12 +419,22 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 
 	public void updateSensorsList(boolean force) {
-		if (!force) {
-			if (System.currentTimeMillis()-lastUpdateTime < gpsUpdateIntervalMs) {
-				return;
-			}
+		/* if (!force) { */
+		/* 	if (System.currentTimeMillis()-lastUpdateTime < gpsUpdateIntervalMs) { */
+		/* 		return; */
+		/* 	} */
+		/* } */
+		if (force) {
+			lastUpdateTime = 0;
+			Log.d(TAG,"force update sensor list");
 		}
-		Log.d(TAG, "------------ update sensor list ---------------");
+		
+		if (System.currentTimeMillis()-lastUpdateTime < gpsUpdateIntervalMs) {
+			Log.d(TAG,"list was not updated, timeout not gone");
+			return;
+		}
+
+		Log.d(TAG,"start list updating...");
 		setRefreshProgress(true);
 		narodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
 		lastUpdateTime = System.currentTimeMillis();
@@ -464,6 +481,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 				narodmonApi.setLocation((float)lat, (float)lon);
 				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 				pref.edit().putFloat("lat",(float)lat).putFloat("lng",(float)lon).commit();
+				updateSensorsList(true);
 			}
 		});
 	}
@@ -476,16 +494,19 @@ public class MainActivity extends SherlockFragmentActivity implements
 	 */
 	@Override
 	public void onLocationResult(boolean ok, String addr, Float lat, Float lng) {
-		Log.d(TAG, "on location Result: " + addr);
+//		Log.d(TAG, "on location Result (server answer): " + addr);
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		// if use gps save address
-		if (ok && pref.getBoolean(getString(R.string.pref_key_use_geocode),false)) {
+		if (ok && !pref.getBoolean(getString(R.string.pref_key_use_geocode),false)) {
+			Log.d(TAG,"on location result: we use gps, so sawe address string to shared pref: " + addr);
 			pref.edit().putString(getString(R.string.pref_key_geoloc), addr).commit();
-			Toast.makeText(getApplicationContext(), addr, Toast.LENGTH_SHORT);
+//			Toast.makeText(getApplicationContext(), addr, Toast.LENGTH_SHORT);
 		} else if (ok) { // if use address, save coordinates and set it to api
+			Log.d(TAG,"on location result: we use addres, so save coordinates to shared pref: " + lat + ", "+ lng);
 			pref.edit().putFloat("lat",lat).putFloat("lng",lng).commit();
 			narodmonApi.setLocation(lat, lng);
 		}
+		updateSensorsList(true);
 	}
 
 	@Override

@@ -59,7 +59,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         try {
             HttpPost httpPost = new HttpPost(uri);
             httpPost.setEntity(new StringEntity(json));
-	        Log.d(TAG,json);
+//	        Log.d(TAG,json);
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             return new DefaultHttpClient().execute(httpPost);
@@ -76,10 +76,10 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... uri) {
-        Log.d(TAG,"doInBackground");
+//        Log.d(TAG,"doInBackground");
         String responseString = null;
         try {
-            Log.d(TAG, uri[0] + ":" + uri[1]);
+//            Log.d(TAG, uri[0] + ":" + uri[1]);
             HttpResponse r = makeRequest(uri[0],uri[1]);
             if (r == null) {
                 Log.e(TAG,"HttpResponse is null");
@@ -88,7 +88,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
             InputStream in = r.getEntity().getContent();
             responseString = inputStreamToString(in);
             if (asyncCallback!=null && !isCancelled()) {
-                Log.d(TAG,"call asyncJob");
+//                Log.d(TAG,"call asyncJob");
                 if (!asyncCallback.asyncJobWithResult(responseString)) {
                     asyncJobFail = true;
                 }
@@ -108,14 +108,14 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        Log.d(TAG,"---------getter finished------");
+//        Log.d(TAG,"---------getter finished------");
         //Log.d(TAG,"result: " + result);
         if (isCancelled()) {
-            Log.d(TAG,"task was cancelled");
+            Log.w(TAG,"task was cancelled");
             return;
         }
         if ((result == null)||(asyncJobFail)) {
-            Log.e(TAG,"asyncJob report about fail, so finished with NoResult");
+//            Log.e(TAG,"asyncJob report about fail, so finished with NoResult");
             listener.onNoResult();
         } else {
             listener.onResultReceived(result);

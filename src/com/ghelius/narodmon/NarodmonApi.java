@@ -30,7 +30,7 @@ public class NarodmonApi {
     private String apiHeader;
 
 	public void setLocation(Float lat, Float lng) {
-		Log.d(TAG,"got new location " + lat +" " + lng);
+		Log.d(TAG,"set new location to Api " + lat +" " + lng);
 		listUpdater.setLocation (lat, lng);
 	}
 
