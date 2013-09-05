@@ -41,9 +41,12 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
 				RemoteViews views = new RemoteViews(getApplicationContext().getPackageName(),R.layout.widget_layout);
-
+				String name = ((EditText)findViewById(R.id.editName)).getText().toString();
+				if (name.isEmpty()) {
+						name = adapter.getItem(position).name;
+				}
 				// set up widget icon and name
-				views.setTextViewText(R.id.name, ((EditText)findViewById(R.id.editName)).getText().toString());
+				views.setTextViewText(R.id.name, name);
 				views.setImageViewBitmap(R.id.imageView,((BitmapDrawable)SensorTypeProvider.getInstance(getApplicationContext()).getIcon(adapter.getItem(position).type)).getBitmap());
 				views.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(getApplicationContext()).getUnitForType(adapter.getItem(position).type));
 
@@ -56,7 +59,7 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 //				appWidgetManager.updateAppWidget(mAppWidgetId, views);
 
 				// save to db
-				dbh.addWidget(new Widget(mAppWidgetId, adapter.getItem(position).id, ((EditText) findViewById(R.id.editName)).getText().toString(), adapter.getItem(position).type));
+				dbh.addWidget(new Widget(mAppWidgetId, adapter.getItem(position).id, name, adapter.getItem(position).type));
 				dbh.close();
 
 				// start watch service for update data
