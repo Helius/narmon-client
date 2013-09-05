@@ -674,7 +674,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 			public void run() {
 				gpsTimerHandler.sendEmptyMessage(0);
 			}
-		}, 0, gpsUpdateIntervalMs); // update gps data timeout 10 min
+		}, gpsUpdateIntervalMs, gpsUpdateIntervalMs); // update gps data timeout 10 min
 
 	}
 
