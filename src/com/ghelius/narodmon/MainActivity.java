@@ -35,7 +35,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private CheckedListItemAdapter typeAdapter;
 	private int prevScreen = 1;
 	private long lastUpdateTime;
-	private final static int gpsUpdateIntervalMs = 10*60*1000; // time interval for update coordinates and sensor list
+	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for update coordinates and sensor list
 
 	@Override
 	public boolean isItemChecked(int position) {
@@ -111,7 +111,6 @@ public class MainActivity extends SherlockFragmentActivity implements
 		Log.d(TAG, "onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis()-lastUpdateTime));
 		listAdapter.notifyDataSetChanged();
 
-		initLocationUpdater();
 		updateSensorsList(false);
 
 		startUpdateTimer();
@@ -125,6 +124,10 @@ public class MainActivity extends SherlockFragmentActivity implements
 			getSupportActionBar().setSelectedNavigationItem(1);
 		}
 		showProgress = true;
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		if (!pref.getBoolean(getString(R.string.pref_key_use_geocode),false)) {
+			startGpsTimer();
+		}
 	}
 
 	@Override
@@ -132,8 +135,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 		Log.i(TAG, "onDestroy");
 		uiFlags.save(this);
 		stopUpdateTimer();
-		stopGpsTimer();
 		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+		stopGpsTimer();
 		super.onDestroy();
 	}
 
@@ -294,6 +297,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 				listAdapter.update();
 			}
 		});
+		initLocationUpdater();
 	}
 
 	// init filter ui from uiFlags
