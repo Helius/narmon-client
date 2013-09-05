@@ -3,10 +3,13 @@ package com.ghelius.narodmon;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Vibrator;
 import android.util.Log;
+import android.widget.RemoteViews;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +22,7 @@ public class WatchService extends WakefulIntentService {
     private int NOTIFICATION = R.string.local_service_started;
     private ArrayList<Integer> ids;
     SensorDataUpdater updater;
+	DatabaseHandler dbh = null;
 
     public WatchService() {
         super("Narodmon watcher");
@@ -80,17 +84,54 @@ public class WatchService extends WakefulIntentService {
 
         @Override
         public void onResultReceived(String result) {
+	        RemoteViews remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
+	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
             getter = null;
             if (result != null) {
                 try {
                     JSONObject JObject = new JSONObject(result);
                     JSONArray sensArray = JObject.getJSONArray("sensors");
                     for (int i = 0; i < sensArray.length(); i++) {
-                        String id = sensArray.getJSONObject(i).getString("id");
+                        int id = Integer.valueOf(sensArray.getJSONObject(i).getString("id"));
                         String value = sensArray.getJSONObject(i).getString("value");
                         String time = sensArray.getJSONObject(i).getString("time");
                         Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
-                        checkLimits(Integer.valueOf(id), Float.valueOf(value), Long.valueOf(time));
+
+                        // check limits for watched item
+	                    if (ConfigHolder.getInstance(getApplicationContext()).isSensorWatched(id))
+	                        checkLimits(id, Float.valueOf(value), Long.valueOf(time));
+
+	                    // update widgets for with sensor
+	                    Log.d(TAG,"check sensor is widget:" + id);
+	                    ArrayList<Widget> widgets = dbh.getWidgetsBySensorId(id);
+	                    for (Widget w: widgets) {
+		                    Log.d(TAG,"sensor is widget, update: " + w.screenName);
+		                    remoteViews.setTextViewText(R.id.value, value);
+		                    remoteViews.setTextViewText(R.id.name, w.screenName);
+		                    remoteViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(getApplicationContext()).getIcon(w.type)).getBitmap());
+		                    remoteViews.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(getApplicationContext()).getUnitForType(w.type));
+		                    if (w.lastValue > Float.valueOf(value)) {
+			                    remoteViews.setTextViewText(R.id.arrowDown, "↓");
+			                    remoteViews.setTextViewText(R.id.arrowUp, "");
+		                    } else if (w.lastValue < Float.valueOf(value)) {
+			                    remoteViews.setTextViewText(R.id.arrowDown, "");
+			                    remoteViews.setTextViewText(R.id.arrowUp, "↑");
+		                    } else {
+//				                    remoteViews.setTextViewText(R.id.arrowDown, "");
+//				                    remoteViews.setTextViewText(R.id.arrowUp, "");
+		                    }
+		                    // When we click the widget, we want to open our main activity.
+		                    Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
+		                    launchActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		                    launchActivity.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		                    launchActivity.putExtra("sensorId",id);
+		                    Log.d(TAG,"update widget click intent sensor ID: " + id);
+		                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), w.widgetId, launchActivity, 0);
+		                    remoteViews.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
+		                    appWidgetManager.updateAppWidget(w.widgetId, remoteViews);
+		                    dbh.updateLastValueByWidgetId(w.widgetId, value);
+
+	                    }
 
                     }
                 } catch (JSONException e) {
@@ -108,15 +149,21 @@ public class WatchService extends WakefulIntentService {
 
     @Override
     protected void doWakefulWork(Intent intent) {
+	    if (dbh == null)
+	        dbh = new DatabaseHandler(getApplicationContext());
         Log.d(TAG,"nmWatcher work...");
         Configuration config = ConfigHolder.getInstance(this).getConfig();
-        //Log.d(TAG,"config size: "+ config.watchedId.size());
+	    ArrayList<Widget> widgetsList = (ArrayList<Widget>) dbh.getAllWidgets();
+	    Log.d(TAG,"widget size: "+ widgetsList.size());
         updater = new SensorDataUpdater();
         Log.d(TAG, "start update");
         ids.clear();
         for (int i = 0; i < config.watchedId.size(); i++) {
             ids.add(config.watchedId.get(i).id);
         }
+	    for (int i = 0; i < widgetsList.size(); i++) {
+		    ids.add(widgetsList.get(i).sensorId);
+	    }
         if (!ids.isEmpty()) {
             Log.d(TAG, "start watched with " + ids.size() + " sensors");
             updater.updateData(ids);

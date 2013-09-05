@@ -22,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -36,18 +38,59 @@ public class SensorInfo extends SherlockFragmentActivity {
     private int id;
     private LogPeriod oldPeriod;
 
+
+
+
+	ArrayList<Sensor> getSavedList () {
+		final String fileName = "sensorList.obj";
+		ArrayList<Sensor> sensorList = new ArrayList<Sensor>();
+//		Log.d(TAG, "------restore list start-------");
+		FileInputStream fis;
+		try {
+			fis = getApplicationContext().openFileInput(fileName);
+			ObjectInputStream is = new ObjectInputStream(fis);
+			sensorList.addAll((ArrayList<Sensor>) is.readObject());
+			is.close();
+			fis.close();
+			for (Sensor aSensorList : sensorList) aSensorList.value = "--";
+//			Log.d(TAG,"------restored list end------- " + sensorList.size());
+		} catch (Exception e) {
+			Log.e(TAG,"Can't read sensorList: " + e.getMessage());
+		}
+		return sensorList;
+	}
+
     public void onCreate(Bundle savedInstanceState) {
 	    setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sensorinfo);
         final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
         Bundle extras = getIntent().getExtras();
-        if (extras == null)
+        if (extras == null) {
             finish();
-
+	        return;
+        }
         logGetter = new SensorLogGetter();
 
-        final Sensor sensor = (Sensor)extras.getSerializable("Sensor");
+        Sensor tmp_sensor = (Sensor)extras.getSerializable("Sensor");
+	    if (tmp_sensor == null) {
+		    Log.d(TAG,"extra don't contain sensor, try get ID");
+		    int sensorId = extras.getInt("sensorId", -1);
+		    if (sensorId != -1) {
+			    Log.d(TAG,"id is " + sensorId);
+			    ArrayList<Sensor> sList = getSavedList();
+			    for (Sensor s: sList) {
+				    if (s.id == sensorId) {
+					    tmp_sensor = s;
+				    }
+			    }
+		    } else {
+			    Log.e(TAG,"extra don't contain ID or ID not found, so return");
+			    finish();
+			    return;
+		    }
+	    }
+	    final Sensor sensor = tmp_sensor;
         id = sensor.id;
         TextView name = (TextView) findViewById(R.id.text_name);
         TextView location = (TextView) findViewById(R.id.text_location);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">People\&apos;s monitoring</string>
+    <string name="app_name">Public monitoring</string>
     <string name="type_termometr">Temperature</string>
     <string name="type_pressure">Pressure</string>
     <string name="type_humidity">Humidity</string>
@@ -44,7 +44,7 @@
     <string name="pref_key_use_geocode">pref_key_use_geoloc</string>
     <string name="text_dont_use_navig_summary">Use address string below instead navigation</string>
     <string name="text_dont_use_navigation_checkbox">Don\'t use gps location</string>
-    <string name="app_version_name">2.5</string>
+    <string name="app_version_name">2.60</string>
     <string name="text_notify_more_than">more than</string>
     <string name="text_notify_less_than">less than</string>
     <string name="text_notify_within">within</string>
@@ -100,4 +100,6 @@
     </string>
     <string name="empty_my_list">There is no Your sensors. Connect your sensor to http://narodmon.ru and do login.
     </string>
+    <string name="select_sensor_text">Select sensor</string>
+    <string name="enter_widget_name_text">Enter widget name:</string>
 </resources>
