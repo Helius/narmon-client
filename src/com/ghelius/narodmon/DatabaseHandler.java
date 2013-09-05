@@ -24,6 +24,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_WIDGET_ID = "widget_id";
 	private static final String KEY_SENSOR_ID = "sensor_id";
 	private static final String KEY_NAME = "name";
+	private static final String KEY_TYPE = "type";
+	private static final String KEY_LAST_VALUE = "last_value";
 
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,8 +37,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		Log.d(TAG,"on create");
 		String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_WIDGETS + "("
-				+ KEY_WIDGET_ID + " INTEGER," + KEY_SENSOR_ID + " INTEGER,"
-				+ KEY_NAME + " TEXT" + ")";
+				+ KEY_WIDGET_ID + " INTEGER,"
+				+ KEY_SENSOR_ID + " INTEGER,"
+				+ KEY_NAME + " TEXT,"
+				+ KEY_TYPE + " INTEGER,"
+				+ KEY_LAST_VALUE + " TEXT"
+				+ ")";
 		db.execSQL(CREATE_CONTACTS_TABLE);
 		db.enableWriteAheadLogging();
 	}
@@ -58,13 +64,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Adding new contact
 	void addWidget(Widget widget) {
-		Log.d(TAG, "added widget: " + widget.widgetId + ", " + widget.sensorId + ", " + widget.screenName);
+		Log.d(TAG, "added widget: " + widget.widgetId + ", " + widget.sensorId + ", " + widget.screenName + ", " + widget.type);
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
 		values.put(KEY_WIDGET_ID, widget.widgetId);
 		values.put(KEY_SENSOR_ID, widget.sensorId);
 		values.put(KEY_NAME, widget.screenName);
+		values.put(KEY_TYPE, widget.type);
 
 		// Inserting Row
 		db.insert(TABLE_WIDGETS, null, values);
@@ -72,22 +79,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	// Getting single contact
-	Widget getWidgetBySensorId(int id) {
+	ArrayList<Widget> getWidgetsBySensorId(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		Cursor cursor = db.query(TABLE_WIDGETS, new String[] { KEY_WIDGET_ID,
-				KEY_SENSOR_ID, KEY_NAME }, KEY_SENSOR_ID + "=?",
+				KEY_SENSOR_ID, KEY_NAME, KEY_TYPE, KEY_LAST_VALUE }, KEY_SENSOR_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
-		Widget widget = new Widget();
+		ArrayList<Widget> widgets = new ArrayList<Widget>();
 		if (cursor != null) {
 			cursor.moveToFirst();
 			if (cursor.getCount() != 0)
-				widget = new Widget(Integer.parseInt(cursor.getString(0)),Integer.parseInt(cursor.getString(1)), cursor.getString(2));
+				do {
+					widgets.add (new Widget(Integer.parseInt(cursor.getString(0)),Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3), cursor.getString(4)));
+				} while (cursor.moveToNext());
 			cursor.close();
 		}
 		db.close();
-		Log.d(TAG, "return widget by id: " + widget.widgetId + ", " + widget.sensorId + ", " + widget.screenName);
-		return widget;
+		return widgets;
 	}
 
 	// Getting All Widget
@@ -103,7 +111,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		if (cursor != null && cursor.getCount()!= 0 && cursor.moveToFirst()) {
 			do {
 				// Adding widgets to list
-				widgetList.add(new Widget(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2)));
+				widgetList.add(new Widget(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3)));
 			} while (cursor.moveToNext());
 			cursor.close();
 		}
@@ -149,4 +157,46 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				new String[] { String.valueOf(w) });
 		db.close();
 	}
+
+	public Widget getWidgetByWidgetId(int wID) {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		Cursor cursor = db.query(TABLE_WIDGETS, new String[] { KEY_WIDGET_ID,
+				KEY_SENSOR_ID, KEY_NAME, KEY_TYPE }, KEY_WIDGET_ID + "=?",
+				new String[] { String.valueOf(wID) }, null, null, null, null);
+		Widget widget = new Widget();
+		if (cursor != null) {
+			cursor.moveToFirst();
+			if (cursor.getCount() != 0)
+				do {
+					widget = new Widget(Integer.parseInt(cursor.getString(0)),Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3));
+				} while (cursor.moveToNext());
+			cursor.close();
+		}
+		db.close();
+		return widget;
+	}
+
+	//	public int updateWidget(Contact contact) {
+//		SQLiteDatabase db = this.getWritableDatabase();
+//
+//		ContentValues values = new ContentValues();
+//		values.put(KEY_NAME, contact.getName());
+//		values.put(KEY_PH_NO, contact.getPhoneNumber());
+//
+//		// updating row
+//		return db.update(TABLE_WIDGETS, values, KEY_ID + " = ?",
+//				new String[] { String.valueOf(contact.getID()) });
+//	}
+	public void updateLastValueByWidgetId(int widgetId, String value) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_LAST_VALUE, value);
+
+		// updating row
+		db.update(TABLE_WIDGETS, values, KEY_WIDGET_ID + " = ?", new String[] { String.valueOf(widgetId) });
+		db.close();
+	}
 }
+

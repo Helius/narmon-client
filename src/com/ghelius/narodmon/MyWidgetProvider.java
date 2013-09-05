@@ -1,52 +1,38 @@
 package com.ghelius.narodmon;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
+import android.widget.RemoteViews;
+import com.commonsware.cwac.wakeful.WakefulIntentService;
 
 public class MyWidgetProvider extends AppWidgetProvider {
 
 	private static final String LOG = "narodmon-widgetProvider";
-	private PendingIntent service = null;
 
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 	                     int[] appWidgetIds) {
-
+		DatabaseHandler dbh = new DatabaseHandler(context);
 		Log.w(LOG, "onUpdate method called");
 		// Get all ids
 		ComponentName thisWidget = new ComponentName(context,
 				MyWidgetProvider.class);
 		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
-
-		// Build the intent to call the service
-		Intent intent = new Intent(context.getApplicationContext(),
-				WatchService.class);
-		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
-
-		// Update the widgets via the service
-		context.startService(intent);
-
-//		final AlarmManager m = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-//
-//		final Calendar TIME = Calendar.getInstance();
-//		TIME.set(Calendar.MINUTE, 0);
-//		TIME.set(Calendar.SECOND, 0);
-//		TIME.set(Calendar.MILLISECOND, 0);
-//
-//		final Intent i = new Intent(context, UpdateWidgetService.class);
-//		i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, allWidgetIds);
-//
-//		if (service == null)
-//		{
-//			service = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-//		}
-//
-//		m.setRepeating(AlarmManager.RTC, TIME.getTime().getTime(), 1000 * 20, service);
+		AppWidgetManager manager = AppWidgetManager.getInstance(context);
+		RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+		for (int wID : allWidgetIds) {
+			Widget widget = dbh.getWidgetByWidgetId(wID);
+			updateViews.setTextViewText(R.id.name, widget.screenName);
+			updateViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(context).getIcon(widget.type)).getBitmap());
+			manager.updateAppWidget(thisWidget, updateViews);
+			// start data update service
+			WakefulIntentService.sendWakefulWork(context, WatchService.class);
+		}
+		dbh.close();
 	}
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
@@ -56,10 +42,5 @@ public class MyWidgetProvider extends AppWidgetProvider {
 		dbh.close();
 	}
 //	@Override
-//	public void onDisabled(Context context)
-//	{
-//		final AlarmManager m = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-//
-//		m.cancel(service);
-//	}
+//	public void onDisabled(Context context)	{}
 }

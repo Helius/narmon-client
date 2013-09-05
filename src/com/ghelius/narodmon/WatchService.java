@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Vibrator;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -95,20 +96,35 @@ public class WatchService extends WakefulIntentService {
                         String value = sensArray.getJSONObject(i).getString("value");
                         String time = sensArray.getJSONObject(i).getString("time");
                         Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
+
                         // check limits for watched item
 	                    if (ConfigHolder.getInstance(getApplicationContext()).isSensorWatched(id))
 	                        checkLimits(id, Float.valueOf(value), Long.valueOf(time));
-	                    // update widgets
-	                    //TODO: we must check all widgets for this sensor id (just return widgets[] from db)
-	                    Log.d(TAG,"check sensor is widget:" + id);
-	                    Widget widget = dbh.getWidgetBySensorId(id);
-	                    if (widget.sensorId != -1) {
-		                    Log.d(TAG,"sensor is widget, update: " + widget.screenName);
 
-		                    remoteViews.setTextViewText(R.id.value, value);
-//		                    remoteViews.setTextViewText(R.id.name, widget.screenName);
-		                    appWidgetManager.updateAppWidget(widget.widgetId, remoteViews);
+	                    // update widgets for with sensor
+	                    Log.d(TAG,"check sensor is widget:" + id);
+	                    ArrayList<Widget> widgets = dbh.getWidgetsBySensorId(id);
+	                    for (Widget w: widgets) {
+		                    if (w.sensorId != -1) {
+			                    Log.d(TAG,"sensor is widget, update: " + w.screenName);
+			                    remoteViews.setTextViewText(R.id.value, value);
+			                    remoteViews.setTextViewText(R.id.name, w.screenName);
+			                    remoteViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(getApplicationContext()).getIcon(w.type)).getBitmap());
+			                    if (w.lastValue > Float.valueOf(value)) {
+									remoteViews.setTextViewText(R.id.arrowDown, "↓");
+				                    remoteViews.setTextViewText(R.id.arrowUp, "");
+			                    } else if (w.lastValue < Float.valueOf(value)) {
+				                    remoteViews.setTextViewText(R.id.arrowDown, "");
+				                    remoteViews.setTextViewText(R.id.arrowUp, "↑");
+			                    } else {
+				                    remoteViews.setTextViewText(R.id.arrowDown, "");
+				                    remoteViews.setTextViewText(R.id.arrowUp, "");
+			                    }
+			                    appWidgetManager.updateAppWidget(w.widgetId, remoteViews);
+			                    dbh.updateLastValueByWidgetId(w.widgetId, value);
+		                    }
 	                    }
+
                     }
                 } catch (JSONException e) {
                     Log.e(TAG,"Wrong JSON");

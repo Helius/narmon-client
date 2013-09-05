@@ -54,7 +54,7 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 				appWidgetManager.updateAppWidget(mAppWidgetId, views);
 
 				// save to db
-				dbh.addWidget(new Widget(mAppWidgetId, adapter.getItem(position).id, ((EditText) findViewById(R.id.editName)).getText().toString()));
+				dbh.addWidget(new Widget(mAppWidgetId, adapter.getItem(position).id, ((EditText) findViewById(R.id.editName)).getText().toString(), adapter.getItem(position).type));
 				dbh.close();
 
 				// start watch service for update data
