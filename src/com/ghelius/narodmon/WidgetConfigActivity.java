@@ -1,6 +1,5 @@
 package com.ghelius.narodmon;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
@@ -32,6 +31,7 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 		Intent intent = getIntent();
 		ListView list = (ListView) findViewById(R.id.listView);
 		adapter = new SensorItemAdapter(getApplicationContext(), getSavedList());
+		adapter.hideValue(true);
 		adapter.update();
 		dbh = new DatabaseHandler(getApplicationContext());
 
@@ -45,13 +45,15 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 				// set up widget icon and name
 				views.setTextViewText(R.id.name, ((EditText)findViewById(R.id.editName)).getText().toString());
 				views.setImageViewBitmap(R.id.imageView,((BitmapDrawable)SensorTypeProvider.getInstance(getApplicationContext()).getIcon(adapter.getItem(position).type)).getBitmap());
+				views.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(getApplicationContext()).getUnitForType(adapter.getItem(position).type));
 
-				// When we click the widget, we want to open our main activity.
-				Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
-				launchActivity.putExtra("widgetId", mAppWidgetId);
-				PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, launchActivity, 0);
-				views.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
-				appWidgetManager.updateAppWidget(mAppWidgetId, views);
+				/* did it in watchService in updating */
+//				// When we click the widget, we want to open our main activity.
+//				Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
+//				launchActivity.putExtra("sensorId", adapter.getItem(position).id);
+//				PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, launchActivity, 0);
+//				views.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
+//				appWidgetManager.updateAppWidget(mAppWidgetId, views);
 
 				// save to db
 				dbh.addWidget(new Widget(mAppWidgetId, adapter.getItem(position).id, ((EditText) findViewById(R.id.editName)).getText().toString(), adapter.getItem(position).type));

@@ -105,24 +105,32 @@ public class WatchService extends WakefulIntentService {
 	                    Log.d(TAG,"check sensor is widget:" + id);
 	                    ArrayList<Widget> widgets = dbh.getWidgetsBySensorId(id);
 	                    for (Widget w: widgets) {
-		                    if (w.sensorId != -1) {
-			                    Log.d(TAG,"sensor is widget, update: " + w.screenName);
-			                    remoteViews.setTextViewText(R.id.value, value);
-			                    remoteViews.setTextViewText(R.id.name, w.screenName);
-			                    remoteViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(getApplicationContext()).getIcon(w.type)).getBitmap());
-			                    if (w.lastValue > Float.valueOf(value)) {
-									remoteViews.setTextViewText(R.id.arrowDown, "↓");
-				                    remoteViews.setTextViewText(R.id.arrowUp, "");
-			                    } else if (w.lastValue < Float.valueOf(value)) {
-				                    remoteViews.setTextViewText(R.id.arrowDown, "");
-				                    remoteViews.setTextViewText(R.id.arrowUp, "↑");
-			                    } else {
-				                    remoteViews.setTextViewText(R.id.arrowDown, "");
-				                    remoteViews.setTextViewText(R.id.arrowUp, "");
-			                    }
-			                    appWidgetManager.updateAppWidget(w.widgetId, remoteViews);
-			                    dbh.updateLastValueByWidgetId(w.widgetId, value);
+		                    Log.d(TAG,"sensor is widget, update: " + w.screenName);
+		                    remoteViews.setTextViewText(R.id.value, value);
+		                    remoteViews.setTextViewText(R.id.name, w.screenName);
+		                    remoteViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(getApplicationContext()).getIcon(w.type)).getBitmap());
+		                    remoteViews.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(getApplicationContext()).getUnitForType(w.type));
+		                    if (w.lastValue > Float.valueOf(value)) {
+			                    remoteViews.setTextViewText(R.id.arrowDown, "↓");
+			                    remoteViews.setTextViewText(R.id.arrowUp, "");
+		                    } else if (w.lastValue < Float.valueOf(value)) {
+			                    remoteViews.setTextViewText(R.id.arrowDown, "");
+			                    remoteViews.setTextViewText(R.id.arrowUp, "↑");
+		                    } else {
+//				                    remoteViews.setTextViewText(R.id.arrowDown, "");
+//				                    remoteViews.setTextViewText(R.id.arrowUp, "");
 		                    }
+		                    // When we click the widget, we want to open our main activity.
+		                    Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
+		                    launchActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		                    launchActivity.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		                    launchActivity.putExtra("sensorId",id);
+		                    Log.d(TAG,"update widget click intent sensor ID: " + id);
+		                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), w.widgetId, launchActivity, 0);
+		                    remoteViews.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
+		                    appWidgetManager.updateAppWidget(w.widgetId, remoteViews);
+		                    dbh.updateLastValueByWidgetId(w.widgetId, value);
+
 	                    }
 
                     }

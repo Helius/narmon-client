@@ -27,6 +27,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     private static final String TAG = "narodmon-adapter";
     ConfigHolder config;
     private UiFlags uiFlags;
+	private boolean hideValue = false;
 
     public SensorItemAdapter(Context context, ArrayList<Sensor> values) {
         super(context, R.layout.sensor_list_item);
@@ -40,6 +41,10 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     public void setUiFlags(UiFlags uiFlags) {
         this.uiFlags = uiFlags;
     }
+
+	public void hideValue (boolean hide) {
+		hideValue = hide;
+	}
 
     public void update() {
         getFilter().filter("");
@@ -161,7 +166,10 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			Sensor sensor = localItems.get(position);
 			holder.name.setText(sensor.name);
 			holder.location.setText(sensor.location);
-			holder.value.setText(sensor.value);
+			if (hideValue)
+				holder.value.setText("");
+			else
+				holder.value.setText(sensor.value);
 
 			if (config.isSensorWatched(sensor.id)) {
 				holder.value.setTypeface(null, Typeface.BOLD);

@@ -28,6 +28,7 @@ public class MyWidgetProvider extends AppWidgetProvider {
 			Widget widget = dbh.getWidgetByWidgetId(wID);
 			updateViews.setTextViewText(R.id.name, widget.screenName);
 			updateViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(context).getIcon(widget.type)).getBitmap());
+			updateViews.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(context).getUnitForType(widget.type));
 			manager.updateAppWidget(thisWidget, updateViews);
 			// start data update service
 			WakefulIntentService.sendWakefulWork(context, WatchService.class);
