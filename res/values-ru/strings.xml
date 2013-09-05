@@ -96,4 +96,5 @@
     </string>
     <string name="select_sensor_text">Выберите датчик</string>
     <string name="enter_widget_name_text">Имя виджета:</string>
+    <string name="widget_label">Народный мониторинг</string>
 </resources>

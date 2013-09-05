@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.ghelius.narodmon"
-          android:versionCode="260"
+          android:versionCode="262"
           android:versionName="@string/app_version_name">
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="11"/>
@@ -26,7 +26,7 @@
         </receiver>
         <receiver
                 android:icon="@drawable/app_icon"
-                android:label="narodmon"
+                android:label="@string/widget_label"
                 android:name="MyWidgetProvider" >
             <intent-filter >
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

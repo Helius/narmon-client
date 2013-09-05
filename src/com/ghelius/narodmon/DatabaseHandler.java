@@ -44,7 +44,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_LAST_VALUE + " TEXT"
 				+ ")";
 		db.execSQL(CREATE_CONTACTS_TABLE);
-		db.enableWriteAheadLogging();
+//		db.enableWriteAheadLogging();
 	}
 
 	// Upgrading database
