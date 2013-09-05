@@ -44,7 +44,7 @@
     <string name="pref_key_use_geocode">pref_key_use_geoloc</string>
     <string name="text_dont_use_navig_summary">Use address string below instead navigation</string>
     <string name="text_dont_use_navigation_checkbox">Don\'t use gps location</string>
-    <string name="app_version_name">2.5</string>
+    <string name="app_version_name">2.60</string>
     <string name="text_notify_more_than">more than</string>
     <string name="text_notify_less_than">less than</string>
     <string name="text_notify_within">within</string>
