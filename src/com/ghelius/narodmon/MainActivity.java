@@ -7,10 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
+import android.os.*;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -36,6 +33,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private int prevScreen = 1;
 	private long lastUpdateTime;
 	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for update coordinates and sensor list
+//	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for update coordinates and sensor list
 
 	@Override
 	public boolean isItemChecked(int position) {
@@ -481,7 +479,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 				narodmonApi.setLocation((float)lat, (float)lon);
 				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 				pref.edit().putFloat("lat",(float)lat).putFloat("lng",(float)lon).commit();
-				updateSensorsList(true);
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						updateSensorsList(true);
+					}
+				});
 			}
 		});
 	}
