@@ -27,6 +27,8 @@ public class Widget {
 		this.sensorId = sensorId;
 		this.screenName = screenName;
 		this.type = type;
+		this.curValue = 0;
+		this.lastValue = 0;
 	}
 
 	Widget(int widgetId, int sensorId, String screenName, int type, String lastValue, String curValue) {

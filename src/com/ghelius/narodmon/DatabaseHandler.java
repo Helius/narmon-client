@@ -13,7 +13,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// All Static variables
 	private final static String TAG = "narodmon-dbh";
 	// Database Version
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 5;
 	// Database Name
 	private static final String DATABASE_NAME = "miscDataBase";
 	// Widgets table name
@@ -52,11 +52,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.d(TAG,"on upgrade");
-		// Drop older table if existed
+		ArrayList<Widget> widgets = new ArrayList<Widget>();
+		// get all widgets
+		String selectQuery = "SELECT  * FROM " + TABLE_WIDGETS;
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		// looping through all rows and adding to list
+		if (cursor != null && cursor.getCount()!= 0 && cursor.moveToFirst()) {
+			do {
+				// Adding widgets to list
+				widgets.add(new Widget(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3)));
+			} while (cursor.moveToNext());
+			cursor.close();
+		}
+		// drop old table
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WIDGETS);
-
 		// Create tables again
 		onCreate(db);
+		// fill with data
+		for (Widget w: widgets) {
+			ContentValues values = new ContentValues();
+			values.put(KEY_WIDGET_ID, w.widgetId);
+			values.put(KEY_SENSOR_ID, w.sensorId);
+			values.put(KEY_NAME, w.screenName);
+			values.put(KEY_TYPE, w.type);
+
+			// Inserting Row
+			db.insert(TABLE_WIDGETS, null, values);
+		}
 	}
 
 	/**
