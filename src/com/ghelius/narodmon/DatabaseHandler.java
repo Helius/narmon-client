@@ -8,13 +8,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 	// All Static variables
 	private final static String TAG = "narodmon-dbh";
 	// Database Version
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 5;
 	// Database Name
 	private static final String DATABASE_NAME = "miscDataBase";
 	// Widgets table name
@@ -26,6 +25,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_NAME = "name";
 	private static final String KEY_TYPE = "type";
 	private static final String KEY_LAST_VALUE = "last_value";
+	private static final String KEY_CUR_VALUE = "cur_value";
 
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,7 +41,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_SENSOR_ID + " INTEGER,"
 				+ KEY_NAME + " TEXT,"
 				+ KEY_TYPE + " INTEGER,"
-				+ KEY_LAST_VALUE + " TEXT"
+				+ KEY_LAST_VALUE + " TEXT, "
+				+ KEY_CUR_VALUE + " TEXT"
 				+ ")";
 		db.execSQL(CREATE_CONTACTS_TABLE);
 //		db.enableWriteAheadLogging();
@@ -51,11 +52,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.d(TAG,"on upgrade");
-		// Drop older table if existed
+		ArrayList<Widget> widgets = new ArrayList<Widget>();
+		// get all widgets
+		String selectQuery = "SELECT  * FROM " + TABLE_WIDGETS;
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		// looping through all rows and adding to list
+		if (cursor != null && cursor.getCount()!= 0 && cursor.moveToFirst()) {
+			do {
+				// Adding widgets to list
+				widgets.add(new Widget(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3)));
+			} while (cursor.moveToNext());
+			cursor.close();
+		}
+		// drop old table
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WIDGETS);
-
 		// Create tables again
 		onCreate(db);
+		// fill with data
+		for (Widget w: widgets) {
+			ContentValues values = new ContentValues();
+			values.put(KEY_WIDGET_ID, w.widgetId);
+			values.put(KEY_SENSOR_ID, w.sensorId);
+			values.put(KEY_NAME, w.screenName);
+			values.put(KEY_TYPE, w.type);
+
+			// Inserting Row
+			db.insert(TABLE_WIDGETS, null, values);
+		}
 	}
 
 	/**
@@ -82,15 +105,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	ArrayList<Widget> getWidgetsBySensorId(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
-		Cursor cursor = db.query(TABLE_WIDGETS, new String[] { KEY_WIDGET_ID,
-				KEY_SENSOR_ID, KEY_NAME, KEY_TYPE, KEY_LAST_VALUE }, KEY_SENSOR_ID + "=?",
+		Cursor cursor = db.query(TABLE_WIDGETS, new String[] { KEY_WIDGET_ID, KEY_SENSOR_ID, KEY_NAME, KEY_TYPE, KEY_LAST_VALUE, KEY_CUR_VALUE },
+				KEY_SENSOR_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		ArrayList<Widget> widgets = new ArrayList<Widget>();
 		if (cursor != null) {
 			cursor.moveToFirst();
 			if (cursor.getCount() != 0)
 				do {
-					widgets.add (new Widget(Integer.parseInt(cursor.getString(0)),Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3), cursor.getString(4)));
+					widgets.add (new Widget(Integer.parseInt(cursor.getString(0)),Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3), cursor.getString(4), cursor.getString(5)));
 				} while (cursor.moveToNext());
 			cursor.close();
 		}
@@ -99,8 +122,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	// Getting All Widget
-	public List<Widget> getAllWidgets() {
-		List<Widget> widgetList = new ArrayList<Widget>();
+	public ArrayList<Widget> getAllWidgets() {
+		ArrayList<Widget> widgetList = new ArrayList<Widget>();
 		// Select All Query
 		String selectQuery = "SELECT  * FROM " + TABLE_WIDGETS;
 
@@ -111,7 +134,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		if (cursor != null && cursor.getCount()!= 0 && cursor.moveToFirst()) {
 			do {
 				// Adding widgets to list
-				widgetList.add(new Widget(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3)));
+				widgetList.add(new Widget(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3), cursor.getString(4), cursor.getString(5)));
 			} while (cursor.moveToNext());
 			cursor.close();
 		}
@@ -131,24 +154,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //				new String[] { String.valueOf(contact.getID()) });
 //	}
 
-	// Deleting single contact
-	public void deleteWidget(Widget widget) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete(TABLE_WIDGETS, KEY_WIDGET_ID + " = ?",
-				new String[] { String.valueOf(widget.widgetId) });
-		db.close();
-	}
-
-	// Getting widgetCount
-	public int getWidgetCount() {
-		String countQuery = "SELECT  * FROM " + TABLE_WIDGETS;
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery(countQuery, null);
-		int count = cursor.getCount();
-		cursor.close();
-		db.close();
-		return count;
-	}
+//
+//	// Getting widgetCount
+//	public int getWidgetCount() {
+//		String countQuery = "SELECT  * FROM " + TABLE_WIDGETS;
+//		SQLiteDatabase db = this.getReadableDatabase();
+//		Cursor cursor = db.rawQuery(countQuery, null);
+//		int count = cursor.getCount();
+//		cursor.close();
+//		db.close();
+//		return count;
+//	}
 
 	public void deleteWidgetByWidgetId(int w) {
 		Log.d(TAG, "widget with widgetId " + w + "was deleted");
@@ -158,24 +174,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public Widget getWidgetByWidgetId(int wID) {
-		SQLiteDatabase db = this.getReadableDatabase();
-
-		Cursor cursor = db.query(TABLE_WIDGETS, new String[] { KEY_WIDGET_ID,
-				KEY_SENSOR_ID, KEY_NAME, KEY_TYPE }, KEY_WIDGET_ID + "=?",
-				new String[] { String.valueOf(wID) }, null, null, null, null);
-		Widget widget = new Widget();
-		if (cursor != null) {
-			cursor.moveToFirst();
-			if (cursor.getCount() != 0)
-				do {
-					widget = new Widget(Integer.parseInt(cursor.getString(0)),Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3));
-				} while (cursor.moveToNext());
-			cursor.close();
-		}
-		db.close();
-		return widget;
-	}
+//	public Widget getWidgetByWidgetId(int wID) {
+//		SQLiteDatabase db = this.getReadableDatabase();
+//
+//		Cursor cursor = db.query(TABLE_WIDGETS, new String[] { KEY_WIDGET_ID,
+//				KEY_SENSOR_ID, KEY_NAME, KEY_TYPE }, KEY_WIDGET_ID + "=?",
+//				new String[] { String.valueOf(wID) }, null, null, null, null);
+//		Widget widget = new Widget();
+//		if (cursor != null) {
+//			cursor.moveToFirst();
+//			if (cursor.getCount() != 0)
+//				do {
+//					widget = new Widget(Integer.parseInt(cursor.getString(0)),Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3));
+//				} while (cursor.moveToNext());
+//			cursor.close();
+//		}
+//		db.close();
+//		return widget;
+//	}
 
 	//	public int updateWidget(Contact contact) {
 //		SQLiteDatabase db = this.getWritableDatabase();
@@ -188,14 +204,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //		return db.update(TABLE_WIDGETS, values, KEY_ID + " = ?",
 //				new String[] { String.valueOf(contact.getID()) });
 //	}
-	public void updateLastValueByWidgetId(int widgetId, String value) {
+	public void updateValueByWidgetId(Widget w) {
+//		Log.d(TAG,"for " + w.screenName + ", last " + w.lastValue + ", cur " + w.curValue);
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
-		values.put(KEY_LAST_VALUE, value);
+		values.put(KEY_LAST_VALUE, w.lastValue);
+		values.put(KEY_CUR_VALUE, w.curValue);
 
 		// updating row
-		db.update(TABLE_WIDGETS, values, KEY_WIDGET_ID + " = ?", new String[] { String.valueOf(widgetId) });
+		db.update(TABLE_WIDGETS, values, KEY_WIDGET_ID + " = ?", new String[] { String.valueOf(w.widgetId) });
 		db.close();
 	}
 }

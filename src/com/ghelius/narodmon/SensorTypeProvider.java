@@ -67,6 +67,22 @@ public class SensorTypeProvider {
     public void setTypesFromString (String res) {
 	    Log.d(TAG,"update types");
         parseString(res);
+
+	    try {
+		    FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
+		    OutputStreamWriter writer = new OutputStreamWriter(fos);
+		    BufferedWriter bufferedWriter = new BufferedWriter(writer);
+		    try {
+			    bufferedWriter.write(res);
+			    bufferedWriter.flush();
+			    bufferedWriter.close();
+		    } catch (IOException e) {
+			    Log.e(TAG,"Something wrong while write types dict");
+		    }
+
+	    } catch (FileNotFoundException e) {
+		    Log.e(TAG,"Can't open config file");
+	    }
     }
 
     public String getNameForType (int type) {

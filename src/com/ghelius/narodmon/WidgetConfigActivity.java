@@ -2,7 +2,6 @@ package com.ghelius.narodmon;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,22 +44,25 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 				if (name.isEmpty()) {
 						name = adapter.getItem(position).name;
 				}
+				Sensor sensor = adapter.getItem(position);
+
+				// save to db
+				dbh.addWidget(new Widget(mAppWidgetId, sensor.id, name, adapter.getItem(position).type));
+				dbh.close();
+
 				// set up widget icon and name
-				views.setTextViewText(R.id.name, name);
-				views.setImageViewBitmap(R.id.imageView,((BitmapDrawable)SensorTypeProvider.getInstance(getApplicationContext()).getIcon(adapter.getItem(position).type)).getBitmap());
-				views.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(getApplicationContext()).getUnitForType(adapter.getItem(position).type));
+//				views.setTextViewText(R.id.name, name);
+//				views.setImageViewBitmap(R.id.imageView,((BitmapDrawable)SensorTypeProvider.getInstance(getApplicationContext()).getIcon(sensor.type)).getBitmap());
+//				views.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(getApplicationContext()).getUnitForType(sensor.type));
+
 
 				/* did it in watchService in updating */
-//				// When we click the widget, we want to open our main activity.
+				// When we click the widget, we want to open our main activity.
 //				Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
 //				launchActivity.putExtra("sensorId", adapter.getItem(position).id);
 //				PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, launchActivity, 0);
 //				views.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
-//				appWidgetManager.updateAppWidget(mAppWidgetId, views);
-
-				// save to db
-				dbh.addWidget(new Widget(mAppWidgetId, adapter.getItem(position).id, name, adapter.getItem(position).type));
-				dbh.close();
+				appWidgetManager.updateAppWidget(mAppWidgetId, views);
 
 				// start watch service for update data
 				WakefulIntentService.sendWakefulWork(getApplicationContext(), WatchService.class);
