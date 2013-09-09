@@ -2,12 +2,9 @@ package com.ghelius.narodmon;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
+import android.content.Intent;
 import android.util.Log;
-import android.widget.RemoteViews;
-import com.commonsware.cwac.wakeful.WakefulIntentService;
 
 public class MyWidgetProvider extends AppWidgetProvider {
 
@@ -17,22 +14,12 @@ public class MyWidgetProvider extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 	                     int[] appWidgetIds) {
 		DatabaseHandler dbh = new DatabaseHandler(context);
-		Log.w(LOG, "onUpdate method called");
-		// Get all ids
-		ComponentName thisWidget = new ComponentName(context,
-				MyWidgetProvider.class);
-		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
-		AppWidgetManager manager = AppWidgetManager.getInstance(context);
-		RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-		for (int wID : allWidgetIds) {
-			Widget widget = dbh.getWidgetByWidgetId(wID);
-			updateViews.setTextViewText(R.id.name, widget.screenName);
-			updateViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(context).getIcon(widget.type)).getBitmap());
-			updateViews.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(context).getUnitForType(widget.type));
-			manager.updateAppWidget(thisWidget, updateViews);
-			// start data update service
-			WakefulIntentService.sendWakefulWork(context, WatchService.class);
-		}
+		Log.w(LOG, "onUpdate WidgetProvider's method called with " + appWidgetIds.length + "widgets");
+		// Build the intent to call the service
+		Intent intent = new Intent(context, UpdateWidgetService.class);
+		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new Integer[0]);
+		// Update the widgets via the service
+		context.startService(intent);
 		dbh.close();
 	}
 	@Override

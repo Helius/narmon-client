@@ -11,6 +11,7 @@ public class Widget {
 	int widgetId;
 	int sensorId;
 	int type;
+	float curValue;
 	float lastValue;
 
 	Widget() {
@@ -18,6 +19,7 @@ public class Widget {
 		widgetId = -1;
 		sensorId = -1;
 		lastValue = 0;
+		curValue = 0;
 		type = 0;
 	}
 	Widget(int widgetId, int sensorId, String screenName, int type) {
@@ -26,13 +28,19 @@ public class Widget {
 		this.screenName = screenName;
 		this.type = type;
 	}
-	Widget(int widgetId, int sensorId, String screenName, int type, String value) {
+
+	Widget(int widgetId, int sensorId, String screenName, int type, String lastValue, String curValue) {
 		this.widgetId = widgetId;
 		this.sensorId = sensorId;
 		this.screenName = screenName;
 		this.type = type;
 		try{
-			this.lastValue = Float.valueOf(value);
+			this.curValue = Float.valueOf(curValue);
+		} catch (Exception e) {
+			this.curValue = 0.f;
+		}
+		try{
+			this.lastValue = Float.valueOf(lastValue);
 		} catch (Exception e) {
 			this.lastValue = 0.f;
 		}

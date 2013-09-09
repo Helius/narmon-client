@@ -6,10 +6,8 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Vibrator;
 import android.util.Log;
-import android.widget.RemoteViews;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -84,9 +82,10 @@ public class WatchService extends WakefulIntentService {
 
         @Override
         public void onResultReceived(String result) {
-	        RemoteViews remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
-	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+//	        RemoteViews remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
+//	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
             getter = null;
+	        boolean widgetsFound = false;
             if (result != null) {
                 try {
                     JSONObject JObject = new JSONObject(result);
@@ -101,39 +100,24 @@ public class WatchService extends WakefulIntentService {
 	                    if (ConfigHolder.getInstance(getApplicationContext()).isSensorWatched(id))
 	                        checkLimits(id, Float.valueOf(value), Long.valueOf(time));
 
-	                    // update widgets for with sensor
+//	                    update widgets value
 	                    Log.d(TAG,"check sensor is widget:" + id);
 	                    ArrayList<Widget> widgets = dbh.getWidgetsBySensorId(id);
 	                    for (Widget w: widgets) {
-		                    Log.d(TAG,"sensor is widget, update: " + w.screenName);
-		                    remoteViews.setTextViewText(R.id.value, value);
-		                    remoteViews.setTextViewText(R.id.name, w.screenName);
-		                    remoteViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(getApplicationContext()).getIcon(w.type)).getBitmap());
-		                    remoteViews.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(getApplicationContext()).getUnitForType(w.type));
-		                    if (w.lastValue > Float.valueOf(value)) {
-			                    remoteViews.setTextViewText(R.id.arrowDown, "↓");
-			                    remoteViews.setTextViewText(R.id.arrowUp, "");
-		                    } else if (w.lastValue < Float.valueOf(value)) {
-			                    remoteViews.setTextViewText(R.id.arrowDown, "");
-			                    remoteViews.setTextViewText(R.id.arrowUp, "↑");
-		                    } else {
-//				                    remoteViews.setTextViewText(R.id.arrowDown, "");
-//				                    remoteViews.setTextViewText(R.id.arrowUp, "");
-		                    }
-		                    // When we click the widget, we want to open our main activity.
-		                    Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
-		                    launchActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		                    launchActivity.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		                    launchActivity.putExtra("sensorId",id);
-		                    Log.d(TAG,"update widget click intent sensor ID: " + id);
-		                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), w.widgetId, launchActivity, 0);
-		                    remoteViews.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
-		                    appWidgetManager.updateAppWidget(w.widgetId, remoteViews);
-		                    dbh.updateLastValueByWidgetId(w.widgetId, value);
-
+		                    widgetsFound = true;
+		                    Log.d(TAG,"sensor is widget, update value: " + w.screenName);
+		                    w.lastValue = w.curValue;
+		                    w.curValue = Float.valueOf(value);
+		                    dbh.updateValueByWidgetId(w);
 	                    }
-
                     }
+	                if (widgetsFound) {
+		                // Build the intent to call the service
+		                Intent intent = new Intent(getApplicationContext(), UpdateWidgetService.class);
+		                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new Integer[0]);
+		                // Update the widgets via the service
+		                getApplicationContext().startService(intent);
+	                }
                 } catch (JSONException e) {
                     Log.e(TAG,"Wrong JSON");
                 }
@@ -143,7 +127,7 @@ public class WatchService extends WakefulIntentService {
         @Override
         public void onNoResult() {
             getter = null;
-            Log.w(TAG,"noResult!!!!");
+            Log.w(TAG, "noResult!!!!");
         }
     }
 
