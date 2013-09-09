@@ -101,11 +101,11 @@ public class WatchService extends WakefulIntentService {
 	                        checkLimits(id, Float.valueOf(value), Long.valueOf(time));
 
 //	                    update widgets value
-	                    Log.d(TAG,"check sensor is widget:" + id);
+	                    Log.d(TAG,"\nwidget for:" + id);
 	                    ArrayList<Widget> widgets = dbh.getWidgetsBySensorId(id);
 	                    for (Widget w: widgets) {
 		                    widgetsFound = true;
-		                    Log.d(TAG,"sensor is widget, update value: " + w.screenName);
+		                    Log.d(TAG,"sensor is widget, update value: " + w.screenName + "w.last=" + w.lastValue + "w.cur=" + w.curValue + "will set cur=" + value);
 		                    w.lastValue = w.curValue;
 		                    w.curValue = Float.valueOf(value);
 		                    dbh.updateValueByWidgetId(w);

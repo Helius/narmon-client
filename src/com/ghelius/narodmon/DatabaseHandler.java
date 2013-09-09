@@ -183,6 +183,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //				new String[] { String.valueOf(contact.getID()) });
 //	}
 	public void updateValueByWidgetId(Widget w) {
+//		Log.d(TAG,"for " + w.screenName + ", last " + w.lastValue + ", cur " + w.curValue);
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();

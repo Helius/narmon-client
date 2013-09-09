@@ -71,11 +71,11 @@ public class UpdateWidgetService extends Service {
 			remoteViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(getApplicationContext()).getIcon(w.type)).getBitmap());
 			remoteViews.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(getApplicationContext()).getUnitForType(w.type));
 			if (w.lastValue > w.curValue) {
-				remoteViews.setTextViewText(R.id.arrowDown, "↓");
+				remoteViews.setTextViewText(R.id.arrowDown, "▼");
 				remoteViews.setTextViewText(R.id.arrowUp, "");
 			} else if (w.lastValue < w.curValue) {
 				remoteViews.setTextViewText(R.id.arrowDown, "");
-				remoteViews.setTextViewText(R.id.arrowUp, "↑");
+				remoteViews.setTextViewText(R.id.arrowUp, "▲");
 			} else {
 				remoteViews.setTextViewText(R.id.arrowDown, "");
 				remoteViews.setTextViewText(R.id.arrowUp, "");
