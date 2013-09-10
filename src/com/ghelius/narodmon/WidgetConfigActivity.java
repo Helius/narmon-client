@@ -41,7 +41,7 @@ public class WidgetConfigActivity extends SherlockFragmentActivity {
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
 				RemoteViews views = new RemoteViews(getApplicationContext().getPackageName(),R.layout.widget_layout);
 				String name = ((EditText)findViewById(R.id.editName)).getText().toString();
-				if (name.isEmpty()) {
+				if (name.length()==0) {
 						name = adapter.getItem(position).name;
 				}
 				Sensor sensor = adapter.getItem(position);
