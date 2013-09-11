@@ -37,7 +37,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		Log.d(TAG,"on create");
 		String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_WIDGETS + "("
-				+ KEY_WIDGET_ID + " INTEGER,"
+				+ KEY_WIDGET_ID + " INTEGER PRIMARY KEY,"
 				+ KEY_SENSOR_ID + " INTEGER,"
 				+ KEY_NAME + " TEXT,"
 				+ KEY_TYPE + " INTEGER,"
@@ -45,7 +45,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_CUR_VALUE + " TEXT"
 				+ ")";
 		db.execSQL(CREATE_CONTACTS_TABLE);
-//		db.enableWriteAheadLogging();
 	}
 
 	// Upgrading database
@@ -85,7 +84,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * All CRUD(Create, Read, Update, Delete) Operations
 	 */
 
-	// Adding new contact
 	void addWidget(Widget widget) {
 		Log.d(TAG, "added widget: " + widget.widgetId + ", " + widget.sensorId + ", " + widget.screenName + ", " + widget.type);
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -101,7 +99,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close(); // Closing database connection
 	}
 
-	// Getting single contact
 	ArrayList<Widget> getWidgetsBySensorId(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
@@ -121,7 +118,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return widgets;
 	}
 
-	// Getting All Widget
 	public ArrayList<Widget> getAllWidgets() {
 		ArrayList<Widget> widgetList = new ArrayList<Widget>();
 		// Select All Query
