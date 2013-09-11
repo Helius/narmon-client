@@ -16,9 +16,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 5;
 	// Database Name
 	private static final String DATABASE_NAME = "miscDataBase";
+
 	// Widgets table name
 	private static final String TABLE_WIDGETS = "widget";
-
 	// Widgets Table Columns names
 	private static final String KEY_WIDGET_ID = "widget_id";
 	private static final String KEY_SENSOR_ID = "sensor_id";
@@ -26,6 +26,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_TYPE = "type";
 	private static final String KEY_LAST_VALUE = "last_value";
 	private static final String KEY_CUR_VALUE = "cur_value";
+
+	// Types Table name
+	private static final String TABLE_TYPES = "types";
+	// Types Table Columns names
+	private static final String KEY_TYPES_CODE = "code";
+	private static final String KEY_TYPES_NAME = "name";
+	private static final String KEY_TYPES_UNIT = "unit";
 
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -36,7 +43,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		Log.d(TAG,"on create");
-		String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_WIDGETS + "("
+		String CREATE_TABLE = "CREATE TABLE " + TABLE_WIDGETS + "("
 				+ KEY_WIDGET_ID + " INTEGER PRIMARY KEY,"
 				+ KEY_SENSOR_ID + " INTEGER,"
 				+ KEY_NAME + " TEXT,"
@@ -44,7 +51,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_LAST_VALUE + " TEXT, "
 				+ KEY_CUR_VALUE + " TEXT"
 				+ ")";
-		db.execSQL(CREATE_CONTACTS_TABLE);
+		db.execSQL(CREATE_TABLE);
+		CREATE_TABLE = "CREATE TABLE " + TABLE_TYPES + "("
+				+ KEY_TYPES_CODE + " INTEGER PRIMARY KEY,"
+				+ KEY_TYPES_NAME + " TEXT,"
+				+ KEY_TYPES_UNIT + " TEXT"
+				+ ")";
+		db.execSQL(CREATE_TABLE);
 	}
 
 	// Upgrading database
@@ -83,6 +96,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	/**
 	 * All CRUD(Create, Read, Update, Delete) Operations
 	 */
+
+	void updateType(SensorType t) {
+		Log.d(TAG, "added types: " + t.code + ", " + t.name + ", " + t.unit);
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_TYPES_CODE, t.code);
+		values.put(KEY_TYPES_NAME, t.name);
+		values.put(KEY_TYPES_UNIT, t.unit);
+
+		// Inserting Row or Replace if exist
+		db.insertWithOnConflict(TABLE_TYPES, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+		db.close(); // Closing database connection
+	}
+
+	ArrayList<SensorType> getAllTypes () {
+		ArrayList<SensorType> types = new ArrayList<SensorType>();
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		String selectQuery = "SELECT  * FROM " + TABLE_WIDGETS;
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+			if (cursor.getCount() != 0)
+				do {
+					types.add(new SensorType(Integer.parseInt(cursor.getString(0)),cursor.getString(1), cursor.getString(2)));
+				} while (cursor.moveToNext());
+			cursor.close();
+		}
+		db.close();
+		return types;
+	}
 
 	void addWidget(Widget widget) {
 		Log.d(TAG, "added widget: " + widget.widgetId + ", " + widget.sensorId + ", " + widget.screenName + ", " + widget.type);
