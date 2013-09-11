@@ -46,6 +46,7 @@ public class SensorTypeProvider {
     }
 
     private boolean parseString (String res) {
+	    if (res == null) return false;
         try {
             JSONObject jsonObject = new JSONObject(res);
             JSONArray types = jsonObject.getJSONArray("types");

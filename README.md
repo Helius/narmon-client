@@ -1,7 +1,8 @@
 android-narodmon клиент для narodmon.ru
 ================
 
-Последняя версия: 2.43
+приложение на маркете
+https://play.google.com/store/apps/details?id=com.ghelius.narodmon&hl=ru
 
 Developed By
 ============
