@@ -14,7 +14,6 @@ public class SensorTypeProvider {
     private final static String TAG = "narodmon-typeProvider";
     private static SensorTypeProvider instance = null;
     private ArrayList<SensorType> typesList;
-    private final static String filename = "sensor_types.inf";
     Context context;
 
 
@@ -25,6 +24,7 @@ public class SensorTypeProvider {
 
     static public SensorTypeProvider getInstance (Context context) {
         if (instance == null) {
+	        Log.d(TAG,"sensorTypeProvider created");
             instance = new SensorTypeProvider(context);
             instance.context = context;
         }

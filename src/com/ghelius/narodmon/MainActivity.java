@@ -281,6 +281,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 		typeAdapter = new CheckedListItemAdapter(this, SensorTypeProvider.getInstance(getApplicationContext()).getTypesList());
 		typeAdapter.setItemChangeInterface(this);
+		typeAdapter.notifyDataSetChanged();
 		ListView typeListView = (ListView) findViewById(R.id.typeListView);
 		typeListView.setAdapter(typeAdapter);
 		typeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
