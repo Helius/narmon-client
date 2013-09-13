@@ -3,6 +3,7 @@ package com.ghelius.narodmon;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import com.commonsware.cwac.wakeful.WakefulIntentService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +60,7 @@ public class SensorTypeProvider {
 	    for (SensorType t : typesList) {
 		    dbh.updateType(t);
 	    }
+	    WakefulIntentService.sendWakefulWork(context, WatchService.class);
     }
 
     public String getNameForType (int type) {
