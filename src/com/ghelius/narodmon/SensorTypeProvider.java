@@ -26,8 +26,8 @@ public class SensorTypeProvider {
         if (instance == null) {
 	        Log.d(TAG,"sensorTypeProvider created");
             instance = new SensorTypeProvider(context);
-            instance.context = context;
         }
+	    instance.context = context;
         return instance;
     }
 

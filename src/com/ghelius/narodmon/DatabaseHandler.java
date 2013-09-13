@@ -13,7 +13,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// All Static variables
 	private final static String TAG = "narodmon-dbh";
 	// Database Version
-	private static final int DATABASE_VERSION = 6;
+	private static final int DATABASE_VERSION = 7;
 	// Database Name
 	private static final String DATABASE_NAME = "miscDataBase";
 
@@ -78,6 +78,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		}
 		// drop old table
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WIDGETS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_TYPES);
 		// Create tables again
 		onCreate(db);
 		// fill with data
@@ -98,7 +99,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 */
 
 	void updateType(SensorType t) {
-		Log.d(TAG, "added types: " + t.code + ", " + t.name + ", " + t.unit);
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
@@ -115,7 +115,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		ArrayList<SensorType> types = new ArrayList<SensorType>();
 		SQLiteDatabase db = this.getReadableDatabase();
 
-		String selectQuery = "SELECT  * FROM " + TABLE_WIDGETS;
+		String selectQuery = "SELECT  * FROM " + TABLE_TYPES;
 		Cursor cursor = db.rawQuery(selectQuery, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
