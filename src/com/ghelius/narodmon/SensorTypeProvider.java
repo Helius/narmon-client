@@ -3,11 +3,11 @@ package com.ghelius.narodmon;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import com.commonsware.cwac.wakeful.WakefulIntentService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.*;
 import java.util.ArrayList;
 
 
@@ -15,75 +15,52 @@ public class SensorTypeProvider {
     private final static String TAG = "narodmon-typeProvider";
     private static SensorTypeProvider instance = null;
     private ArrayList<SensorType> typesList;
-    private final static String filename = "sensor_types.inf";
     Context context;
 
 
-    private SensorTypeProvider (Context context) {
-        typesList = new ArrayList<SensorType>();
-        FileInputStream fis;
-        try {
-            fis = context.openFileInput(filename);
-            InputStreamReader inputreader = new InputStreamReader(fis);
-            BufferedReader buffreader = new BufferedReader(inputreader);
-	        Log.d(TAG, "get saved types");
-            parseString (buffreader.readLine());
-            fis.close();
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-    }
+	private SensorTypeProvider (Context context) {
+		DatabaseHandler dbh = new DatabaseHandler(context);
+		typesList = dbh.getAllTypes();
+	}
 
     static public SensorTypeProvider getInstance (Context context) {
         if (instance == null) {
+	        Log.d(TAG,"sensorTypeProvider created");
             instance = new SensorTypeProvider(context);
-            instance.context = context;
         }
+	    instance.context = context;
         return instance;
     }
 
-    private boolean parseString (String res) {
-	    if (res == null) return false;
-        try {
-            JSONObject jsonObject = new JSONObject(res);
-            JSONArray types = jsonObject.getJSONArray("types");
-            typesList.clear();
-            for (int i = 0; i < types.length(); i++) {
-                int type = Integer.valueOf(types.getJSONObject(i).getString("type"));
-                String name = types.getJSONObject(i).getString("name");
-                String unit = types.getJSONObject(i).getString("unit");
-//                Log.d(TAG, "add type: " + type + ", " + name + ", " + unit);
-                typesList.add(new SensorType(type, name, unit));
-            }
-            return true;
-        } catch (JSONException e) {
-            Log.e(TAG, "wrong json");
-        }
-        return false;
+    private ArrayList<SensorType> parseString (String res) {
+
+	    Log.d(TAG,"try to parse dict str: [" + res + "]");
+	    if (res != null) {
+		    try {
+			    JSONObject jsonObject = new JSONObject(res);
+			    JSONArray types = jsonObject.getJSONArray("types");
+			    typesList.clear();
+			    for (int i = 0; i < types.length(); i++) {
+				    int type = Integer.valueOf(types.getJSONObject(i).getString("type"));
+				    String name = types.getJSONObject(i).getString("name");
+				    String unit = types.getJSONObject(i).getString("unit");
+				    typesList.add(new SensorType(type, name, unit));
+			    }
+		    } catch (JSONException e) {
+			    Log.e(TAG, "wrong json");
+		    }
+	    }
+        return typesList;
     }
 
     public void setTypesFromString (String res) {
 	    Log.d(TAG,"update types");
-        parseString(res);
-
-	    try {
-		    FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
-		    OutputStreamWriter writer = new OutputStreamWriter(fos);
-		    BufferedWriter bufferedWriter = new BufferedWriter(writer);
-		    try {
-			    bufferedWriter.write(res);
-			    bufferedWriter.flush();
-			    bufferedWriter.close();
-		    } catch (IOException e) {
-			    Log.e(TAG,"Something wrong while write types dict");
-		    }
-
-	    } catch (FileNotFoundException e) {
-		    Log.e(TAG,"Can't open config file");
+        DatabaseHandler dbh = new DatabaseHandler(context);
+	    parseString(res);
+	    for (SensorType t : typesList) {
+		    dbh.updateType(t);
 	    }
+	    WakefulIntentService.sendWakefulWork(context, WatchService.class);
     }
 
     public String getNameForType (int type) {
