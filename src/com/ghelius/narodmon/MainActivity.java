@@ -630,16 +630,16 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	private void setRefreshProgress(boolean refreshing) {
-		if (mOptionsMenu != null) {
-			final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
-			if (refreshItem != null) {
-				if (refreshing) {
-					refreshItem.setActionView(R.layout.actionbar_indeterminate_progress);
-				} else {
-					refreshItem.setActionView(null);
-				}
-			}
-		}
+//		if (mOptionsMenu != null) {
+//			final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
+//			if (refreshItem != null) {
+//				if (refreshing) {
+//					refreshItem.setActionView(R.layout.actionbar_indeterminate_progress);
+//				} else {
+//					refreshItem.setActionView(null);
+//				}
+//			}
+//		}
 	}
 
 	final Handler updateTimerHandler = new Handler(new Handler.Callback() {
