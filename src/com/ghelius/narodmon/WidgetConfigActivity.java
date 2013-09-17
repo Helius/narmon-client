@@ -3,26 +3,25 @@ package com.ghelius.narodmon;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RemoteViews;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
-public class WidgetConfigActivity extends SherlockFragmentActivity {
+public class WidgetConfigActivity extends ActionBarActivity {
 	private final static String TAG = "narodmon-widgetConfig";
 	private int mAppWidgetId;
 	private SensorItemAdapter adapter;
 	private DatabaseHandler dbh;
 	public void onCreate(Bundle savedInstanceState) {
-		setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.widget_config_activity);
 		setTitle(getString(R.string.select_sensor_text));

@@ -2,21 +2,16 @@ package com.ghelius.narodmon;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
+import android.preference.*;
 import android.util.Log;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
-public class PreferActivity extends SherlockPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
+public class PreferActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
 
     private static final String TAG = "narodmon-pref";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState)
     {
-        setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference_screen);
     }

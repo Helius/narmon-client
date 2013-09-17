@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-public class SensorInfo extends SherlockFragmentActivity {
+public class SensorInfo extends ActionBarActivity {
     private final String TAG = "narodmon-info";
     private ArrayList <Point> logData = new ArrayList<Point>();
     private Timer updateTimer;
@@ -61,7 +61,6 @@ public class SensorInfo extends SherlockFragmentActivity {
 	}
 
     public void onCreate(Bundle savedInstanceState) {
-	    setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sensorinfo);
         final AlarmsSetupDialog dialog = new AlarmsSetupDialog();

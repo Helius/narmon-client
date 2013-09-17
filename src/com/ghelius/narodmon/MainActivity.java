@@ -7,24 +7,22 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
-import android.os.*;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends SherlockFragmentActivity implements
+public class MainActivity extends ActionBarActivity implements
 		SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface {
 
 	private Menu mOptionsMenu = null;
@@ -56,7 +54,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	private WatchedItemAdapter mySensorsAdapter;
 	private Timer updateTimer = null;
 	private Timer gpsUpdateTimer = null;
-	private HorizontalPager mPager;
+//	private HorizontalPager mPager;
 	private LoginDialog loginDialog;
 	private UiFlags uiFlags;
 	private NarodmonApi narodmonApi;
@@ -112,15 +110,15 @@ public class MainActivity extends SherlockFragmentActivity implements
 		updateSensorsList(false);
 
 		startUpdateTimer();
-		if (uiFlags.uiMode == UiFlags.UiMode.watched) {
-			Log.d(TAG, "switch to watched");
-			mPager.setCurrentScreen(2, false);
-			getSupportActionBar().setSelectedNavigationItem(2);
-		} else {
-			Log.d(TAG, "switch to list");
-			mPager.setCurrentScreen(1, false);
-			getSupportActionBar().setSelectedNavigationItem(1);
-		}
+//		if (uiFlags.uiMode == UiFlags.UiMode.watched) {
+//			Log.d(TAG, "switch to watched");
+//			mPager.setCurrentScreen(2, false);
+//			getSupportActionBar().setSelectedNavigationItem(2);
+//		} else {
+//			Log.d(TAG, "switch to list");
+//			mPager.setCurrentScreen(1, false);
+//			getSupportActionBar().setSelectedNavigationItem(1);
+//		}
 		showProgress = true;
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		if (!pref.getBoolean(getString(R.string.pref_key_use_geocode),false)) {
@@ -140,14 +138,14 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		switch (keyCode) {
-			case KeyEvent.KEYCODE_BACK:
-			case KeyEvent.KEYCODE_ESCAPE:
-				if (prevScreen == 0) {
-					mPager.setCurrentScreen(1, true);
-					return true;
-				}
-		}
+//		switch (keyCode) {
+//			case KeyEvent.KEYCODE_BACK:
+//			case KeyEvent.KEYCODE_ESCAPE:
+//				if (prevScreen == 0) {
+//					mPager.setCurrentScreen(1, true);
+//					return true;
+//				}
+//		}
 		return super.onKeyDown(keyCode, event);
 	}
 
@@ -167,53 +165,53 @@ public class MainActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate");
-		setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
+
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
-		mPager = (HorizontalPager) findViewById(R.id.horizontal_pager);
-		mPager.setOnScreenSwitchListener(new HorizontalPager.OnScreenSwitchListener() {
-			@Override
-			public void onScreenSwitched(int screen) {
-				Log.d(TAG, "onScreenSwitch: " + screen);
-				getSupportActionBar().setSelectedNavigationItem(screen);
-				if (screen == 2) {
-					uiFlags.uiMode = UiFlags.UiMode.watched;
-					if (prevScreen == 0)
-						listAdapter.update();
-
-				} else if (screen == 1) {
-					uiFlags.uiMode = UiFlags.UiMode.list;
-					if (prevScreen == 0)
-						listAdapter.update();
-
-				} else if (screen == 0) {
-					setFilterData();
-				}
-				prevScreen = screen;
-			}
-		});
+//		mPager = (HorizontalPager) findViewById(R.id.horizontal_pager);
+//		mPager.setOnScreenSwitchListener(new HorizontalPager.OnScreenSwitchListener() {
+//			@Override
+//			public void onScreenSwitched(int screen) {
+//				Log.d(TAG, "onScreenSwitch: " + screen);
+//				getSupportActionBar().setSelectedNavigationItem(screen);
+//				if (screen == 2) {
+//					uiFlags.uiMode = UiFlags.UiMode.watched;
+//					if (prevScreen == 0)
+//						listAdapter.update();
+//
+//				} else if (screen == 1) {
+//					uiFlags.uiMode = UiFlags.UiMode.list;
+//					if (prevScreen == 0)
+//						listAdapter.update();
+//
+//				} else if (screen == 0) {
+//					setFilterData();
+//				}
+//				prevScreen = screen;
+//			}
+//		});
 
 		uiFlags = UiFlags.load(this);
 
-		ListView fullListView = new ListView(this);
+		ListView fullListView = (ListView)findViewById(R.id.fullListView);
 		View filterView = View.inflate(this, R.layout.filter_dialog, null);
 
-		mPager.addView(filterView);
-		mPager.addView(fullListView);
-		mPager.addView(View.inflate(getApplicationContext(), R.layout.watched_screen, null));
-		mPager.addView(View.inflate(getApplicationContext(), R.layout.my_sensor_screen, null));
+//		mPager.addView(filterView);
+//		mPager.addView(fullListView);
+//		mPager.addView(View.inflate(getApplicationContext(), R.layout.watched_screen, null));
+//		mPager.addView(View.inflate(getApplicationContext(), R.layout.my_sensor_screen, null));
 
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
-		ListView watchedListView = (ListView) mPager.findViewById(R.id.watchedListView);
-		ListView myListView = (ListView) mPager.findViewById(R.id.myListView);
-		myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				myItemClick(position);
-			}
-		});
+//		ListView watchedListView = (ListView) mPager.findViewById(R.id.watchedListView);
+//		ListView myListView = (ListView) mPager.findViewById(R.id.myListView);
+//		myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//				myItemClick(position);
+//			}
+//		});
 
 		sensorList = new ArrayList<Sensor>();
 
@@ -240,28 +238,28 @@ public class MainActivity extends SherlockFragmentActivity implements
 			}
 		});
 		watchAdapter = new WatchedItemAdapter(getApplicationContext(), new ArrayList<Sensor>());
-		watchedListView.setAdapter(watchAdapter);
-		watchedListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		watchedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				watchedItemClick(position);
-			}
-		});
+//		watchedListView.setAdapter(watchAdapter);
+//		watchedListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+//		watchedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+//				watchedItemClick(position);
+//			}
+//		});
 		mySensorsAdapter = new WatchedItemAdapter(getApplicationContext(), new ArrayList<Sensor>());
-		myListView.setAdapter(mySensorsAdapter);
+//		myListView.setAdapter(mySensorsAdapter);
 
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		actionBar.setDisplayShowTitleEnabled(false);
-		actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
-				android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
-			@Override
-			public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-				mPager.setCurrentScreen(itemPosition, true);
-				return true;
-			}
-		});
+//		ActionBar actionBar = getSupportActionBar();
+//		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+//		actionBar.setDisplayShowTitleEnabled(false);
+//		actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
+//				android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
+//			@Override
+//			public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+////				mPager.setCurrentScreen(itemPosition, true);
+//				return true;
+//			}
+//		});
 
 		loginDialog = new LoginDialog();
 		loginDialog.setOnChangeListener(this);
@@ -283,19 +281,19 @@ public class MainActivity extends SherlockFragmentActivity implements
 		typeAdapter.setItemChangeInterface(this);
 		typeAdapter.notifyDataSetChanged();
 		ListView typeListView = (ListView) findViewById(R.id.typeListView);
-		typeListView.setAdapter(typeAdapter);
-		typeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if (uiFlags.hidenTypes.contains(typeAdapter.getItem(position).code)) {
-					uiFlags.hidenTypes.remove((Integer) typeAdapter.getItem(position).code);
-				} else {
-					uiFlags.hidenTypes.add((Integer) typeAdapter.getItem(position).code);
-				}
-				typeAdapter.notifyDataSetChanged();
-				listAdapter.update();
-			}
-		});
+//		typeListView.setAdapter(typeAdapter);
+//		typeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//				if (uiFlags.hidenTypes.contains(typeAdapter.getItem(position).code)) {
+//					uiFlags.hidenTypes.remove((Integer) typeAdapter.getItem(position).code);
+//				} else {
+//					uiFlags.hidenTypes.add((Integer) typeAdapter.getItem(position).code);
+//				}
+//				typeAdapter.notifyDataSetChanged();
+//				listAdapter.update();
+//			}
+//		});
 		initLocationUpdater();
 	}
 
@@ -556,49 +554,49 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 
 	private void updateWatchedList() {
-		ArrayList<Sensor> watchedList = new ArrayList<Sensor>();
-		for (Configuration.SensorTask storedItem : ConfigHolder.getInstance(getApplicationContext()).getConfig().watchedId) {
-			boolean found = false;
-			for (Sensor aSensorList : sensorList) {
-				if (storedItem.id == aSensorList.id) {
-					// watched item online
-					aSensorList.online = true;
-					watchedList.add(aSensorList);
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				// watched item offline
-				watchedList.add(new Sensor(storedItem));
-			}
-		}
-		watchAdapter.clear();
-		// for compatibility reason
-		for (Sensor aWatchedList : watchedList) {
-			watchAdapter.add(aWatchedList);
-		}
-		watchAdapter.notifyDataSetChanged();
-
-		// fill my sensors screen
-		mySensorsAdapter.clear();
-		Log.d(TAG, "find `my` sensors");
-		for (int i = 0; i < sensorList.size(); i++) {
-			if (sensorList.get(i).my) {
-				mySensorsAdapter.add(sensorList.get(i));
-			}
-		}
-		mySensorsAdapter.notifyDataSetChanged();
-
-		if (watchAdapter.isEmpty())
-			findViewById(R.id.watchedListEmptyMsg).setVisibility(View.VISIBLE);
-		else
-			findViewById(R.id.watchedListEmptyMsg).setVisibility(View.INVISIBLE);
-
-		if (mySensorsAdapter.isEmpty())
-			findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.VISIBLE);
-		else
-			findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.INVISIBLE);
+//		ArrayList<Sensor> watchedList = new ArrayList<Sensor>();
+//		for (Configuration.SensorTask storedItem : ConfigHolder.getInstance(getApplicationContext()).getConfig().watchedId) {
+//			boolean found = false;
+//			for (Sensor aSensorList : sensorList) {
+//				if (storedItem.id == aSensorList.id) {
+//					// watched item online
+//					aSensorList.online = true;
+//					watchedList.add(aSensorList);
+//					found = true;
+//					break;
+//				}
+//			}
+//			if (!found) {
+//				// watched item offline
+//				watchedList.add(new Sensor(storedItem));
+//			}
+//		}
+//		watchAdapter.clear();
+//		// for compatibility reason
+//		for (Sensor aWatchedList : watchedList) {
+//			watchAdapter.add(aWatchedList);
+//		}
+//		watchAdapter.notifyDataSetChanged();
+//
+//		// fill my sensors screen
+//		mySensorsAdapter.clear();
+//		Log.d(TAG, "find `my` sensors");
+//		for (int i = 0; i < sensorList.size(); i++) {
+//			if (sensorList.get(i).my) {
+//				mySensorsAdapter.add(sensorList.get(i));
+//			}
+//		}
+//		mySensorsAdapter.notifyDataSetChanged();
+//
+//		if (watchAdapter.isEmpty())
+//			findViewById(R.id.watchedListEmptyMsg).setVisibility(View.VISIBLE);
+//		else
+//			findViewById(R.id.watchedListEmptyMsg).setVisibility(View.INVISIBLE);
+//
+//		if (mySensorsAdapter.isEmpty())
+//			findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.VISIBLE);
+//		else
+//			findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.INVISIBLE);
 	}
 
 	private void myItemClick(int position) {
@@ -621,7 +619,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
 	// called by action (define via xml onClick)
 	public void showFilterDialog(MenuItem item) {
-		mPager.setCurrentScreen(0, true);
+//		mPager.setCurrentScreen(0, true);
 	}
 
 	// called by pressing refresh button (define via xml onClick)
@@ -731,7 +729,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		mOptionsMenu = menu;
-		final MenuInflater inflater = getSupportMenuInflater();
+		final MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.icon_menu, menu);
 		if (showProgress) {
 			setRefreshProgress(true);
