@@ -13,6 +13,9 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.*;
@@ -61,6 +64,13 @@ public class MainActivity extends ActionBarActivity implements
 	private String apiHeader;
 	private LoginStatus loginStatus = LoginStatus.LOGOUT;
 	String uid;
+
+	private DrawerLayout mDrawerLayout;
+	private ActionBarDrawerToggle mDrawerToggle;
+	private CharSequence mDrawerTitle;
+	private CharSequence mTitle;
+	private String[] mPlanetTitles;
+
 
 
 	@Override
@@ -165,53 +175,60 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate");
-
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-		setContentView(R.layout.main);
-//		mPager = (HorizontalPager) findViewById(R.id.horizontal_pager);
-//		mPager.setOnScreenSwitchListener(new HorizontalPager.OnScreenSwitchListener() {
-//			@Override
-//			public void onScreenSwitched(int screen) {
-//				Log.d(TAG, "onScreenSwitch: " + screen);
-//				getSupportActionBar().setSelectedNavigationItem(screen);
-//				if (screen == 2) {
-//					uiFlags.uiMode = UiFlags.UiMode.watched;
-//					if (prevScreen == 0)
-//						listAdapter.update();
-//
-//				} else if (screen == 1) {
-//					uiFlags.uiMode = UiFlags.UiMode.list;
-//					if (prevScreen == 0)
-//						listAdapter.update();
-//
-//				} else if (screen == 0) {
-//					setFilterData();
-//				}
-//				prevScreen = screen;
-//			}
-//		});
+		mTitle = mDrawerTitle = getTitle();
+//		mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+//		mDrawerList = (ListView) findViewById(R.id.menu_view);
+
+		// set a custom shadow that overlays the main content when the drawer opens
+
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		// set up the drawer's list view with items and click listener
+//		mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mPlanetTitles));
+//		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		// enable ActionBar app icon to behave as action to toggle nav drawer
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
+
+
+
+		// ActionBarDrawerToggle ties together the the proper interactions
+		// between the sliding drawer and the action bar app icon
+		mDrawerToggle = new ActionBarDrawerToggle(
+				this,                  /* host Activity */
+				mDrawerLayout,         /* DrawerLayout object */
+				R.drawable.app_icon,  /* nav drawer image to replace 'Up' caret */
+				R.string.drawer_open,  /* "open drawer" description for accessibility */
+				R.string.drawer_close  /* "close drawer" description for accessibility */
+		) {
+			public void onDrawerClosed(View view) {
+				getSupportActionBar().setTitle(mTitle);
+//				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+			}
+
+			public void onDrawerOpened(View drawerView) {
+				getSupportActionBar().setTitle(mDrawerTitle);
+//				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+			}
+		};
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+//		if (savedInstanceState == null) {
+//			selectItem(0);
+//		}
+
 
 		uiFlags = UiFlags.load(this);
 
-		ListView fullListView = (ListView)findViewById(R.id.fullListView);
+		ListView fullListView = (ListView)findViewById(R.id.sensorList);
 		View filterView = View.inflate(this, R.layout.filter_dialog, null);
 
-//		mPager.addView(filterView);
-//		mPager.addView(fullListView);
-//		mPager.addView(View.inflate(getApplicationContext(), R.layout.watched_screen, null));
-//		mPager.addView(View.inflate(getApplicationContext(), R.layout.my_sensor_screen, null));
 
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-
-//		ListView watchedListView = (ListView) mPager.findViewById(R.id.watchedListView);
-//		ListView myListView = (ListView) mPager.findViewById(R.id.myListView);
-//		myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//				myItemClick(position);
-//			}
-//		});
 
 		sensorList = new ArrayList<Sensor>();
 
@@ -296,6 +313,7 @@ public class MainActivity extends ActionBarActivity implements
 //		});
 		initLocationUpdater();
 	}
+
 
 	// init filter ui from uiFlags
 	private void setFilterData() {

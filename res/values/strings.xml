@@ -109,4 +109,11 @@
     <string name="select_sensor_text">Select sensor</string>
     <string name="enter_widget_name_text">Enter widget name:</string>
     <string name="widget_label">Public monitoring</string>
+
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="action_websearch">Web search</string>
+    <string name="app_not_available">Sorry, there\'s no web browser available</string>
+
 </resources>
