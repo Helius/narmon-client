@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class MainActivity extends ActionBarActivity implements
 	private long lastUpdateTime;
 	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for update coordinates and sensor list
 //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for update coordinates and sensor list
+	private ArrayList<View> menuItems = new ArrayList<View>();
 
 	@Override
 	public boolean isItemChecked(int position) {
@@ -66,6 +68,7 @@ public class MainActivity extends ActionBarActivity implements
 	String uid;
 
 	private DrawerLayout mDrawerLayout;
+	private View mDrawerMenu;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
@@ -181,20 +184,12 @@ public class MainActivity extends ActionBarActivity implements
 		mTitle = mDrawerTitle = getTitle();
 //		mPlanetTitles = getResources().getStringArray(R.array.planets_array);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//		mDrawerList = (ListView) findViewById(R.id.menu_view);
-
+		mDrawerMenu = (View)findViewById(R.id.menu_view);
 		// set a custom shadow that overlays the main content when the drawer opens
-
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-		// set up the drawer's list view with items and click listener
-//		mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mPlanetTitles));
-//		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
 		// enable ActionBar app icon to behave as action to toggle nav drawer
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-
-
 
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
@@ -216,6 +211,47 @@ public class MainActivity extends ActionBarActivity implements
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+		// collect menu item views
+		menuItems.add(findViewById(R.id.menu_item0));
+		menuItems.add(findViewById(R.id.menu_item1));
+		menuItems.add(findViewById(R.id.menu_item2));
+		menuItems.add(findViewById(R.id.menu_item3));
+		menuItems.add(findViewById(R.id.menu_item4));
+		int i = 0;
+		for (View view : menuItems) {
+			view.setTag(i++);
+			view.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					clearMenuSelection();
+					Log.d(TAG,"click!" + v.getTag());
+					int menuBackgroundColor = Color.BLUE;
+					switch ((Integer)v.getTag()) {
+						case 0: // all
+							menuAllClicked();
+							break;
+						case 1: // my
+							menuMyClicked();
+							break;
+						case 2: // watched
+							menuWatchedClicked();
+							break;
+						case 3: // filter
+							menuFilterClicked();
+							break;
+						case 4: // filter
+							menuGraphClicked();
+							break;
+						default:
+							Log.d(TAG, "unknown tag");
+							break;
+					}
+					mDrawerLayout.closeDrawer(mDrawerMenu);
+					v.setBackgroundColor(menuBackgroundColor);
+				}
+			});
+		}
 
 //		if (savedInstanceState == null) {
 //			selectItem(0);
@@ -290,8 +326,8 @@ public class MainActivity extends ActionBarActivity implements
 		sendVersion();
 		narodmonApi.getTypeDictionary(this);
 
-		Intent i = new Intent(this, OnBootReceiver.class);
-		sendBroadcast(i);
+		Intent intent = new Intent(this, OnBootReceiver.class);
+		sendBroadcast(intent);
 		scheduleAlarmWatcher();
 
 		typeAdapter = new CheckedListItemAdapter(this, SensorTypeProvider.getInstance(getApplicationContext()).getTypesList());
@@ -312,6 +348,36 @@ public class MainActivity extends ActionBarActivity implements
 //			}
 //		});
 		initLocationUpdater();
+	}
+
+	private void menuGraphClicked() {
+		Toast.makeText(getApplicationContext(), "Graph", Toast.LENGTH_SHORT).show();
+	}
+
+	private void menuFilterClicked() {
+		//To change body of created methods use File | Settings | File Templates.
+		Toast.makeText(getApplicationContext(), "Filter", Toast.LENGTH_SHORT).show();
+	}
+
+	private void menuWatchedClicked() {
+		//To change body of created methods use File | Settings | File Templates.
+		Toast.makeText(getApplicationContext(), "Watched", Toast.LENGTH_SHORT).show();
+	}
+
+	private void menuMyClicked() {
+		//To change body of created methods use File | Settings | File Templates.
+		Toast.makeText(getApplicationContext(), "My", Toast.LENGTH_SHORT).show();
+	}
+
+	private void menuAllClicked() {
+		//To change body of created methods use File | Settings | File Templates.
+		Toast.makeText(getApplicationContext(), "All", Toast.LENGTH_SHORT).show();
+	}
+
+	private void clearMenuSelection () {
+		for (View item: menuItems ) {
+			item.setBackgroundColor(Color.BLACK);
+		}
 	}
 
 

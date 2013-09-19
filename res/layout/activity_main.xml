@@ -33,12 +33,117 @@
                 android:layout_height="match_parent"
                 android:id="@+id/sensorList"/>
     </FrameLayout>
-    <LinearLayout android:id="@+id/menu_view"
-              android:layout_width="240dp"
-              android:layout_height="match_parent"
-              android:layout_gravity="start"
-              android:background="@android:color/black">
+    <ScrollView android:id="@+id/menu_view"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@android:color/black"
+            >
+    <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+        <LinearLayout
+                android:id="@+id/menu_item0"
+                android:clickable="true"
+                android:editable="true"
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="All"
+                    android:id="@+id/allTextView"
+                    android:textSize="24dp" android:layout_weight="1"
+                    android:layout_margin="10dp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="312"
+                    android:id="@+id/textView1" android:textSize="18dp"/>
+        </LinearLayout>
+        <LinearLayout
+                android:id="@+id/menu_item1"
+                android:clickable="true"
+                android:editable="true"
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Watched"
+                    android:id="@+id/watchedTextView"
+                    android:textSize="24dp" android:layout_weight="1"
+                    android:layout_margin="10dp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="9"
+                    android:id="@+id/textView3" android:textSize="18dp"/>
+        </LinearLayout>
+        <LinearLayout
+                android:id="@+id/menu_item2"
+                android:clickable="true"
+                android:editable="true"
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="My"
+                    android:id="@+id/myTextView"
+                    android:layout_weight="1"
+                    android:textSize="24dp"
+                    android:layout_margin="10dp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2"
+                    android:id="@+id/textView5" android:textSize="18dp"/>
+        </LinearLayout>
+        <LinearLayout
+                android:id="@+id/menu_item3"
+                android:clickable="true"
+                android:editable="true"
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Filter"
+                    android:id="@+id/myTextView"
+                    android:layout_weight="1"
+                    android:textSize="24dp"
+                    android:layout_margin="10dp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:id="@+id/textView5"
+                    android:textSize="18dp"/>
+        </LinearLayout>
+        <LinearLayout
+                android:id="@+id/menu_item4"
+                android:clickable="true"
+                android:editable="true"
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Graph"
+                    android:id="@+id/myTextView"
+                    android:layout_weight="1"
+                    android:textSize="24dp"
+                    android:layout_margin="10dp"/>
+        </LinearLayout>
     </LinearLayout>
+    </ScrollView>
 
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
          this as a sliding drawer on the left side for left-to-right
