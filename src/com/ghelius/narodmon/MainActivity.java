@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -35,7 +34,7 @@ public class MainActivity extends ActionBarActivity implements
 	private int prevScreen = 1;
 	private long lastUpdateTime;
 	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for update coordinates and sensor list
-//	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for update coordinates and sensor list
+	//	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for update coordinates and sensor list
 	private ArrayList<View> menuItems = new ArrayList<View>();
 
 	@Override
@@ -59,7 +58,7 @@ public class MainActivity extends ActionBarActivity implements
 	private WatchedItemAdapter mySensorsAdapter;
 	private Timer updateTimer = null;
 	private Timer gpsUpdateTimer = null;
-//	private HorizontalPager mPager;
+	//	private HorizontalPager mPager;
 	private LoginDialog loginDialog;
 	private UiFlags uiFlags;
 	private NarodmonApi narodmonApi;
@@ -196,7 +195,7 @@ public class MainActivity extends ActionBarActivity implements
 		mDrawerToggle = new ActionBarDrawerToggle(
 				this,                  /* host Activity */
 				mDrawerLayout,         /* DrawerLayout object */
-				R.drawable.app_icon,  /* nav drawer image to replace 'Up' caret */
+				R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
 				R.string.drawer_open,  /* "open drawer" description for accessibility */
 				R.string.drawer_close  /* "close drawer" description for accessibility */
 		) {
@@ -230,18 +229,23 @@ public class MainActivity extends ActionBarActivity implements
 					switch ((Integer)v.getTag()) {
 						case 0: // all
 							menuAllClicked();
+							setTitle("All");
 							break;
-						case 1: // my
-							menuMyClicked();
-							break;
-						case 2: // watched
+						case 1: // watched
 							menuWatchedClicked();
+							setTitle("Watched");
+							break;
+						case 2: // my
+							menuMyClicked();
+							setTitle("My");
 							break;
 						case 3: // filter
 							menuFilterClicked();
+							setTitle("Filter");
 							break;
-						case 4: // filter
+						case 4: // graph
 							menuGraphClicked();
+							setTitle("Graphs");
 							break;
 						default:
 							Log.d(TAG, "unknown tag");
@@ -349,6 +353,66 @@ public class MainActivity extends ActionBarActivity implements
 //		});
 		initLocationUpdater();
 	}
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.icon_menu, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	/* Called whenever we call invalidateOptionsMenu() */
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// If the nav drawer is open, hide action items related to the content view
+//        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+//        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// The action bar home/up action should open or close the drawer.
+		// ActionBarDrawerToggle will take care of this.
+		if (mDrawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
+		// Handle action buttons
+		switch(item.getItemId()) {
+//        case R.id.action_websearch:
+//			return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+
+
+	@Override
+	public void setTitle(CharSequence title) {
+		mTitle = title;
+		getSupportActionBar().setTitle(mTitle);
+	}
+
+	/**
+	 * When using the ActionBarDrawerToggle, you must call it during
+	 * onPostCreate() and onConfigurationChanged()...
+	 */
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+	}
+
+//	@Override
+//	public void onConfigurationChanged(Configuration newConfig) {
+//		super.onConfigurationChanged(newConfig);
+//		// Pass any configuration change to the drawer toggls
+//		mDrawerToggle.onConfigurationChanged(newConfig);
+//	}
+
 
 	private void menuGraphClicked() {
 		Toast.makeText(getApplicationContext(), "Graph", Toast.LENGTH_SHORT).show();
@@ -509,7 +573,7 @@ public class MainActivity extends ActionBarActivity implements
 			lastUpdateTime = 0;
 			Log.d(TAG,"force update sensor list");
 		}
-		
+
 		if (System.currentTimeMillis()-lastUpdateTime < gpsUpdateIntervalMs) {
 			Log.d(TAG,"list was not updated, timeout not gone");
 			return;
@@ -810,46 +874,46 @@ public class MainActivity extends ActionBarActivity implements
 				pi);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		mOptionsMenu = menu;
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.icon_menu, menu);
-		if (showProgress) {
-			setRefreshProgress(true);
-			showProgress = false;
-		}
-		return super.onCreateOptionsMenu(menu);
-	}
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		mOptionsMenu = menu;
+//		final MenuInflater inflater = getMenuInflater();
+//		inflater.inflate(R.menu.icon_menu, menu);
+//		if (showProgress) {
+//			setRefreshProgress(true);
+//			showProgress = false;
+//		}
+//		return super.onCreateOptionsMenu(menu);
+//	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d(TAG, "item: " + item + ", itemID: " + item.getItemId());
-
-		switch (item.getItemId()) {
-			case R.id.menu_settings:
-				Log.d(TAG, "start settings activity");
-				startActivity(new Intent(MainActivity.this, PreferActivity.class));
-				break;
-			case R.id.menu_refresh:
-				Log.d(TAG, "refresh sensor list");
-				updateSensorsList(true);
-				break;
-			case R.id.menu_login:
-				Log.d(TAG, "show login dialog");
-				loginDialog.show(getSupportFragmentManager(), "dlg2");
-				break;
-			case R.id.menu_help:
-				String url = "http://helius.github.com/narmon-client/";
-				Intent i = new Intent(Intent.ACTION_VIEW);
-				i.setData(Uri.parse(url));
-				startActivity(i);
-				break;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-		return false;
-	}
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		Log.d(TAG, "item: " + item + ", itemID: " + item.getItemId());
+//
+//		switch (item.getItemId()) {
+//			case R.id.menu_settings:
+//				Log.d(TAG, "start settings activity");
+//				startActivity(new Intent(MainActivity.this, PreferActivity.class));
+//				break;
+//			case R.id.menu_refresh:
+//				Log.d(TAG, "refresh sensor list");
+//				updateSensorsList(true);
+//				break;
+//			case R.id.menu_login:
+//				Log.d(TAG, "show login dialog");
+//				loginDialog.show(getSupportFragmentManager(), "dlg2");
+//				break;
+//			case R.id.menu_help:
+//				String url = "http://helius.github.com/narmon-client/";
+//				Intent i = new Intent(Intent.ACTION_VIEW);
+//				i.setData(Uri.parse(url));
+//				startActivity(i);
+//				break;
+//			default:
+//				return super.onOptionsItemSelected(item);
+//		}
+//		return false;
+//	}
 
 	@Override
 	public void login() {
