@@ -14,6 +14,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -28,11 +29,13 @@ import java.util.TimerTask;
 public class MainActivity extends ActionBarActivity implements
 		SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface {
 
+	private SensorInfoFragment sensorInfoFragment;
 	private Menu mOptionsMenu = null;
 	private boolean showProgress;
 	private CheckedListItemAdapter typeAdapter;
 	private int prevScreen = 1;
 	private long lastUpdateTime;
+	ListView fullListView;
 	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for update coordinates and sensor list
 	//	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for update coordinates and sensor list
 	private ArrayList<View> menuItems = new ArrayList<View>();
@@ -262,9 +265,12 @@ public class MainActivity extends ActionBarActivity implements
 //		}
 
 
+		sensorInfoFragment = new SensorInfoFragment();
+
+
 		uiFlags = UiFlags.load(this);
 
-		ListView fullListView = (ListView)findViewById(R.id.sensorList);
+		fullListView = (ListView)findViewById(R.id.sensorList);
 		View filterView = View.inflate(this, R.layout.filter_dialog, null);
 
 
@@ -760,9 +766,11 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	private void sensorItemClick(int position) {
-		Intent i = new Intent(this, SensorInfo.class);
-		i.putExtra("Sensor", listAdapter.getItem(position));
-		startActivity(i);
+
+		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+		trans.replace(R.id.content_frame , sensorInfoFragment);
+		trans.addToBackStack(null);
+		trans.commit();
 	}
 
 	// called by action (define via xml onClick)
