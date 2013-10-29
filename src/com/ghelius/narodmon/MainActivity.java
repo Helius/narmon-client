@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -30,6 +31,8 @@ public class MainActivity extends ActionBarActivity implements
 		SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface {
 
 	private SensorInfoFragment sensorInfoFragment;
+	private FilterFragment filterFragment;
+	private ListFragment sensorListFragment;
 	private Menu mOptionsMenu = null;
 	private boolean showProgress;
 	private CheckedListItemAdapter typeAdapter;
@@ -120,7 +123,18 @@ public class MainActivity extends ActionBarActivity implements
 	public void onResume() {
 		super.onResume();
 		Log.d(TAG, "onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis()-lastUpdateTime));
+
+		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+		trans.replace(R.id.content_frame , sensorListFragment);
+		trans.commit();
+
 		listAdapter.notifyDataSetChanged();
+//		sensorListFragment.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//				sensorItemClick(position);
+//			}
+//		});
 
 		updateSensorsList(false);
 
@@ -266,12 +280,15 @@ public class MainActivity extends ActionBarActivity implements
 
 
 		sensorInfoFragment = new SensorInfoFragment();
+		filterFragment = new FilterFragment();
+		sensorListFragment = new ListFragment();
 
 
 		uiFlags = UiFlags.load(this);
 
-		fullListView = (ListView)findViewById(R.id.sensorList);
-		View filterView = View.inflate(this, R.layout.filter_dialog, null);
+//		fullListView = sensorListFragment.getListView();
+//		fullListView = (ListView)findViewById(R.id.sensorList);
+//		View filterView = View.inflate(this, R.layout.filter_dialog, null);
 
 
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
@@ -292,14 +309,15 @@ public class MainActivity extends ActionBarActivity implements
 
 		listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
 		listAdapter.setUiFlags(uiFlags);
-		fullListView.setAdapter(listAdapter);
-		fullListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		fullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				sensorItemClick(position);
-			}
-		});
+		sensorListFragment.setListAdapter(listAdapter);
+//		fullListView.setAdapter(listAdapter);
+//		fullListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+//		fullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+//				sensorItemClick(position);
+//			}
+//		});
 		watchAdapter = new WatchedItemAdapter(getApplicationContext(), new ArrayList<Sensor>());
 //		watchedListView.setAdapter(watchAdapter);
 //		watchedListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -425,8 +443,9 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	private void menuFilterClicked() {
-		//To change body of created methods use File | Settings | File Templates.
-		Toast.makeText(getApplicationContext(), "Filter", Toast.LENGTH_SHORT).show();
+		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+		trans.replace(R.id.content_frame , filterFragment);
+		trans.commit();
 	}
 
 	private void menuWatchedClicked() {
@@ -440,8 +459,9 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	private void menuAllClicked() {
-		//To change body of created methods use File | Settings | File Templates.
-		Toast.makeText(getApplicationContext(), "All", Toast.LENGTH_SHORT).show();
+		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+		trans.replace(R.id.content_frame , sensorListFragment);
+		trans.commit();
 	}
 
 	private void clearMenuSelection () {
