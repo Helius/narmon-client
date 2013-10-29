@@ -1,22 +1,30 @@
 package com.ghelius.narodmon;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class SensorInfoFragment extends Fragment {
 
 	private final String TAG = "narodmon-info";
+	private int sensorId = -1;
 //	private ArrayList<Point> logData = new ArrayList<Point>();
-//	private Timer updateTimer;
+	private Timer updateTimer;
 //	private int offset = 0;
 //	private LogPeriod period = LogPeriod.day;
 //	private SensorLogGetter logGetter;
@@ -50,6 +58,12 @@ public class SensorInfoFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.sensorinfo, null);
 		return v;
+	}
+
+
+
+	public void setId(int id) {
+		sensorId = id;
 	}
 
 //	public void onCreate(Bundle savedInstanceState) {
@@ -273,20 +287,20 @@ public class SensorInfoFragment extends Fragment {
 //		mRenderer.setXTitle(title);
 //	}
 
-//	public static String getTimeSince (Context context, Long time) {
-//		long difftime = (System.currentTimeMillis() - time*1000)/1000;
-//		String agoText;
-//		if (difftime < 60) {
-//			agoText = String.valueOf(difftime) +" "+ context.getString(R.string.text_sec);
-//		} else if (difftime/60 < 60) {
-//			agoText = String.valueOf(difftime/60) +" "+ context.getString(R.string.text_min);
-//		} else if (difftime/3600 < 24) {
-//			agoText = String.valueOf(difftime/3600) +" "+ context.getString(R.string.text_hr);
-//		} else {
-//			agoText = String.valueOf(difftime/(3600*24)) +" "+ context.getString(R.string.text_days);
-//		}
-//		return agoText;
-//	}
+	public static String getTimeSince (Context context, Long time) {
+		long difftime = (System.currentTimeMillis() - time*1000)/1000;
+		String agoText;
+		if (difftime < 60) {
+			agoText = String.valueOf(difftime) +" "+ context.getString(R.string.text_sec);
+		} else if (difftime/60 < 60) {
+			agoText = String.valueOf(difftime/60) +" "+ context.getString(R.string.text_min);
+		} else if (difftime/3600 < 24) {
+			agoText = String.valueOf(difftime/3600) +" "+ context.getString(R.string.text_hr);
+		} else {
+			agoText = String.valueOf(difftime/(3600*24)) +" "+ context.getString(R.string.text_days);
+		}
+		return agoText;
+	}
 //
 //	private GraphicalView mChart;
 //	private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
@@ -379,11 +393,51 @@ public class SensorInfoFragment extends Fragment {
 //		findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
 //	}
 //
-//	@Override
-//	public void onResume() {
-//		super.onResume();
-//		startTimer();
-//	}
+	@Override
+	public void onResume() {
+		super.onResume();
+		Sensor sensor = null;
+		Log.d(TAG, "id is " + sensorId);
+		ArrayList<Sensor> sList = getSavedList();
+		for (Sensor s : sList) {
+			if (s.id == sensorId) {
+				sensor = s;
+			}
+		}
+		if (sensor == null) {
+			Log.e(TAG,"sensor" + sensorId + "not found");
+			return; // TODO: hide fragment or report 'sensor not found'
+		}
+
+		((TextView) getView().findViewById(R.id.text_name)).setText(sensor.name);
+		((TextView) getView().findViewById(R.id.text_location)).setText(sensor.location);
+		((TextView) getView().findViewById(R.id.text_distance)).setText(String.valueOf(sensor.distance));
+		((TextView) getView().findViewById(R.id.value_units)).setText(SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getUnitForType(sensor.type));
+		((TextView) getView().findViewById(R.id.text_type)).setText(SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getNameForType(sensor.type));
+//		((TextView) getView().findViewById(R.id.text_id)).setText(sensor.id);
+		((ImageView) getView().findViewById(R.id.info_sensor_icon)).setImageDrawable(SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getIcon(sensor.type));
+
+		TextView time = (TextView) getView().findViewById(R.id.text_time);
+
+		long dv = Long.valueOf(sensor.time)*1000;// its need to be in millisecond
+		Date df = new java.util.Date(dv);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+		sdf.setTimeZone(TimeZone.getDefault());
+		String vv = sdf.format(df);
+		time.setText(vv);
+
+		TextView ago = (TextView) getView().findViewById(R.id.text_ago);
+
+		ago.setText(getTimeSince(getActivity().getApplicationContext(), sensor.time));
+
+		TextView value = (TextView) getView().findViewById(R.id.text_value);
+		value.setText(sensor.value);
+
+		startTimer();
+	}
+
+
+
 //
 //	@Override
 //	public void onPause () {
@@ -446,33 +500,32 @@ public class SensorInfoFragment extends Fragment {
 //	}
 //
 //
-//	final Handler h = new Handler(new Handler.Callback() {
-//		@Override
-//		public boolean handleMessage(Message msg) {
+	final Handler timerHandler = new Handler(new Handler.Callback() {
+		@Override
+		public boolean handleMessage(Message msg) {
 //			updateGraph();
-//			return false;
-//		}
-//	});
-//
-//	void startTimer () {
-//		stopTimer();
-//		updateTimer = new Timer("updateTimer",true);
-//		updateTimer.schedule(new TimerTask() {
-//			@Override
-//			public void run() {
-//				h.sendEmptyMessage(0);
-//			}
-//		}, 0, 60000 * Integer.valueOf(PreferenceManager.
-//				getDefaultSharedPreferences(this).
-//				getString(getString(R.string.pref_key_interval), "5")));
-//	}
-//	void stopTimer () {
-//		if (updateTimer != null) {
-//			updateTimer.cancel();
-//			updateTimer.purge();
-//			updateTimer = null;
-//		}
-//	}
+			return false;
+		}
+	});
+
+	void startTimer () {
+		stopTimer();
+		updateTimer = new Timer("updateTimer",true);
+		updateTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				timerHandler.sendEmptyMessage(0);
+			}
+		}, 0, 60000 * Integer.valueOf(PreferenceManager.
+				getDefaultSharedPreferences(getActivity().getApplicationContext()).getString(getString(R.string.pref_key_interval), "5")));
+	}
+	void stopTimer () {
+		if (updateTimer != null) {
+			updateTimer.cancel();
+			updateTimer.purge();
+			updateTimer = null;
+		}
+	}
 //	class Point {
 //		public long time;
 //		public float value;

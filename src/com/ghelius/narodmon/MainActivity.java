@@ -767,6 +767,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	private void sensorItemClick(int position) {
 
+		sensorInfoFragment.setId(listAdapter.getItem(position).id);
 		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
 		trans.replace(R.id.content_frame , sensorInfoFragment);
 		trans.addToBackStack(null);
