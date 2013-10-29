@@ -56,8 +56,8 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="312"
-                    android:id="@+id/textView1" android:textSize="18dp"/>
+                    android:text=""
+                    android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
         </LinearLayout>
         <LinearLayout
                 android:id="@+id/menu_item1"
@@ -76,8 +76,8 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="9"
-                    android:id="@+id/textView3" android:textSize="18dp"/>
+                    android:text=""
+                    android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
         </LinearLayout>
         <LinearLayout
                 android:id="@+id/menu_item2"
@@ -97,8 +97,8 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2"
-                    android:id="@+id/textView5" android:textSize="18dp"/>
+                    android:text=""
+                    android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
         </LinearLayout>
         <LinearLayout
                 android:id="@+id/menu_item3"
@@ -118,9 +118,9 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"
-                    android:id="@+id/textView5"
-                    android:textSize="18dp"/>
+                    android:text=""
+                    android:id="@+id/cnt"
+                    android:textSize="18dp" android:layout_marginRight="8dp"/>
         </LinearLayout>
         <LinearLayout
                 android:id="@+id/menu_item4"

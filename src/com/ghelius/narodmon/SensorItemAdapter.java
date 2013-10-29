@@ -28,6 +28,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     ConfigHolder config;
     private UiFlags uiFlags;
 	private boolean hideValue = false;
+	private SensorGroups groups = SensorGroups.All;
 
     public SensorItemAdapter(Context context, ArrayList<Sensor> values) {
         super(context, R.layout.sensor_list_item);
@@ -37,6 +38,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         config = ConfigHolder.getInstance(context);
 	    uiFlags = new UiFlags();
     }
+
+	enum SensorGroups {All, Watched, My}
 
     public void setUiFlags(UiFlags uiFlags) {
         this.uiFlags = uiFlags;
@@ -49,6 +52,11 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     public void update() {
         getFilter().filter("");
     }
+
+	public void setGroups (SensorGroups g) {
+		this.groups = g;
+		update();
+	}
 
     static class SensorNameComparator implements Comparator<Sensor> {
         @Override
@@ -87,7 +95,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			ArrayList<Sensor> tempFilteredItems = new ArrayList<Sensor>();
 
 			for (Sensor originItem : originItems) {
-				boolean my_match = uiFlags.showingMyOnly && originItem.my || !uiFlags.showingMyOnly;
+				boolean show_my = !(originItem.my && !(groups == SensorGroups.My)); // if wants 'my' and it's not my - return false, else true.
 
 				boolean type_match = true;
 				for (int i = 0; i < uiFlags.hidenTypes.size(); i++) {
@@ -96,7 +104,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 					}
 				}
 
-				if (my_match && type_match && (originItem.distance < uiFlags.radiusKm)) {
+				if (show_my && type_match && (originItem.distance < uiFlags.radiusKm)) {
 					tempFilteredItems.add(originItem);
 				}
 			}

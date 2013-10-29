@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -59,10 +60,8 @@ public class MainActivity extends ActionBarActivity implements
 	private ArrayList<Sensor> sensorList;
 	private SensorItemAdapter listAdapter;
 	private WatchedItemAdapter watchAdapter;
-	private WatchedItemAdapter mySensorsAdapter;
 	private Timer updateTimer = null;
 	private Timer gpsUpdateTimer = null;
-	//	private HorizontalPager mPager;
 	private LoginDialog loginDialog;
 	private UiFlags uiFlags;
 	private NarodmonApi narodmonApi;
@@ -75,7 +74,6 @@ public class MainActivity extends ActionBarActivity implements
 	private ActionBarDrawerToggle mDrawerToggle;
 	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
-	private String[] mPlanetTitles;
 
 
 
@@ -234,7 +232,7 @@ public class MainActivity extends ActionBarActivity implements
 				public void onClick(View v) {
 					clearMenuSelection();
 					Log.d(TAG,"click!" + v.getTag());
-					int menuBackgroundColor = Color.BLUE;
+					int menuBackgroundColor = Color.GRAY;
 					switch ((Integer)v.getTag()) {
 						case 0: // all
 							menuAllClicked();
@@ -320,7 +318,7 @@ public class MainActivity extends ActionBarActivity implements
 //				watchedItemClick(position);
 //			}
 //		});
-		mySensorsAdapter = new WatchedItemAdapter(getApplicationContext(), new ArrayList<Sensor>());
+//		mySensorsAdapter = new WatchedItemAdapter(getApplicationContext(), new ArrayList<Sensor>());
 //		myListView.setAdapter(mySensorsAdapter);
 
 //		ActionBar actionBar = getSupportActionBar();
@@ -372,6 +370,11 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 
+	private void updateMenuSensorCounts () {
+		((TextView)menuItems.get(0).findViewById(R.id.cnt)).setText(String.valueOf(listAdapter.getCount()));
+		((TextView)menuItems.get(1).findViewById(R.id.cnt)).setText(String.valueOf(ConfigHolder.getInstance(getApplicationContext()).getConfig().watchedId.size()));
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -392,23 +395,37 @@ public class MainActivity extends ActionBarActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// The action bar home/up action should open or close the drawer.
 		// ActionBarDrawerToggle will take care of this.
+
 		if (item.getItemId() == android.R.id.home && sensorInfoFragment.isVisible()) {
 			menuAllClicked();
-		} else {
-			if (mDrawerToggle.onOptionsItemSelected(item)) {
-				return true;
-			}
+			return true;
 		}
 		// Handle action buttons
-//		switch(item.getItemId()) {
-//		case android.R.id.home:
-//			if (sensorInfoFragment.isVisible()) {
-//				menuAllClicked();
-//			}
-//			return true;
-//		default:
-//			return super.onOptionsItemSelected(item);
-//		}
+		switch(item.getItemId()) {
+			case R.id.menu_settings:
+				Log.d(TAG, "start settings activity");
+				startActivity(new Intent(MainActivity.this, PreferActivity.class));
+				break;
+			case R.id.menu_refresh:
+				Log.d(TAG, "refresh sensor list");
+				updateSensorsList(true);
+				break;
+			case R.id.menu_login:
+				Log.d(TAG, "show login dialog");
+				loginDialog.show(getSupportFragmentManager(), "dlg2");
+				break;
+			case R.id.menu_help:
+				String url = "http://helius.github.com/narmon-client/";
+				Intent i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse(url));
+				startActivity(i);
+				break;
+			default:
+		}
+
+		if (mDrawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -716,6 +733,7 @@ public class MainActivity extends ActionBarActivity implements
 		Log.d(TAG, "---------------- List updated --------------");
 		setRefreshProgress(false);
 		listAdapter.update();
+		updateMenuSensorCounts();
 		updateWatchedList();
 	}
 
