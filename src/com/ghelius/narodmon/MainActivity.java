@@ -15,7 +15,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -32,13 +31,12 @@ public class MainActivity extends ActionBarActivity implements
 
 	private SensorInfoFragment sensorInfoFragment;
 	private FilterFragment filterFragment;
-	private ListFragment sensorListFragment;
+	private SensorListFragment sensorListFragment;
 	private Menu mOptionsMenu = null;
 	private boolean showProgress;
 	private CheckedListItemAdapter typeAdapter;
 	private int prevScreen = 1;
 	private long lastUpdateTime;
-	ListView fullListView;
 	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for update coordinates and sensor list
 	//	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for update coordinates and sensor list
 	private ArrayList<View> menuItems = new ArrayList<View>();
@@ -125,16 +123,10 @@ public class MainActivity extends ActionBarActivity implements
 		Log.d(TAG, "onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis()-lastUpdateTime));
 
 		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-		trans.replace(R.id.content_frame , sensorListFragment);
+		trans.replace(R.id.content_frame, sensorListFragment);
 		trans.commit();
 
-		listAdapter.notifyDataSetChanged();
-//		sensorListFragment.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//				sensorItemClick(position);
-//			}
-//		});
+//		listAdapter.notifyDataSetChanged();
 
 		updateSensorsList(false);
 
@@ -281,14 +273,17 @@ public class MainActivity extends ActionBarActivity implements
 
 		sensorInfoFragment = new SensorInfoFragment();
 		filterFragment = new FilterFragment();
-		sensorListFragment = new ListFragment();
+		sensorListFragment = new SensorListFragment();
+		sensorListFragment.setOnListItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				sensorItemClick(position);
+			}
+		});
 
 
 		uiFlags = UiFlags.load(this);
 
-//		fullListView = sensorListFragment.getListView();
-//		fullListView = (ListView)findViewById(R.id.sensorList);
-//		View filterView = View.inflate(this, R.layout.filter_dialog, null);
 
 
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
@@ -310,8 +305,6 @@ public class MainActivity extends ActionBarActivity implements
 		listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
 		listAdapter.setUiFlags(uiFlags);
 		sensorListFragment.setListAdapter(listAdapter);
-//		fullListView.setAdapter(listAdapter);
-//		fullListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 //		fullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //			@Override
 //			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
@@ -361,7 +354,7 @@ public class MainActivity extends ActionBarActivity implements
 		typeAdapter = new CheckedListItemAdapter(this, SensorTypeProvider.getInstance(getApplicationContext()).getTypesList());
 		typeAdapter.setItemChangeInterface(this);
 		typeAdapter.notifyDataSetChanged();
-		ListView typeListView = (ListView) findViewById(R.id.typeListView);
+//		ListView typeListView = (ListView) findViewById(R.id.typeListView);
 //		typeListView.setAdapter(typeAdapter);
 //		typeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //			@Override
@@ -399,16 +392,24 @@ public class MainActivity extends ActionBarActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// The action bar home/up action should open or close the drawer.
 		// ActionBarDrawerToggle will take care of this.
-		if (mDrawerToggle.onOptionsItemSelected(item)) {
-			return true;
+		if (item.getItemId() == android.R.id.home && sensorInfoFragment.isVisible()) {
+			menuAllClicked();
+		} else {
+			if (mDrawerToggle.onOptionsItemSelected(item)) {
+				return true;
+			}
 		}
 		// Handle action buttons
-		switch(item.getItemId()) {
-//        case R.id.action_websearch:
+//		switch(item.getItemId()) {
+//		case android.R.id.home:
+//			if (sensorInfoFragment.isVisible()) {
+//				menuAllClicked();
+//			}
 //			return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
+//		default:
+//			return super.onOptionsItemSelected(item);
+//		}
+		return super.onOptionsItemSelected(item);
 	}
 
 
@@ -595,6 +596,7 @@ public class MainActivity extends ActionBarActivity implements
 		/* 		return; */
 		/* 	} */
 		/* } */
+
 		if (force) {
 			lastUpdateTime = 0;
 			Log.d(TAG,"force update sensor list");
@@ -612,6 +614,7 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	public void updateSensorsValue() {
+
 		Log.d(TAG, "------------ update sensor value ---------------");
 		setRefreshProgress(true);
 		narodmonApi.updateSensorsValue(sensorList);
@@ -773,17 +776,6 @@ public class MainActivity extends ActionBarActivity implements
 //			findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.INVISIBLE);
 	}
 
-	private void myItemClick(int position) {
-		Intent i = new Intent(this, SensorInfo.class);
-		i.putExtra("Sensor", mySensorsAdapter.getItem(position));
-		startActivity(i);
-	}
-
-	private void watchedItemClick(int position) {
-		Intent i = new Intent(this, SensorInfo.class);
-		i.putExtra("Sensor", watchAdapter.getItem(position));
-		startActivity(i);
-	}
 
 	private void sensorItemClick(int position) {
 

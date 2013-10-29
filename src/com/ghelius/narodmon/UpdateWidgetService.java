@@ -1,7 +1,6 @@
 package com.ghelius.narodmon;
 
 
-import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
@@ -81,12 +80,13 @@ public class UpdateWidgetService extends Service {
 				remoteViews.setTextViewText(R.id.arrowUp, "");
 			}
 			// When we click the widget, we want to open our main activity.
-			Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
-			launchActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			launchActivity.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-			launchActivity.putExtra("sensorId", w.sensorId);
-			PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), w.widgetId, launchActivity, 0);
-			remoteViews.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
+			//TODO!!! we need to open sensor info!!
+//			Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
+//			launchActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//			launchActivity.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+//			launchActivity.putExtra("sensorId", w.sensorId);
+//			PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), w.widgetId, launchActivity, 0);
+//			remoteViews.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
 			appWidgetManager.updateAppWidget(w.widgetId, remoteViews);
 		}
 		dbh.close();

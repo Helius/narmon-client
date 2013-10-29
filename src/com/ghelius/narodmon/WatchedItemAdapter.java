@@ -57,7 +57,7 @@ public class WatchedItemAdapter extends ArrayAdapter<Sensor> {
 	    } else {
 		    holder.value.setTextColor(Color.WHITE);
 	    }
-        holder.bottomText.setText (vv + " (" + SensorInfo.getTimeSince(context, sensor.time) + ")");
+//        holder.bottomText.setText (vv + " (" + SensorInfo.getTimeSince(context, sensor.time) + ")");
 	    holder.icon.setImageDrawable(SensorTypeProvider.getInstance(context).getIcon(sensor.type));
         return v;
     }

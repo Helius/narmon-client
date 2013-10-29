@@ -44,6 +44,12 @@ public class SensorInfoFragment extends Fragment {
 	private LogPeriod oldPeriod;
 	private TextView value;
 
+	private GraphicalView mChart;
+	private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
+	private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
+	private TimeSeries timeSeries;
+	private XYSeriesRenderer mCurrentRenderer;
+
 
 	ArrayList<Sensor> getSavedList () {
 		final String fileName = "sensorList.obj";
@@ -64,6 +70,11 @@ public class SensorInfoFragment extends Fragment {
 		return sensorList;
 	}
 
+	@Override
+	public void onCreate (Bundle savedInstanceState) {
+		super.onCreate (savedInstanceState);
+		initChart();
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -263,6 +274,7 @@ public class SensorInfoFragment extends Fragment {
 //	}
 
 	private void updateGraph() {
+		Log.d(TAG,"updating graph...");
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
 		logGetter.getLog(sensorId, period, offset);
 		String title = "";
@@ -313,17 +325,16 @@ public class SensorInfoFragment extends Fragment {
 		return agoText;
 	}
 
-	private GraphicalView mChart;
-	private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
-	private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
-	private TimeSeries timeSeries;
-	private XYSeriesRenderer mCurrentRenderer;
 
 	private void initChart() {
+		Log.d(TAG,"init chart");
 		timeSeries = new TimeSeries("");
+		if (mDataset.getSeriesCount() != 0)
+			mDataset.removeSeries(mDataset.getSeriesCount()-1);
 		mDataset.addSeries(timeSeries);
 		mCurrentRenderer = new XYSeriesRenderer();
 
+		mRenderer.removeAllRenderers();
 		mRenderer.addSeriesRenderer(mCurrentRenderer);
 		mRenderer.setShowLabels(true);
 		mRenderer.setShowGrid(true);
@@ -344,21 +355,11 @@ public class SensorInfoFragment extends Fragment {
 		mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
 		mCurrentRenderer.setFillPoints(true);
 		mCurrentRenderer.setChartValuesTextSize(15);
-
-
-
 	}
 
 	private void addSampleData() {
 		if ((period == LogPeriod.day) && (offset == 0)) {
 			value.setText(String.valueOf(logData.get(logData.size()-1).value));
-		}
-		if (mChart == null) {
-			LinearLayout layout = (LinearLayout) getActivity().findViewById(R.id.sensorInfoChart);
-			initChart();
-			mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "H:mm");
-			layout.addView(mChart);
-			oldPeriod = period;
 		}
 		int max_gap = 1000*60;
 		if (period == LogPeriod.day) {
@@ -370,6 +371,7 @@ public class SensorInfoFragment extends Fragment {
 		}
 
 		if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format
+			Log.d(TAG,"recreate chart");
 			LinearLayout layout = (LinearLayout) getActivity().findViewById(R.id.sensorInfoChart);
 			layout.removeAllViews();
 			if (period == LogPeriod.day) {
@@ -409,6 +411,7 @@ public class SensorInfoFragment extends Fragment {
 
 	@Override
 	public void onResume() {
+		Log.d(TAG,"onResume");
 		super.onResume();
 		Sensor sensor = null;
 		Log.d(TAG, "id is " + sensorId);
@@ -430,6 +433,7 @@ public class SensorInfoFragment extends Fragment {
 		((TextView) getView().findViewById(R.id.text_type)).setText(SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getNameForType(sensor.type));
 //		((TextView) getView().findViewById(R.id.text_id)).setText(sensor.id);
 		((ImageView) getView().findViewById(R.id.info_sensor_icon)).setImageDrawable(SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getIcon(sensor.type));
+		value = (TextView) getView().findViewById(R.id.text_value);
 
 		TextView time = (TextView) getView().findViewById(R.id.text_time);
 
@@ -441,11 +445,8 @@ public class SensorInfoFragment extends Fragment {
 		time.setText(vv);
 
 		TextView ago = (TextView) getView().findViewById(R.id.text_ago);
-
 		ago.setText(getTimeSince(getActivity().getApplicationContext(), sensor.time));
 
-		value = (TextView) getView().findViewById(R.id.text_value);
-//		value.setText(sensor.value);
 
 		getActivity().findViewById(R.id.bt_graph_prev).setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -487,7 +488,7 @@ public class SensorInfoFragment extends Fragment {
 				}
 			}
 		});
-
+		oldPeriod = LogPeriod.year; // for create chart (in update)
 		startTimer();
 	}
 
@@ -496,6 +497,7 @@ public class SensorInfoFragment extends Fragment {
 
 	@Override
 	public void onPause () {
+		Log.d(TAG,"onPause");
 		super.onPause();
 		stopTimer();
 	}
