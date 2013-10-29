@@ -34,6 +34,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_TYPES_NAME = "name";
 	private static final String KEY_TYPES_UNIT = "unit";
 
+	// Sensors Table name
+	private static final String TABLE_SENSORS = "sensors";
+	// Sensors Table Columns names
+	private static final String KEY_SENSOR_CODE = "code";
+	private static final String KEY_SENSOR_NAME = "name";
+	private static final String KEY_SENSOR_TYPE = "type";
+	private static final String KEY_SENSOR_LOCATION = "location";
+	private static final String KEY_SENSOR_DISTANCE = "distance";
+	private static final String KEY_SENSOR_TIMESTAMP = "timestamp";
+	private static final String KEY_SENSOR_VALUE = "value";
+
+
+
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		Log.d(TAG,"create db helper");
@@ -58,6 +71,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_TYPES_UNIT + " TEXT"
 				+ ")";
 		db.execSQL(CREATE_TABLE);
+//		CREATE_TABLE = "CREATE TABLE " + TABLE_SENSORS + "("
+//				+ KEY_SENSOR_ID + " INTEGER PRIMARY KEY,"
+//				+ KEY_SENSOR_NAME + " TEXT,"
+//				+ KEY_SENSOR_TYPE + " INTEGER,"
+//				+ KEY_SENSOR_LOCATION + " TEXT,"
+//				+ KEY_SENSOR_DISTANCE + " INTEGER,"
+//				+ KEY_SENSOR_TIMESTAMP + " INTEGER,"
+//				+ KEY_SENSOR_VALUE + " TEXT"
+//				+ ")";
+//		db.execSQL(CREATE_TABLE);
 	}
 
 	// Upgrading database
