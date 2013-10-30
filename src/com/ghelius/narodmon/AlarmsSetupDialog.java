@@ -14,18 +14,23 @@ public class AlarmsSetupDialog extends android.support.v4.app.DialogFragment {
 
     private Float currentValue;
     private AlarmChangeListener listener;
-    private Configuration.SensorTask sensorTask;
+    private AlarmSensorTask sensorTask;
 
     private final static String TAG = "narodmon-info";
 
-    public void setSensorTask(Configuration.SensorTask sensorTask) {
+    public void setSensorTask(AlarmSensorTask sensorTask) {
         if (sensorTask != null) {
             this.sensorTask = sensorTask;
         }
     }
 
     public void setCurrentValue(String value) {
+	    try {
         this.currentValue = Float.valueOf(value);
+	    } catch (Exception e) {
+		    Log.e(TAG,"current value error: " + e.getMessage());
+		    this.currentValue = 0f;
+	    }
     }
 
     interface AlarmChangeListener {

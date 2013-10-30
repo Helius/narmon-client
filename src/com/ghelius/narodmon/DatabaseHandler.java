@@ -13,11 +13,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// All Static variables
 	private final static String TAG = "narodmon-dbh";
 	// Database Version
-	private static final int DATABASE_VERSION = 7;
+	private static final int DATABASE_VERSION = 10;
 	// Database Name
 	private static final String DATABASE_NAME = "miscDataBase";
 
-	// Widgets table name
+		/* Widgets table name */
 	private static final String TABLE_WIDGETS = "widget";
 	// Widgets Table Columns names
 	private static final String KEY_WIDGET_ID = "widget_id";
@@ -27,14 +27,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_LAST_VALUE = "last_value";
 	private static final String KEY_CUR_VALUE = "cur_value";
 
-	// Types Table name
+		/* Types Table name */
 	private static final String TABLE_TYPES = "types";
 	// Types Table Columns names
 	private static final String KEY_TYPES_CODE = "code";
 	private static final String KEY_TYPES_NAME = "name";
 	private static final String KEY_TYPES_UNIT = "unit";
 
-	// Sensors Table name
+		/* Favorites Table name */
+	private static final String TABLE_FAVORITES = "favorites";
+	// Types Table Columns names
+	private static final String KEY_FAVORITES_ID = "id";
+
+	/* Alarm tasks Table name */
+	private static final String TABLE_ALARMS = "alarms";
+	// Types Table Columns names
+	private static final String KEY_ALARM_SID = "id";
+	private static final String KEY_ALARM_JOB = "job";
+	private static final String KEY_ALARM_HI = "hi";
+	private static final String KEY_ALARM_LO = "lo";
+	private static final String KEY_ALARM_OLDVALUE = "oldvalue";
+
+		/* Sensors Table name */
 	private static final String TABLE_SENSORS = "sensors";
 	// Sensors Table Columns names
 	private static final String KEY_SENSOR_CODE = "code";
@@ -71,6 +85,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_TYPES_UNIT + " TEXT"
 				+ ")";
 		db.execSQL(CREATE_TABLE);
+		CREATE_TABLE = "CREATE TABLE " + TABLE_FAVORITES + "("
+				+ KEY_FAVORITES_ID + " INTEGER PRIMARY KEY"
+				+ ")";
+		db.execSQL(CREATE_TABLE);
+		CREATE_TABLE = "CREATE TABLE " + TABLE_ALARMS + "("
+				+ KEY_ALARM_SID + " INTEGER PRIMARY KEY,"
+				+ KEY_ALARM_JOB + " INTEGER,"
+				+ KEY_ALARM_HI + " TEXT,"
+				+ KEY_ALARM_LO + " TEXT,"
+				+ KEY_ALARM_OLDVALUE + " TEXT"
+				+ ")";
+		db.execSQL(CREATE_TABLE);
 //		CREATE_TABLE = "CREATE TABLE " + TABLE_SENSORS + "("
 //				+ KEY_SENSOR_ID + " INTEGER PRIMARY KEY,"
 //				+ KEY_SENSOR_NAME + " TEXT,"
@@ -89,7 +115,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		Log.d(TAG,"on upgrade");
 		ArrayList<Widget> widgets = new ArrayList<Widget>();
 		// get all widgets
-		String selectQuery = "SELECT  * FROM " + TABLE_WIDGETS;
+		String selectQuery = "SELECT * FROM " + TABLE_WIDGETS;
 		Cursor cursor = db.rawQuery(selectQuery, null);
 		// looping through all rows and adding to list
 		if (cursor != null && cursor.getCount()!= 0 && cursor.moveToFirst()) {
@@ -102,6 +128,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		// drop old table
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_WIDGETS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_TYPES);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITES);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_ALARMS);
 		// Create tables again
 		onCreate(db);
 		// fill with data
@@ -191,7 +219,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		// Select All Query
 		String selectQuery = "SELECT  * FROM " + TABLE_WIDGETS;
 
-		SQLiteDatabase db = this.getWritableDatabase();
+		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		// looping through all rows and adding to list
@@ -238,25 +266,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 	}
 
-//	public Widget getWidgetByWidgetId(int wID) {
-//		SQLiteDatabase db = this.getReadableDatabase();
-//
-//		Cursor cursor = db.query(TABLE_WIDGETS, new String[] { KEY_WIDGET_ID,
-//				KEY_SENSOR_ID, KEY_NAME, KEY_TYPE }, KEY_WIDGET_ID + "=?",
-//				new String[] { String.valueOf(wID) }, null, null, null, null);
-//		Widget widget = new Widget();
-//		if (cursor != null) {
-//			cursor.moveToFirst();
-//			if (cursor.getCount() != 0)
-//				do {
-//					widget = new Widget(Integer.parseInt(cursor.getString(0)),Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3));
-//				} while (cursor.moveToNext());
-//			cursor.close();
-//		}
-//		db.close();
-//		return widget;
-//	}
-
 	//	public int updateWidget(Contact contact) {
 //		SQLiteDatabase db = this.getWritableDatabase();
 //
@@ -280,5 +289,119 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.update(TABLE_WIDGETS, values, KEY_WIDGET_ID + " = ?", new String[] { String.valueOf(w.widgetId) });
 		db.close();
 	}
+
+
+	/**--------- FAVORITES ---------*/
+
+	public ArrayList<Integer> getFavorites () {
+		ArrayList<Integer> favorList = new ArrayList<Integer>();
+		// Select All Query
+		String selectQuery = "SELECT * FROM " + TABLE_FAVORITES;
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		// looping through all rows and adding to list
+		if (cursor != null && cursor.getCount()!= 0 && cursor.moveToFirst()) {
+			do {
+				// fill list with row
+				favorList.add(cursor.getInt(0));
+			} while (cursor.moveToNext());
+			cursor.close();
+		}
+		db.close();
+		return favorList;
+	}
+
+	void addFavorites (Integer id) {
+		Log.d(TAG, "add favorites: " + id);
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_FAVORITES_ID, id);
+
+		// Inserting Row
+		db.insertWithOnConflict(TABLE_FAVORITES, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+		db.close(); // Closing database connection
+	}
+
+	void removeFavorites (Integer id) {
+		Log.d(TAG, "del favorites: " + id);
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_FAVORITES, KEY_FAVORITES_ID + " = ?", new String[]{String.valueOf(id)});
+		db.close(); // Closing database connection
+	}
+
+
+	/**--------- ALARM TASKS ---------*/
+	ArrayList<AlarmSensorTask> getAlarmTask () {
+		ArrayList<AlarmSensorTask> tasks = new ArrayList<AlarmSensorTask>();
+		// Select All Query
+		String selectQuery = "SELECT * FROM " + TABLE_ALARMS;
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		// looping through all rows and adding to list
+		if (cursor != null && cursor.getCount()!= 0 && cursor.moveToFirst()) {
+			do {
+				// fill list with row
+				Float hi    = Float.valueOf(cursor.getString(2));
+				Float lo    = Float.valueOf(cursor.getString(3));
+				Float value = Float.valueOf(cursor.getString(4));
+				tasks.add(new AlarmSensorTask(cursor.getInt(0),cursor.getInt(1),hi,lo,value));
+			} while (cursor.moveToNext());
+			cursor.close();
+		}
+		db.close();
+		return tasks;
+	}
+
+	AlarmSensorTask getAlarmById(Integer id) {
+		String selectQuery = "SELECT * FROM " + TABLE_ALARMS + " WERE "+ KEY_ALARM_SID +" =?" + id;
+
+		SQLiteDatabase db = this.getReadableDatabase();
+//		Cursor cursor = db.rawQuery(selectQuery, null);
+		Cursor cursor = db.query(TABLE_ALARMS, new String[] {KEY_ALARM_SID,KEY_ALARM_JOB,KEY_ALARM_HI,KEY_ALARM_LO,KEY_ALARM_OLDVALUE}, KEY_ALARM_SID + " =?",  new String[] {String.valueOf(id)}, null, null,null,null);
+		AlarmSensorTask task = null;
+		// looping through all rows and adding to list
+		if (cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()) {
+
+			// fill list with row
+			Float hi = Float.valueOf(cursor.getString(2));
+			Float lo = Float.valueOf(cursor.getString(3));
+			Float value = Float.valueOf(cursor.getString(4));
+			task = new AlarmSensorTask(cursor.getInt(0), cursor.getInt(1), hi, lo, value);
+		}
+		if (cursor!=null)
+			cursor.close();
+
+		db.close();
+		return task;
+	}
+
+	void addAlarm (AlarmSensorTask task) {
+		Log.d(TAG, "add alarm for " + task.id);
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_ALARM_SID, task.id);
+		values.put(KEY_ALARM_JOB, task.job);
+		values.put(KEY_ALARM_HI, String.valueOf(task.hi));
+		values.put(KEY_ALARM_LO, String.valueOf(task.lo));
+		values.put(KEY_ALARM_OLDVALUE, String.valueOf(-999));
+
+		// Inserting Row
+		db.insertWithOnConflict(TABLE_ALARMS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+		db.close(); // Closing database connection
+	}
+
+	void removeAlarm (Integer id) {
+		Log.d(TAG, "del alarm: " + id);
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete(TABLE_ALARMS, KEY_ALARM_SID + " = ?", new String[] { String.valueOf(id) });
+		db.close(); // Closing database connection
+	}
+
 }
 

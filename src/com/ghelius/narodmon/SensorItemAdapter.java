@@ -93,9 +93,14 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			Log.d(TAG, "performFiltering");
 			FilterResults filteredResult = new FilterResults();
 			ArrayList<Sensor> tempFilteredItems = new ArrayList<Sensor>();
+			ArrayList<Integer> favorites = null;
+			if (groups ==  SensorGroups.Watched) {
+				favorites = new DatabaseHandler(context).getFavorites();
+			}
 
 			for (Sensor originItem : originItems) {
 				boolean show_my = !(originItem.my && !(groups == SensorGroups.My)); // if wants 'my' and it's not my - return false, else true.
+				boolean show_watched = (!(groups == SensorGroups.Watched) || favorites.contains(originItem.id)); // if wants 'favorites' and it's not - return false, else true.
 
 				boolean type_match = true;
 				for (int i = 0; i < uiFlags.hidenTypes.size(); i++) {
@@ -104,7 +109,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 					}
 				}
 
-				if (show_my && type_match && (originItem.distance < uiFlags.radiusKm)) {
+				if (show_my && show_watched && type_match && (originItem.distance < uiFlags.radiusKm)) {
 					tempFilteredItems.add(originItem);
 				}
 			}
@@ -148,6 +153,15 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 	@Override
 	public int getCount() {
 		return localItems.size();
+	}
+
+	public int getMyCount() {
+		int i = 0;
+		for (Sensor s: originItems) {
+			if (s.my)
+				i++;
+		}
+		return i;
 	}
 
 	@Override

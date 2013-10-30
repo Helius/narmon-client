@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -49,6 +50,18 @@ public class SensorInfoFragment extends Fragment {
 	private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
 	private TimeSeries timeSeries;
 	private XYSeriesRenderer mCurrentRenderer;
+
+	private FavoritesChangeListener listener = null;
+
+	interface FavoritesChangeListener {
+		void favoritesChange();
+	}
+
+	public void setFavoritesChangeListener (FavoritesChangeListener listener) {
+		this.listener = listener;
+	}
+
+
 
 
 	ArrayList<Sensor> getSavedList () {
@@ -488,10 +501,65 @@ public class SensorInfoFragment extends Fragment {
 				}
 			}
 		});
+
+
+		final ImageButton monitor = (ImageButton) getActivity().findViewById(R.id.addMonitoring);
+
+		DatabaseHandler dbh = new DatabaseHandler(getActivity().getApplicationContext());
+		ArrayList<Integer> favorites = dbh.getFavorites();
+		if (favorites.contains(sensorId)) { // we are favorite!
+			monitor.setImageResource(R.drawable.btn_star_big_on);
+		} else {
+			monitor.setImageResource(R.drawable.btn_star_big_off);
+		}
+		monitor.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG,"monitoring onClick");
+				DatabaseHandler dbh = new DatabaseHandler(getActivity().getApplicationContext());
+				ArrayList<Integer> favorites = dbh.getFavorites();
+				if (favorites.contains(sensorId)) { // we are favorite!
+					// remove us
+					dbh.removeFavorites(sensorId);
+					monitor.setImageResource(R.drawable.btn_star_big_off);
+				} else {
+					// add us
+					dbh.addFavorites(sensorId);
+					monitor.setImageResource(R.drawable.btn_star_big_on);
+				}
+				if (listener != null)
+					listener.favoritesChange();
+			}
+		});
+
+		final ImageButton alarm = (ImageButton) getActivity().findViewById(R.id.alarmSetup);
+		final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
+		final Sensor s = sensor;
+		alarm.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.setCurrentValue(String.valueOf(value.getText()));
+				DatabaseHandler dbh = new DatabaseHandler(getActivity().getApplicationContext());
+				AlarmSensorTask task = dbh.getAlarmById(s.id);
+				if (task != null) {
+					Log.d(TAG, "Found: SensorTask with job " + task.job);
+				} else {
+					Log.e(TAG, "Cant find sensorTask");
+				}
+				dialog.setSensorTask(task);
+				dialog.show(getActivity().getSupportFragmentManager(), "alarmDialog");
+
+//				if () {
+//					alarm.setImageResource(R.drawable.alarm_blue);
+//				} else {
+//					alarm.setImageResource(R.drawable.alarm_gray);
+//				}
+			}
+		});
+
 		oldPeriod = LogPeriod.year; // for create chart (in update)
 		startTimer();
 	}
-
 
 
 

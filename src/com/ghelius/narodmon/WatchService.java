@@ -137,7 +137,7 @@ public class WatchService extends WakefulIntentService {
 	        dbh = new DatabaseHandler(getApplicationContext());
         Log.d(TAG,"nmWatcher work...");
         Configuration config = ConfigHolder.getInstance(this).getConfig();
-	    ArrayList<Widget> widgetsList = (ArrayList<Widget>) dbh.getAllWidgets();
+	    ArrayList<Widget> widgetsList = dbh.getAllWidgets();
 	    Log.d(TAG,"widget size: "+ widgetsList.size());
         updater = new SensorDataUpdater();
         Log.d(TAG, "start update");

@@ -28,7 +28,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends ActionBarActivity implements
-		SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface {
+		SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface, SensorInfoFragment.FavoritesChangeListener {
 
 	private SensorInfoFragment sensorInfoFragment;
 	private FilterFragment filterFragment;
@@ -51,6 +51,12 @@ public class MainActivity extends ActionBarActivity implements
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public void favoritesChange() {
+		int favoritesCnt = new DatabaseHandler(getApplicationContext()).getFavorites().size();
+		((TextView)menuItems.get(1).findViewById(R.id.cnt)).setText(String.valueOf(favoritesCnt));
 	}
 
 	enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -236,15 +242,12 @@ public class MainActivity extends ActionBarActivity implements
 					switch ((Integer)v.getTag()) {
 						case 0: // all
 							menuAllClicked();
-							setTitle("All");
 							break;
 						case 1: // watched
 							menuWatchedClicked();
-							setTitle("Watched");
 							break;
 						case 2: // my
 							menuMyClicked();
-							setTitle("My");
 							break;
 						case 3: // filter
 							menuFilterClicked();
@@ -264,12 +267,9 @@ public class MainActivity extends ActionBarActivity implements
 			});
 		}
 
-//		if (savedInstanceState == null) {
-//			selectItem(0);
-//		}
-
 
 		sensorInfoFragment = new SensorInfoFragment();
+		sensorInfoFragment.setFavoritesChangeListener(this);
 		filterFragment = new FilterFragment();
 		sensorListFragment = new SensorListFragment();
 		sensorListFragment.setOnListItemClickListener(new AdapterView.OnItemClickListener() {
@@ -278,6 +278,7 @@ public class MainActivity extends ActionBarActivity implements
 				sensorItemClick(position);
 			}
 		});
+
 
 
 		uiFlags = UiFlags.load(this);
@@ -372,7 +373,8 @@ public class MainActivity extends ActionBarActivity implements
 
 	private void updateMenuSensorCounts () {
 		((TextView)menuItems.get(0).findViewById(R.id.cnt)).setText(String.valueOf(listAdapter.getCount()));
-		((TextView)menuItems.get(1).findViewById(R.id.cnt)).setText(String.valueOf(ConfigHolder.getInstance(getApplicationContext()).getConfig().watchedId.size()));
+		((TextView)menuItems.get(2).findViewById(R.id.cnt)).setText(String.valueOf(listAdapter.getMyCount()));
+		favoritesChange();
 	}
 
 	@Override
@@ -467,19 +469,21 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	private void menuWatchedClicked() {
-		//To change body of created methods use File | Settings | File Templates.
-		Toast.makeText(getApplicationContext(), "Watched", Toast.LENGTH_SHORT).show();
+		listAdapter.setGroups(SensorItemAdapter.SensorGroups.Watched);
+		setTitle("Favourites");
 	}
 
 	private void menuMyClicked() {
-		//To change body of created methods use File | Settings | File Templates.
-		Toast.makeText(getApplicationContext(), "My", Toast.LENGTH_SHORT).show();
+		listAdapter.setGroups(SensorItemAdapter.SensorGroups.My);
+		setTitle("My");
 	}
 
 	private void menuAllClicked() {
+		listAdapter.setGroups(SensorItemAdapter.SensorGroups.All);
 		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
 		trans.replace(R.id.content_frame , sensorListFragment);
 		trans.commit();
+		setTitle("All");
 	}
 
 	private void clearMenuSelection () {
