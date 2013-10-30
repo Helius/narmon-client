@@ -28,7 +28,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends ActionBarActivity implements
-		SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface, SensorInfoFragment.FavoritesChangeListener {
+		SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface, SensorInfoFragment.SensorConfigChangeListener {
 
 	private SensorInfoFragment sensorInfoFragment;
 	private FilterFragment filterFragment;
@@ -57,6 +57,11 @@ public class MainActivity extends ActionBarActivity implements
 	public void favoritesChange() {
 		int favoritesCnt = new DatabaseHandler(getApplicationContext()).getFavorites().size();
 		((TextView)menuItems.get(1).findViewById(R.id.cnt)).setText(String.valueOf(favoritesCnt));
+	}
+
+	@Override
+	public void alarmChanged() {
+		//TODO: need to calc alarms and show it
 	}
 
 	enum LoginStatus {LOGIN, LOGOUT, ERROR}

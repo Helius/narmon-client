@@ -14,14 +14,12 @@ public class AlarmsSetupDialog extends android.support.v4.app.DialogFragment {
 
     private Float currentValue;
     private AlarmChangeListener listener;
-    private AlarmSensorTask sensorTask;
+    private AlarmSensorTask sensorTask=null;
 
     private final static String TAG = "narodmon-info";
 
     public void setSensorTask(AlarmSensorTask sensorTask) {
-        if (sensorTask != null) {
-            this.sensorTask = sensorTask;
-        }
+        this.sensorTask = sensorTask;
     }
 
     public void setCurrentValue(String value) {
@@ -33,8 +31,9 @@ public class AlarmsSetupDialog extends android.support.v4.app.DialogFragment {
 	    }
     }
 
-    interface AlarmChangeListener {
-        void onAlarmChange (int job, Float hi, Float lo);
+
+	interface AlarmChangeListener {
+        void onAlarmChange (AlarmSensorTask task);
     }
 
     public void setOnAlarmChangeListener (AlarmChangeListener l) {
@@ -56,24 +55,28 @@ public class AlarmsSetupDialog extends android.support.v4.app.DialogFragment {
         getView().findViewById(R.id.AcceptButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null) {
-                    Float hi = (float) 0;
-                    try {
-                        hi = Float.valueOf(((EditText) getView().findViewById(R.id.hiLimit)).getText().toString());
-                    } catch (Exception e) {
-                        Log.e(TAG, "Can't parce float " + e.getMessage());
-                    }
-                    Float lo = (float) 0;
-                    try {
-                        lo = Float.valueOf(((EditText) getView().findViewById(R.id.lowLimit)).getText().toString());
-                    } catch (Exception e) {
-                        Log.e(TAG, "Can't parce float " + e.getMessage());
-                    }
-                    Log.d(TAG, "onClick: call listener for save alarm");
-                    listener.onAlarmChange(((Spinner)getView().findViewById(R.id.AlarmSpinner)).getSelectedItemPosition(), hi, lo);
-                } else
-                    Log.e(TAG,"listener is null");
-                dismiss();
+	            Float hi = (float) 0;
+	            try {
+		            hi = Float.valueOf(((EditText) getView().findViewById(R.id.hiLimit)).getText().toString());
+	            } catch (Exception e) {
+		            Log.e(TAG, "Can't parce float " + e.getMessage());
+	            }
+	            Float lo = (float) 0;
+	            try {
+		            lo = Float.valueOf(((EditText) getView().findViewById(R.id.lowLimit)).getText().toString());
+	            } catch (Exception e) {
+		            Log.e(TAG, "Can't parce float " + e.getMessage());
+	            }
+	            Log.d(TAG, "onClick: call listener for save alarm");
+//                    listener.onAlarmChange(((Spinner)getView().findViewById(R.id.AlarmSpinner)).getSelectedItemPosition(), hi, lo);
+	            if (listener != null)
+		            listener.onAlarmChange (new AlarmSensorTask(
+				            sensorTask.id,
+				            ((Spinner)getView().findViewById(R.id.AlarmSpinner)).getSelectedItemPosition(),
+				            hi,
+				            lo,
+				            sensorTask.lastValue));
+	            dismiss();
             }
         });
 
@@ -85,8 +88,8 @@ public class AlarmsSetupDialog extends android.support.v4.app.DialogFragment {
             textLo.setText(String.valueOf(sensorTask.lo));
             spinner.setSelection(sensorTask.job);
             if (sensorTask.job == 0) {
-                textHi.setText(String.valueOf(currentValue + 10.0));
-                textLo.setText(String.valueOf(currentValue - 10.0));
+                textHi.setText(String.valueOf(currentValue + 10));
+                textLo.setText(String.valueOf(currentValue - 10));
             }
         }
 

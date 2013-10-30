@@ -33,7 +33,7 @@ import java.io.ObjectInputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class SensorInfoFragment extends Fragment {
+public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.AlarmChangeListener {
 
 	private final String TAG = "narodmon-info";
 	private int sensorId = -1;
@@ -51,13 +51,24 @@ public class SensorInfoFragment extends Fragment {
 	private TimeSeries timeSeries;
 	private XYSeriesRenderer mCurrentRenderer;
 
-	private FavoritesChangeListener listener = null;
+	private SensorConfigChangeListener listener = null;
 
-	interface FavoritesChangeListener {
-		void favoritesChange();
+	/**
+	 * Called when user press Ok button on dialog
+	 */
+	@Override
+	public void onAlarmChange(AlarmSensorTask task) {
+		new DatabaseHandler(getActivity().getApplicationContext()).addAlarm(task);
+		if (listener!=null)
+			listener.alarmChanged();
 	}
 
-	public void setFavoritesChangeListener (FavoritesChangeListener listener) {
+	interface SensorConfigChangeListener {
+		void favoritesChange();
+		void alarmChanged();
+	}
+
+	public void setFavoritesChangeListener (SensorConfigChangeListener listener) {
 		this.listener = listener;
 	}
 
@@ -534,6 +545,7 @@ public class SensorInfoFragment extends Fragment {
 
 		final ImageButton alarm = (ImageButton) getActivity().findViewById(R.id.alarmSetup);
 		final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
+		dialog.setOnAlarmChangeListener(this);
 		final Sensor s = sensor;
 		alarm.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -544,16 +556,12 @@ public class SensorInfoFragment extends Fragment {
 				if (task != null) {
 					Log.d(TAG, "Found: SensorTask with job " + task.job);
 				} else {
-					Log.e(TAG, "Cant find sensorTask");
+					Log.e(TAG, "Cant find sensorTask, create empty");
+					Float val = Float.valueOf(String.valueOf(value.getText()));
+					task = new AlarmSensorTask(sensorId,0,0f,0f,val);
 				}
 				dialog.setSensorTask(task);
 				dialog.show(getActivity().getSupportFragmentManager(), "alarmDialog");
-
-//				if () {
-//					alarm.setImageResource(R.drawable.alarm_blue);
-//				} else {
-//					alarm.setImageResource(R.drawable.alarm_gray);
-//				}
 			}
 		});
 
