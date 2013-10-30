@@ -65,7 +65,6 @@ public class MainActivity extends ActionBarActivity implements
 	private final String TAG = "narodmon-main";
 	private ArrayList<Sensor> sensorList;
 	private SensorItemAdapter listAdapter;
-	private WatchedItemAdapter watchAdapter;
 	private Timer updateTimer = null;
 	private Timer gpsUpdateTimer = null;
 	private LoginDialog loginDialog;
@@ -279,11 +278,7 @@ public class MainActivity extends ActionBarActivity implements
 			}
 		});
 
-
-
 		uiFlags = UiFlags.load(this);
-
-
 
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
@@ -292,47 +287,16 @@ public class MainActivity extends ActionBarActivity implements
 		// get android UUID
 		final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
 		apiHeader = config.getApiHeader();
-//        if ((apiHeader == null) || (apiHeader.length() < 2)) {
 		uid = NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID));
 		Log.d(TAG, "android ID: " + uid);
 		apiHeader = "{\"uuid\":\"" + uid +
 				"\",\"api_key\":\"" + api_key + "\",";
 		config.setApiHeader(apiHeader);
-//        }
 
 
 		listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
 		listAdapter.setUiFlags(uiFlags);
 		sensorListFragment.setListAdapter(listAdapter);
-//		fullListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-//				sensorItemClick(position);
-//			}
-//		});
-		watchAdapter = new WatchedItemAdapter(getApplicationContext(), new ArrayList<Sensor>());
-//		watchedListView.setAdapter(watchAdapter);
-//		watchedListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-//		watchedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-//				watchedItemClick(position);
-//			}
-//		});
-//		mySensorsAdapter = new WatchedItemAdapter(getApplicationContext(), new ArrayList<Sensor>());
-//		myListView.setAdapter(mySensorsAdapter);
-
-//		ActionBar actionBar = getSupportActionBar();
-//		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-//		actionBar.setDisplayShowTitleEnabled(false);
-//		actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(this, R.array.action_list,
-//				android.R.layout.simple_spinner_dropdown_item), new ActionBar.OnNavigationListener() {
-//			@Override
-//			public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-////				mPager.setCurrentScreen(itemPosition, true);
-//				return true;
-//			}
-//		});
 
 		loginDialog = new LoginDialog();
 		loginDialog.setOnChangeListener(this);
@@ -738,7 +702,6 @@ public class MainActivity extends ActionBarActivity implements
 		setRefreshProgress(false);
 		listAdapter.update();
 		updateMenuSensorCounts();
-		updateWatchedList();
 	}
 
 	@Override
@@ -748,55 +711,8 @@ public class MainActivity extends ActionBarActivity implements
 		if (!ok) return;
 		SensorTypeProvider.getInstance(getApplicationContext()).setTypesFromString(res);
 		listAdapter.notifyDataSetChanged();
-		watchAdapter.notifyDataSetChanged();
 	}
 
-
-	private void updateWatchedList() {
-//		ArrayList<Sensor> watchedList = new ArrayList<Sensor>();
-//		for (Configuration.SensorTask storedItem : ConfigHolder.getInstance(getApplicationContext()).getConfig().watchedId) {
-//			boolean found = false;
-//			for (Sensor aSensorList : sensorList) {
-//				if (storedItem.id == aSensorList.id) {
-//					// watched item online
-//					aSensorList.online = true;
-//					watchedList.add(aSensorList);
-//					found = true;
-//					break;
-//				}
-//			}
-//			if (!found) {
-//				// watched item offline
-//				watchedList.add(new Sensor(storedItem));
-//			}
-//		}
-//		watchAdapter.clear();
-//		// for compatibility reason
-//		for (Sensor aWatchedList : watchedList) {
-//			watchAdapter.add(aWatchedList);
-//		}
-//		watchAdapter.notifyDataSetChanged();
-//
-//		// fill my sensors screen
-//		mySensorsAdapter.clear();
-//		Log.d(TAG, "find `my` sensors");
-//		for (int i = 0; i < sensorList.size(); i++) {
-//			if (sensorList.get(i).my) {
-//				mySensorsAdapter.add(sensorList.get(i));
-//			}
-//		}
-//		mySensorsAdapter.notifyDataSetChanged();
-//
-//		if (watchAdapter.isEmpty())
-//			findViewById(R.id.watchedListEmptyMsg).setVisibility(View.VISIBLE);
-//		else
-//			findViewById(R.id.watchedListEmptyMsg).setVisibility(View.INVISIBLE);
-//
-//		if (mySensorsAdapter.isEmpty())
-//			findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.VISIBLE);
-//		else
-//			findViewById(R.id.mySensorsEmptyMsg).setVisibility(View.INVISIBLE);
-	}
 
 
 	private void sensorItemClick(int position) {

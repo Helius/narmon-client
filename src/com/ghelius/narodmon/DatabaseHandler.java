@@ -358,10 +358,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	AlarmSensorTask getAlarmById(Integer id) {
-		String selectQuery = "SELECT * FROM " + TABLE_ALARMS + " WERE "+ KEY_ALARM_SID +" =?" + id;
-
 		SQLiteDatabase db = this.getReadableDatabase();
-//		Cursor cursor = db.rawQuery(selectQuery, null);
 		Cursor cursor = db.query(TABLE_ALARMS, new String[] {KEY_ALARM_SID,KEY_ALARM_JOB,KEY_ALARM_HI,KEY_ALARM_LO,KEY_ALARM_OLDVALUE}, KEY_ALARM_SID + " =?",  new String[] {String.valueOf(id)}, null, null,null,null);
 		AlarmSensorTask task = null;
 		// looping through all rows and adding to list
