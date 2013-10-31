@@ -58,6 +58,11 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 	 */
 	@Override
 	public void onAlarmChange(AlarmSensorTask task) {
+		if (task.job == AlarmSensorTask.NOTHING) {
+			((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_gray);
+		} else {
+			((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_blue);
+		}
 		new DatabaseHandler(getActivity().getApplicationContext()).addAlarm(task);
 		if (listener!=null)
 			listener.alarmChanged();
@@ -547,6 +552,13 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 		final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
 		dialog.setOnAlarmChangeListener(this);
 		final Sensor s = sensor;
+
+		AlarmSensorTask task = new DatabaseHandler(getActivity().getApplicationContext()).getAlarmById(s.id);
+		if (task == null || task.job == AlarmSensorTask.NOTHING) {
+			((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_gray);
+		} else {
+			((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_blue);
+		}
 		alarm.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

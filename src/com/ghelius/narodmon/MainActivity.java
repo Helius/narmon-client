@@ -234,6 +234,7 @@ public class MainActivity extends ActionBarActivity implements
 		menuItems.add(findViewById(R.id.menu_item2));
 		menuItems.add(findViewById(R.id.menu_item3));
 		menuItems.add(findViewById(R.id.menu_item4));
+		menuItems.add(findViewById(R.id.menu_item5));
 		int i = 0;
 		for (View view : menuItems) {
 			view.setTag(i++);
@@ -253,11 +254,14 @@ public class MainActivity extends ActionBarActivity implements
 						case 2: // my
 							menuMyClicked();
 							break;
-						case 3: // filter
+						case 3: // alarm
+							menuAlarmClicked();
+							break;
+						case 4: // filter
 							menuFilterClicked();
 							setTitle("Filter");
 							break;
-						case 4: // graph
+						case 5: // graph
 							menuGraphClicked();
 							setTitle("Graphs");
 							break;
@@ -338,6 +342,7 @@ public class MainActivity extends ActionBarActivity implements
 //		});
 		initLocationUpdater();
 	}
+
 
 
 	private void updateMenuSensorCounts () {
@@ -445,6 +450,10 @@ public class MainActivity extends ActionBarActivity implements
 	private void menuMyClicked() {
 		listAdapter.setGroups(SensorItemAdapter.SensorGroups.My);
 		setTitle("My");
+	}
+
+	private void menuAlarmClicked() {
+		//To change body of created methods use File | Settings | File Templates.
 	}
 
 	private void menuAllClicked() {
