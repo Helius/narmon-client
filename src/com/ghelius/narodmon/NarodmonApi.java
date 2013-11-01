@@ -144,7 +144,7 @@ public class NarodmonApi {
         @Override
         public void onNoResult() {
             getter = null;
-            Log.w(TAG, "listUpdater: Server not responds");
+            Log.e(TAG, "listUpdater: Server not responds");
             if (listener != null)
                 listener.onSensorListResult(false, "");
         }
@@ -237,7 +237,7 @@ public class NarodmonApi {
         @Override
         public void onNoResult() {
             getter = null;
-            Log.w(TAG, "valueUpdater: Server not responds");
+            Log.e(TAG, "valueUpdater: Server not responds");
             if (listener != null)
                 listener.onSensorListResult(false, "");
         }
