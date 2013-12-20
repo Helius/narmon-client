@@ -380,6 +380,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 		mRenderer.setXLabelsAlign(Paint.Align.CENTER);
 		mRenderer.setXLabels(10);
 
+
 		mCurrentRenderer.setColor(0xFF00FF00);
 		mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
 		mCurrentRenderer.setFillPoints(true);

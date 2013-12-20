@@ -10,7 +10,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RemoteViews;
-import com.commonsware.cwac.wakeful.WakefulIntentService;
+
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -64,7 +64,7 @@ public class WidgetConfigActivity extends ActionBarActivity {
 				appWidgetManager.updateAppWidget(mAppWidgetId, views);
 
 				// start watch service for update data
-				WakefulIntentService.sendWakefulWork(getApplicationContext(), WatchService.class);
+			    WakefulIntentService.sendWakefulWork(getApplicationContext(), WatchService.class);
 
 				// config done
 				Intent resultValue = new Intent();
