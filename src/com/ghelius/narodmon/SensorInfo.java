@@ -335,6 +335,9 @@ public class SensorInfo extends SherlockFragmentActivity {
     }
 
     private void addSampleData() {
+	    if (period == LogPeriod.day && offset == 0 && !logData.isEmpty()) {
+		    ((TextView)findViewById(R.id.text_value)).setText(String.valueOf(logData.get(logData.size()-1).value));
+	    }
     if (mChart == null) {
             LinearLayout layout = (LinearLayout) findViewById(R.id.sensorInfoChart);
             initChart();
