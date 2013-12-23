@@ -109,4 +109,7 @@
     <string name="select_sensor_text">Select sensor</string>
     <string name="enter_widget_name_text">Enter widget name:</string>
     <string name="widget_label">Public monitoring</string>
+    <string name="sensor_not_available_msg">Sensor information not available. Sensor is private or was disabled by
+        user.
+    </string>
 </resources>

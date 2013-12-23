@@ -20,6 +20,9 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 	private SharedPreferences prefs;
 	private Button loginButton = null;
 	private TextView loginStatus = null;
+	private CheckBox autoCheckBox;
+	private TextView passwordTextView;
+	private TextView loginTextView;
 
 	public void updateLoginStatus() {
 		if (listener.loginStatus() == MainActivity.LoginStatus.LOGIN)
@@ -31,6 +34,7 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 
 	private void updateLoginStatusText () {
 		if (loginStatus != null) {
+			setFeildsEnable(true);
 			if (listener.loginStatus() == MainActivity.LoginStatus.LOGIN)
 				loginStatus.setText(getString(R.string.login_dialog_youarelogin));
 			else if (listener.loginStatus() == MainActivity.LoginStatus.LOGOUT)
@@ -75,7 +79,7 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 			prefs = listener.getPreference();
 
 
-		TextView loginTextView = (TextView) v.findViewById(R.id.login_textview);
+		loginTextView = (TextView) v.findViewById(R.id.login_textview);
 		loginTextView.setText(prefs.getString(getString(R.string.pref_key_login),""));
 		loginTextView.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -92,7 +96,7 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 			}
 		});
 
-		TextView passwordTextView = (TextView) v.findViewById(R.id.passwordTextEdit);
+		passwordTextView = (TextView) v.findViewById (R.id.passwordTextEdit);
 		passwordTextView.setText(prefs.getString(getString(R.string.pref_key_passwd), ""));
 		passwordTextView.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -105,7 +109,7 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 			}
 		});
 
-		CheckBox autoCheckBox = (CheckBox) v.findViewById(R.id.loginAutoCheckBox);
+		autoCheckBox = (CheckBox) v.findViewById(R.id.loginAutoCheckBox);
 		autoCheckBox.setChecked(prefs.getBoolean(getString(R.string.pref_key_autologin),false));
 		autoCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
@@ -121,6 +125,7 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 			@Override
 			public void onClick(View v) {
 				loginButton.setEnabled(false);
+				setFeildsEnable(false);
 				if (listener.loginStatus() == MainActivity.LoginStatus.LOGIN)
 					listener.logout();
 				else
@@ -131,6 +136,18 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 		updateButtonText();
 		updateLoginStatusText();
 		return v;
+	}
+
+	private void setFeildsEnable (boolean enable) {
+		if (enable) {
+			passwordTextView.setEnabled(true);
+			loginTextView.setEnabled(true);
+			autoCheckBox.setEnabled(true);
+		} else {
+			passwordTextView.setEnabled(false);
+			loginTextView.setEnabled(false);
+			autoCheckBox.setEnabled(false);
+		}
 	}
 
 	@Override
