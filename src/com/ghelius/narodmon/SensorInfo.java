@@ -37,6 +37,7 @@ public class SensorInfo extends SherlockFragmentActivity {
     private SensorLogGetter logGetter;
     private int id;
     private LogPeriod oldPeriod;
+	private boolean sensorNotAvailable = false;
 
 
 
@@ -63,33 +64,33 @@ public class SensorInfo extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
 	    setTheme(com.actionbarsherlock.R.style.Theme_Sherlock);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sensorinfo);
         final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
         Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            finish();
-	        return;
-        }
-        logGetter = new SensorLogGetter();
-
-        Sensor tmp_sensor = (Sensor)extras.getSerializable("Sensor");
-	    if (tmp_sensor == null) {
-		    Log.d(TAG,"extra don't contain sensor, try get ID");
-		    int sensorId = extras.getInt("sensorId", -1);
-		    if (sensorId != -1) {
-			    Log.d(TAG,"id is " + sensorId);
-			    ArrayList<Sensor> sList = getSavedList();
-			    for (Sensor s: sList) {
-				    if (s.id == sensorId) {
-					    tmp_sensor = s;
+	    Sensor tmp_sensor = null;
+	    if (extras != null) {
+		    logGetter = new SensorLogGetter();
+		    tmp_sensor = (Sensor) extras.getSerializable("Sensor");
+		    if (tmp_sensor == null) {
+			    Log.d(TAG, "extra don't contain sensor, try get ID");
+			    int sensorId = extras.getInt("sensorId", -1);
+			    if (sensorId != -1) {
+				    Log.d(TAG, "id is " + sensorId);
+				    ArrayList<Sensor> sList = getSavedList();
+				    for (Sensor s : sList) {
+					    if (s.id == sensorId) {
+						    tmp_sensor = s;
+					    }
 				    }
 			    }
-		    } else {
-			    Log.e(TAG,"extra don't contain ID or ID not found, so return");
-			    finish();
-			    return;
 		    }
 	    }
+	    if (tmp_sensor == null) {
+		    Log.e(TAG,"extra don't contain ID or ID not found, so return");
+		    setContentView(R.layout.sensorinfonotfound);
+		    sensorNotAvailable = true;
+		    return;
+	    }
+	    setContentView(R.layout.sensorinfo);
 	    final Sensor sensor = tmp_sensor;
         id = sensor.id;
         TextView name = (TextView) findViewById(R.id.text_name);
@@ -391,7 +392,8 @@ public class SensorInfo extends SherlockFragmentActivity {
     @Override
     public void onResume() {
         super.onResume();
-        startTimer();
+	    if (!sensorNotAvailable)
+            startTimer();
     }
 
     @Override
