@@ -31,5 +31,5 @@
                android:layout_height="match_parent"
                android:id="@+id/img"
                android:contentDescription="wtf"
-            />
+        android:padding="3dp" />
 </LinearLayout>
