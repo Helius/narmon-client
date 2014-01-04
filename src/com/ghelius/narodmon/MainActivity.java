@@ -77,6 +77,7 @@ public class MainActivity extends ActionBarActivity implements
         boolean canBack = getSupportFragmentManager().getBackStackEntryCount()>0;
         Log.d(TAG,"shouldDisplayHomeUp is " + canBack);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
+        mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
     }
 
     @Override
