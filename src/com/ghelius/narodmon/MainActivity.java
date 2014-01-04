@@ -15,9 +15,11 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.*;
@@ -28,7 +30,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends ActionBarActivity implements
-		SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface, SensorInfoFragment.SensorConfigChangeListener {
+		SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface, SensorInfoFragment.SensorConfigChangeListener, FragmentManager.OnBackStackChangedListener {
 
 	private SensorInfoFragment sensorInfoFragment;
 	private FilterFragment filterFragment;
@@ -64,7 +66,28 @@ public class MainActivity extends ActionBarActivity implements
 		//TODO: need to calc alarms and show it
 	}
 
-	enum LoginStatus {LOGIN, LOGOUT, ERROR}
+    @Override
+    public void onBackStackChanged() {
+        Log.d(TAG,"onBackStackChanged");
+        shouldDisplayHomeUp();
+    }
+
+    public void shouldDisplayHomeUp(){
+        //Enable Up button only  if there are entries in the back stack
+        boolean canBack = getSupportFragmentManager().getBackStackEntryCount()>0;
+        Log.d(TAG,"shouldDisplayHomeUp is " + canBack);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        Log.d(TAG,"onSupportNavigateUp");
+        //This method is called when the up button is pressed. Just the pop back stack.
+        getSupportFragmentManager().popBackStack();
+        return true;
+    }
+
+    enum LoginStatus {LOGIN, LOGOUT, ERROR}
 
 	private static final String api_key = "85UneTlo8XBlA";
 	private final String TAG = "narodmon-main";
@@ -82,7 +105,6 @@ public class MainActivity extends ActionBarActivity implements
 	private DrawerLayout mDrawerLayout;
 	private View mDrawerMenu;
 	private ActionBarDrawerToggle mDrawerToggle;
-	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
 
 
@@ -165,18 +187,6 @@ public class MainActivity extends ActionBarActivity implements
 		super.onDestroy();
 	}
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		switch (keyCode) {
-//			case KeyEvent.KEYCODE_BACK:
-//			case KeyEvent.KEYCODE_ESCAPE:
-//				if (prevScreen == 0) {
-//					mPager.setCurrentScreen(1, true);
-//					return true;
-//				}
-//		}
-		return super.onKeyDown(keyCode, event);
-	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -197,15 +207,15 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		mTitle = mDrawerTitle = getTitle();
-//		mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+		mTitle = "All";
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		mDrawerMenu = (View)findViewById(R.id.menu_view);
+		mDrawerMenu   = findViewById(R.id.left_menu_view);
 		// set a custom shadow that overlays the main content when the drawer opens
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 		// enable ActionBar app icon to behave as action to toggle nav drawer
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
 		getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
@@ -222,7 +232,7 @@ public class MainActivity extends ActionBarActivity implements
 			}
 
 			public void onDrawerOpened(View drawerView) {
-				getSupportActionBar().setTitle(mDrawerTitle);
+				getSupportActionBar().setTitle(mTitle);
 //				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
 		};
@@ -341,6 +351,7 @@ public class MainActivity extends ActionBarActivity implements
 //			}
 //		});
 		initLocationUpdater();
+        setTitle(mTitle);
 	}
 
 
@@ -372,10 +383,12 @@ public class MainActivity extends ActionBarActivity implements
 		// The action bar home/up action should open or close the drawer.
 		// ActionBarDrawerToggle will take care of this.
 
-		if (item.getItemId() == android.R.id.home && sensorInfoFragment.isVisible()) {
-			menuAllClicked();
-			return true;
-		}
+
+        if (item.getItemId() == android.R.id.home && getSupportFragmentManager().getBackStackEntryCount()>0) {
+            getSupportFragmentManager().popBackStack();
+            return true;
+        }
+
 		// Handle action buttons
 		switch(item.getItemId()) {
 			case R.id.menu_settings:
@@ -439,6 +452,7 @@ public class MainActivity extends ActionBarActivity implements
 	private void menuFilterClicked() {
 		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
 		trans.replace(R.id.content_frame , filterFragment);
+        trans.addToBackStack(null);
 		trans.commit();
 	}
 

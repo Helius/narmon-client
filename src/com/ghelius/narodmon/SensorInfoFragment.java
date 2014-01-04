@@ -635,7 +635,8 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 			}
 			// now we have full data, paint graph
 			Log.d(TAG,"add log data to graph, items count: " + logData.size());
-			addSampleData();
+            if (getView()!=null)
+			    addSampleData();
 			getter = null;
 		}
 

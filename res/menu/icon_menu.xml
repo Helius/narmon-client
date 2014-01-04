@@ -7,7 +7,7 @@
     <item android:id="@+id/item1"
           android:title="@string/menu_text_filter"
           android:icon="@android:drawable/ic_menu_sort_by_size"
-          android:showAsAction="always|withText"
+          android:showAsAction="always"
           android:onClick="showFilterDialog"
           />
 <group android:id="@+id/group">
