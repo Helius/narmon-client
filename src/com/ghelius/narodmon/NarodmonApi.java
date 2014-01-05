@@ -97,7 +97,7 @@ public class NarodmonApi {
     }
 
     /*
-    * Class for get full sensor list from server, parse it and put to sensorList and update listAdapter
+    * Class for get full sensor list from server, parse it and put to sensorList and updateFilter listAdapter
     * */
     private class ListUpdater implements ServerDataGetter.OnResultListener, ServerDataGetter.AsyncJobCallbackInterface {
         ServerDataGetter getter;
@@ -204,7 +204,7 @@ public class NarodmonApi {
     }
 
     /*
-    * Class for update values for sensors id set
+    * Class for updateFilter values for sensors id set
     * */
     private class ValueUpdater implements ServerDataGetter.OnResultListener, ServerDataGetter.AsyncJobCallbackInterface {
         ServerDataGetter getter;

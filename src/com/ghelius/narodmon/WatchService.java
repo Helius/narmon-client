@@ -99,12 +99,12 @@ public class WatchService extends WakefulIntentService {
 	                    if (ConfigHolder.getInstance(getApplicationContext()).isSensorWatched(id))
 	                        checkLimits(id, Float.valueOf(value), Long.valueOf(time));
 
-//	                    update widgets value
+//	                    updateFilter widgets value
 	                    Log.d(TAG,"\nwidget for:" + id);
 	                    ArrayList<Widget> widgets = dbh.getWidgetsBySensorId(id);
 	                    for (Widget w: widgets) {
 		                    widgetsFound = true;
-		                    Log.d(TAG,"sensor is widget, update value: " + w.screenName + "w.last=" + w.lastValue + "w.cur=" + w.curValue + "will set cur=" + value);
+		                    Log.d(TAG,"sensor is widget, updateFilter value: " + w.screenName + "w.last=" + w.lastValue + "w.cur=" + w.curValue + "will set cur=" + value);
 		                    w.lastValue = w.curValue;
 		                    w.curValue = Float.valueOf(value);
 		                    dbh.updateValueByWidgetId(w);
@@ -139,7 +139,7 @@ public class WatchService extends WakefulIntentService {
 	    ArrayList<Widget> widgetsList = dbh.getAllWidgets();
 	    Log.d(TAG,"widget size: "+ widgetsList.size());
         updater = new SensorDataUpdater();
-        Log.d(TAG, "start update");
+        Log.d(TAG, "start updateFilter");
         ids.clear();
         for (int i = 0; i < config.watchedId.size(); i++) {
             ids.add(config.watchedId.get(i).id);

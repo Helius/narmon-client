@@ -30,7 +30,7 @@ public class WidgetConfigActivity extends ActionBarActivity {
 		ListView list = (ListView) findViewById(R.id.listView);
 		adapter = new SensorItemAdapter(getApplicationContext(), getSavedList());
 		adapter.hideValue(true);
-		adapter.update();
+		adapter.updateFilter();
 		dbh = new DatabaseHandler(getApplicationContext());
 
 		list.setAdapter(adapter);
@@ -63,7 +63,7 @@ public class WidgetConfigActivity extends ActionBarActivity {
 //				views.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
 				appWidgetManager.updateAppWidget(mAppWidgetId, views);
 
-				// start watch service for update data
+				// start watch service for updateFilter data
 			    WakefulIntentService.sendWakefulWork(getApplicationContext(), WatchService.class);
 
 				// config done

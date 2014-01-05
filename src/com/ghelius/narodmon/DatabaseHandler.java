@@ -242,7 +242,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //		values.put(KEY_PH_NO, contact.getPhoneNumber());
 //
 //		// updating row
-//		return db.update(TABLE_WIDGETS, values, KEY_ID + " = ?",
+//		return db.updateFilter(TABLE_WIDGETS, values, KEY_ID + " = ?",
 //				new String[] { String.valueOf(contact.getID()) });
 //	}
 
@@ -274,7 +274,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //		values.put(KEY_PH_NO, contact.getPhoneNumber());
 //
 //		// updating row
-//		return db.update(TABLE_WIDGETS, values, KEY_ID + " = ?",
+//		return db.updateFilter(TABLE_WIDGETS, values, KEY_ID + " = ?",
 //				new String[] { String.valueOf(contact.getID()) });
 //	}
 	public void updateValueByWidgetId(Widget w) {

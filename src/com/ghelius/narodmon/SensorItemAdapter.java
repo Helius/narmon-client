@@ -49,13 +49,13 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 		hideValue = hide;
 	}
 
-    public void update() {
+    public void updateFilter() {
         getFilter().filter("");
     }
 
 	public void setGroups (SensorGroups g) {
 		this.groups = g;
-		update();
+		updateFilter();
 	}
 
     static class SensorNameComparator implements Comparator<Sensor> {
@@ -99,8 +99,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			}
 
 			for (Sensor originItem : originItems) {
-				boolean show_my = !(originItem.my && !(groups == SensorGroups.My)); // if wants 'my' and it's not my - return false, else true.
-				boolean show_watched = (!(groups == SensorGroups.Watched) || favorites.contains(originItem.id)); // if wants 'favorites' and it's not - return false, else true.
+				boolean show_my = !(!originItem.my && (groups == SensorGroups.My)); // if wants 'my' and it's not my - return false, else true.
+				boolean show_watched = !(groups == SensorGroups.Watched) || favorites.contains(originItem.id); // if wants 'favorites' and it's not - return false, else true.
 
 				boolean type_match = true;
 				for (int i = 0; i < uiFlags.hidenTypes.size(); i++) {

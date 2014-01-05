@@ -19,7 +19,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.*;
@@ -30,30 +29,25 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends ActionBarActivity implements
-		SharedPreferences.OnSharedPreferenceChangeListener, NarodmonApi.onResultReceiveListener, LoginDialog.LoginEventListener, CheckedListItemAdapter.ItemChangeInterface, SensorInfoFragment.SensorConfigChangeListener, FragmentManager.OnBackStackChangedListener {
+		SharedPreferences.OnSharedPreferenceChangeListener,
+        NarodmonApi.onResultReceiveListener,
+        LoginDialog.LoginEventListener,
+        SensorInfoFragment.SensorConfigChangeListener,
+        FragmentManager.OnBackStackChangedListener,
+        FilterFragment.OnFilterChangeListener {
 
 	private SensorInfoFragment sensorInfoFragment;
 	private FilterFragment filterFragment;
 	private SensorListFragment sensorListFragment;
 	private Menu mOptionsMenu = null;
 	private boolean showProgress;
-	private CheckedListItemAdapter typeAdapter;
+//	private CheckedListItemAdapter typeAdapter;
 	private int prevScreen = 1;
 	private long lastUpdateTime;
-	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for update coordinates and sensor list
-	//	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for update coordinates and sensor list
+	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for updateFilter coordinates and sensor list
+	//	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 	private ArrayList<View> menuItems = new ArrayList<View>();
 
-	@Override
-	public boolean isItemChecked(int position) {
-//		Log.d(TAG, "isItemChecked: " + position + ", in " + uiFlags.hidenTypes);
-		for (int i = 0; i < uiFlags.hidenTypes.size(); i++) {
-			if (typeAdapter.getItem(position).code == uiFlags.hidenTypes.get(i)) {
-				return false;
-			}
-		}
-		return true;
-	}
 
 	@Override
 	public void favoritesChange() {
@@ -88,6 +82,17 @@ public class MainActivity extends ActionBarActivity implements
         return true;
     }
 
+    @Override
+    public void filterChange() {
+        listAdapter.updateFilter();
+    }
+
+    @Override
+    public UiFlags returnUiFlags() {
+        return uiFlags;
+    }
+
+
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
 
 	private static final String api_key = "85UneTlo8XBlA";
@@ -113,7 +118,7 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		Log.d(TAG, "onSharedPreferenceChanged " + key);
-		if (key.equals(getString(R.string.pref_key_interval))) { // update interval changed
+		if (key.equals(getString(R.string.pref_key_interval))) { // updateFilter interval changed
 			scheduleAlarmWatcher();
 			startUpdateTimer();
 		} else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
@@ -138,11 +143,11 @@ public class MainActivity extends ActionBarActivity implements
 		// it's first start, gps data may be not ready or gps not used, so we use prev coordinates always first time
 		if (lat != 0.0f && lng != 0.0f)
 			narodmonApi.setLocation(lat, lng);
-		if (useGps) { // if use gps, just update location periodically, set to api, don't use saved value
+		if (useGps) { // if use gps, just updateFilter location periodically, set to api, don't use saved value
 			Log.d(TAG, "init location updater: we use gps");
 			startGpsTimer();
 			updateLocation();
-		} else { // if use address, use this value and set to api, this value update and save in location result callback
+		} else { // if use address, use this value and set to api, this value updateFilter and save in location result callback
 			Log.d(TAG, "init location updater: we use address");
 			narodmonApi.sendLocation(prefs.getString(getString(R.string.pref_key_geoloc), ""));
 		}
@@ -334,23 +339,6 @@ public class MainActivity extends ActionBarActivity implements
 		sendBroadcast(intent);
 		scheduleAlarmWatcher();
 
-		typeAdapter = new CheckedListItemAdapter(this, SensorTypeProvider.getInstance(getApplicationContext()).getTypesList());
-		typeAdapter.setItemChangeInterface(this);
-		typeAdapter.notifyDataSetChanged();
-//		ListView typeListView = (ListView) findViewById(R.id.typeListView);
-//		typeListView.setAdapter(typeAdapter);
-//		typeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//				if (uiFlags.hidenTypes.contains(typeAdapter.getItem(position).code)) {
-//					uiFlags.hidenTypes.remove((Integer) typeAdapter.getItem(position).code);
-//				} else {
-//					uiFlags.hidenTypes.add((Integer) typeAdapter.getItem(position).code);
-//				}
-//				typeAdapter.notifyDataSetChanged();
-//				listAdapter.update();
-//			}
-//		});
 		initLocationUpdater();
         setTitle(mTitle);
 	}
@@ -486,122 +474,6 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 
-	// init filter ui from uiFlags
-	private void setFilterData() {
-		RadioGroup radioGroup1 = (RadioGroup) findViewById(R.id.radiogroupe_sort);
-		if (uiFlags.sortType == UiFlags.SortType.distance)
-			radioGroup1.check(R.id.radioButtonSortDistance);
-		else if (uiFlags.sortType == UiFlags.SortType.name)
-			radioGroup1.check(R.id.radioButtonSortName);
-		else if (uiFlags.sortType == UiFlags.SortType.time)
-			radioGroup1.check(R.id.radioButtonSortTime);
-		else if (uiFlags.sortType == UiFlags.SortType.type)
-			radioGroup1.check(R.id.radioButtonSortType);
-
-		RadioButton btSortDistance = (RadioButton) findViewById(R.id.radioButtonSortDistance);
-		btSortDistance.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (!isChecked)
-					return;
-				Log.d(TAG, "check distance");
-				uiFlags.sortType = UiFlags.SortType.distance;
-				((RadioButton) findViewById(R.id.radioButtonSortName)).setChecked(false);
-				((RadioButton) findViewById(R.id.radioButtonSortType)).setChecked(false);
-				((RadioButton) findViewById(R.id.radioButtonSortTime)).setChecked(false);
-				listAdapter.update();
-			}
-		});
-		RadioButton btSortName = (RadioButton) findViewById(R.id.radioButtonSortName);
-		btSortName.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (!isChecked)
-					return;
-				Log.d(TAG, "check name");
-				uiFlags.sortType = UiFlags.SortType.name;
-				((RadioButton) findViewById(R.id.radioButtonSortDistance)).setChecked(false);
-				((RadioButton) findViewById(R.id.radioButtonSortType)).setChecked(false);
-				((RadioButton) findViewById(R.id.radioButtonSortTime)).setChecked(false);
-				listAdapter.update();
-			}
-		});
-		RadioButton btSortType = (RadioButton) findViewById(R.id.radioButtonSortType);
-		btSortType.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (!isChecked)
-					return;
-				Log.d(TAG, "check type");
-				uiFlags.sortType = UiFlags.SortType.type;
-				((RadioButton) findViewById(R.id.radioButtonSortName)).setChecked(false);
-				((RadioButton) findViewById(R.id.radioButtonSortDistance)).setChecked(false);
-				((RadioButton) findViewById(R.id.radioButtonSortTime)).setChecked(false);
-				listAdapter.update();
-			}
-		});
-		RadioButton btSortTime = (RadioButton) findViewById(R.id.radioButtonSortTime);
-		btSortTime.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (!isChecked)
-					return;
-				Log.d(TAG, "check time");
-				uiFlags.sortType = UiFlags.SortType.time;
-				((RadioButton) findViewById(R.id.radioButtonSortName)).setChecked(false);
-				((RadioButton) findViewById(R.id.radioButtonSortType)).setChecked(false);
-				((RadioButton) findViewById(R.id.radioButtonSortDistance)).setChecked(false);
-				listAdapter.update();
-			}
-		});
-
-
-		SeekBar radius = (SeekBar) findViewById(R.id.radius_seekerbar);
-		radius.setMax(15);
-		radius.setProgress((int) (Math.log(uiFlags.radiusKm) / Math.log(2)));
-		final TextView radiusValue = (TextView) findViewById(R.id.radius_value);
-		radiusValue.setText(String.valueOf(uiFlags.radiusKm));
-		radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				int distance = (int) Math.pow(2, progress);
-				radiusValue.setText(String.valueOf(distance));
-				if (distance != 0)
-					uiFlags.radiusKm = distance;
-				else
-					uiFlags.radiusKm = 1;
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-			}
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-				listAdapter.update();
-			}
-		});
-
-
-		((Button) findViewById(R.id.filter_select_all)).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				uiFlags.hidenTypes.clear();
-				typeAdapter.notifyDataSetChanged();
-				listAdapter.update();
-			}
-		});
-		((Button) findViewById(R.id.filter_select_none)).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				for (int i = 0; i < SensorTypeProvider.getInstance(getApplicationContext()).getTypesList().size(); i++) {
-					uiFlags.hidenTypes.add(SensorTypeProvider.getInstance(getApplicationContext()).getTypesList().get(i).code);
-				}
-				typeAdapter.notifyDataSetChanged();
-				listAdapter.update();
-			}
-		});
-	}
 
 
 	public void updateSensorsList(boolean force) {
@@ -613,7 +485,7 @@ public class MainActivity extends ActionBarActivity implements
 
 		if (force) {
 			lastUpdateTime = 0;
-			Log.d(TAG,"force update sensor list");
+			Log.d(TAG,"force updateFilter sensor list");
 		}
 
 		if (System.currentTimeMillis()-lastUpdateTime < gpsUpdateIntervalMs) {
@@ -629,7 +501,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	public void updateSensorsValue() {
 
-		Log.d(TAG, "------------ update sensor value ---------------");
+		Log.d(TAG, "------------ updateFilter sensor value ---------------");
 		setRefreshProgress(true);
 		narodmonApi.updateSensorsValue(sensorList);
 	}
@@ -729,7 +601,7 @@ public class MainActivity extends ActionBarActivity implements
 	public void onSensorListResult(boolean ok, String res) {
 		Log.d(TAG, "---------------- List updated --------------");
 		setRefreshProgress(false);
-		listAdapter.update();
+		listAdapter.updateFilter();
 		updateMenuSensorCounts();
 	}
 
@@ -760,7 +632,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	// called by pressing refresh button (define via xml onClick)
 	public void onUpdateBtnPress(MenuItem item) {
-		/*now we update only sensor value, not full list for traffic economy*/
+		/*now we updateFilter only sensor value, not full list for traffic economy*/
 //		updateSensorsList(true);
 		updateSensorsValue();
 	}
@@ -812,7 +684,7 @@ public class MainActivity extends ActionBarActivity implements
 			public void run() {
 				gpsTimerHandler.sendEmptyMessage(0);
 			}
-		}, gpsUpdateIntervalMs, gpsUpdateIntervalMs); // update gps data timeout 10 min
+		}, gpsUpdateIntervalMs, gpsUpdateIntervalMs); // updateFilter gps data timeout 10 min
 
 	}
 

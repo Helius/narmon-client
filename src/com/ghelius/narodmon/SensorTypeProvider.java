@@ -53,7 +53,7 @@ public class SensorTypeProvider {
     }
 
     public void setTypesFromString (String res) {
-	    Log.d(TAG,"update types");
+	    Log.d(TAG,"updateFilter types");
         DatabaseHandler dbh = new DatabaseHandler(context);
 	    parseString(res);
 	    for (SensorType t : typesList) {
@@ -108,6 +108,14 @@ public class SensorTypeProvider {
 				return context.getResources().getDrawable(R.drawable.ethernet_icon);
 			case 9:
 				return context.getResources().getDrawable(R.drawable.rain_icon);
+            case 10:
+                return context.getResources().getDrawable(R.drawable.switch_icon);
+            case 11:
+                return context.getResources().getDrawable(R.drawable.sun_icon);
+            case 12:
+                return context.getResources().getDrawable(R.drawable.radiation_icon);
+            case 13:
+                return context.getResources().getDrawable(R.drawable.voltage_icon);
 		}
 		return context.getResources().getDrawable(R.drawable.unknown_icon);
 	}

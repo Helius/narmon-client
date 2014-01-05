@@ -40,7 +40,7 @@ public class UpdateWidgetService extends Service {
 //					R.layout.widget_layout);
 //			Log.w("WidgetExample", String.valueOf(number));
 //			// Set the text
-//			remoteViews.setTextViewText(R.id.update,
+//			remoteViews.setTextViewText(R.id.updateFilter,
 //					"Random: " + String.valueOf(number));
 //
 //			// Register an onClickListener
@@ -53,18 +53,18 @@ public class UpdateWidgetService extends Service {
 //
 //			PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, clickIntent,
 //					PendingIntent.FLAG_UPDATE_CURRENT);
-//			remoteViews.setOnClickPendingIntent(R.id.update, pendingIntent);
+//			remoteViews.setOnClickPendingIntent(R.id.updateFilter, pendingIntent);
 //			appWidgetManager.updateAppWidget(widgetId, remoteViews);
 //		}
 
 
 		RemoteViews remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-		// update widgets for with sensor
+		// updateFilter widgets for with sensor
 		DatabaseHandler dbh = new DatabaseHandler(getApplicationContext());
 		ArrayList<Widget> widgets = dbh.getAllWidgets();
 		for (Widget w: widgets) {
-			Log.d(TAG,"update: " + w.screenName + ", curr: " + w.curValue + ", last: " + w.lastValue);
+			Log.d(TAG,"updateFilter: " + w.screenName + ", curr: " + w.curValue + ", last: " + w.lastValue);
 			remoteViews.setTextViewText(R.id.value, String.valueOf(w.curValue));
 			remoteViews.setTextViewText(R.id.name, w.screenName);
 			remoteViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(getApplicationContext()).getIcon(w.type)).getBitmap());

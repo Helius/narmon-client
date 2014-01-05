@@ -578,7 +578,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 			}
 		});
 
-		oldPeriod = LogPeriod.year; // for create chart (in update)
+		oldPeriod = LogPeriod.year; // for create chart (in updateFilter)
 		startTimer();
 	}
 

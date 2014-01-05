@@ -20,7 +20,7 @@ public class CheckedListItemAdapter extends ArrayAdapter<SensorType> {
 		boolean isItemChecked (int position);
 	}
 
-	public void setItemChangeInterface (ItemChangeInterface listener) {
+	public void setItemChangeListener(ItemChangeInterface listener) {
 		this.listener = listener;
 	}
 
