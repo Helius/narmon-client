@@ -39,10 +39,8 @@ public class MainActivity extends ActionBarActivity implements
 	private SensorInfoFragment sensorInfoFragment;
 	private FilterFragment filterFragment;
 	private SensorListFragment sensorListFragment;
-	private Menu mOptionsMenu = null;
 	private boolean showProgress;
-//	private CheckedListItemAdapter typeAdapter;
-	private int prevScreen = 1;
+    private Menu mOptionsMenu;
 	private long lastUpdateTime;
 	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for updateFilter coordinates and sensor list
 	//	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
@@ -353,6 +351,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+        mOptionsMenu = menu;
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.icon_menu, menu);
 		return super.onCreateOptionsMenu(menu);
@@ -448,10 +447,16 @@ public class MainActivity extends ActionBarActivity implements
 	private void menuWatchedClicked() {
 		listAdapter.setGroups(SensorItemAdapter.SensorGroups.Watched);
 		setTitle("Favourites");
+        if (listAdapter.getMyCount() == 0) {
+            //TODO: show message
+        }
 	}
 
 	private void menuMyClicked() {
 		listAdapter.setGroups(SensorItemAdapter.SensorGroups.My);
+        if (listAdapter.getMyCount() == 0) {
+            //TODO: show message
+        }
 		setTitle("My");
 	}
 
@@ -627,27 +632,26 @@ public class MainActivity extends ActionBarActivity implements
 
 	// called by action (define via xml onClick)
 	public void showFilterDialog(MenuItem item) {
-//		mPager.setCurrentScreen(0, true);
+        menuFilterClicked();
 	}
 
 	// called by pressing refresh button (define via xml onClick)
 	public void onUpdateBtnPress(MenuItem item) {
-		/*now we updateFilter only sensor value, not full list for traffic economy*/
-//		updateSensorsList(true);
+		/* now we updateFilter only sensor value, not full list for traffic economy */
 		updateSensorsValue();
 	}
 
 	private void setRefreshProgress(boolean refreshing) {
-//		if (mOptionsMenu != null) {
-//			final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
-//			if (refreshItem != null) {
-//				if (refreshing) {
-//					refreshItem.setActionView(R.layout.actionbar_indeterminate_progress);
-//				} else {
-//					refreshItem.setActionView(null);
-//				}
-//			}
-//		}
+		if (mOptionsMenu != null) {
+			final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
+			if (refreshItem != null) {
+				if (refreshing) {
+					refreshItem.setActionView(R.layout.actionbar_indeterminate_progress);
+				} else {
+					refreshItem.setActionView(null);
+				}
+			}
+		}
 	}
 
 	final Handler updateTimerHandler = new Handler(new Handler.Callback() {
