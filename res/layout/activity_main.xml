@@ -122,28 +122,6 @@
                     android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
         </LinearLayout>
         <LinearLayout
-                android:id="@+id/menu_item4"
-                android:clickable="true"
-                android:editable="true"
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Filter"
-                    android:id="@+id/myTextView"
-                    android:layout_weight="1"
-                    android:textSize="24dp"
-                    android:layout_margin="10dp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:id="@+id/cnt"
-                    android:textSize="18dp" android:layout_marginRight="8dp"/>
-        </LinearLayout>
-        <LinearLayout
                 android:id="@+id/menu_item5"
                 android:clickable="true"
                 android:editable="true"

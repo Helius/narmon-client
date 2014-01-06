@@ -70,6 +70,11 @@ public class MainActivity extends ActionBarActivity implements
         Log.d(TAG,"shouldDisplayHomeUp is " + canBack);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
         mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
+        if (canBack) {
+            mOptionsMenu.clear();
+        } else {
+            supportInvalidateOptionsMenu();
+        }
     }
 
     @Override
@@ -247,7 +252,6 @@ public class MainActivity extends ActionBarActivity implements
 		menuItems.add(findViewById(R.id.menu_item1));
 		menuItems.add(findViewById(R.id.menu_item2));
 		menuItems.add(findViewById(R.id.menu_item3));
-		menuItems.add(findViewById(R.id.menu_item4));
 		menuItems.add(findViewById(R.id.menu_item5));
 		int i = 0;
 		for (View view : menuItems) {
@@ -271,10 +275,10 @@ public class MainActivity extends ActionBarActivity implements
 						case 3: // alarm
 							menuAlarmClicked();
 							break;
-						case 4: // filter
-							menuFilterClicked();
-							setTitle("Filter");
-							break;
+//						case 4: // filter
+//							menuFilterClicked();
+//							setTitle("Filter");
+//							break;
 						case 5: // graph
 							menuGraphClicked();
 							setTitle("Graphs");
@@ -442,6 +446,7 @@ public class MainActivity extends ActionBarActivity implements
 		trans.replace(R.id.content_frame , filterFragment);
         trans.addToBackStack(null);
 		trans.commit();
+        mOptionsMenu.clear();
 	}
 
 	private void menuWatchedClicked() {

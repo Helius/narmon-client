@@ -7,65 +7,50 @@
         android:layout_height="fill_parent">
     <LinearLayout
                   android:orientation="vertical"
-                  android:layout_width="wrap_content"
+                  android:layout_width="300dp"
                   android:layout_height="wrap_content">
 
         <LinearLayout
                 android:orientation="horizontal"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:layout_gravity="left|center_vertical"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+            android:paddingBottom="20dp">
             <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:id="@+id/info_sensor_icon" android:layout_gravity="center" android:src="@drawable/ic_launcher"
                     android:scaleType="fitStart"/>
+
             <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:layout_marginLeft="100dp">
-                <ImageButton
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:id="@+id/addMonitoring"
-                        android:src="@drawable/btn_star_big_off"
-                        android:layout_gravity="center"
-                        android:layout_marginRight="10dp" android:clickable="true" android:background="#000000FF"
-                        android:adjustViewBounds="false" android:scaleType="fitCenter" android:layout_marginLeft="10dp"
-                        android:layout_marginTop="10dp"/>
-                <ImageButton
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:id="@+id/alarmSetup" android:src="@drawable/alarm_blue"
-                        android:layout_gravity="center" android:layout_marginRight="10dp"
-                        android:clickable="true" android:scaleType="fitCenter" android:background="#000000FF"
-                        android:layout_marginLeft="10dp" android:layout_marginTop="10dp"/>
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                android:layout_weight="1">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="140%"
+                        android:id="@+id/text_value" android:textSize="36dp" android:layout_gravity="center"
+                        android:ellipsize="none"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Unit"
+                        android:id="@+id/value_units" android:textSize="36dp" android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="10dp"/>
             </LinearLayout>
+
         </LinearLayout>
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="140%"
-                    android:id="@+id/text_value" android:textSize="40dp" android:layout_gravity="center"
-                    android:ellipsize="none"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="New Text"
-                    android:id="@+id/value_units" android:textSize="30dp" android:layout_gravity="bottom"
-                    android:layout_marginLeft="10dp"/>
-        </LinearLayout>
+
         <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="name name name name name"
-                android:id="@+id/text_name" android:textSize="25dp"/>
+                android:text="sensor name"
+                android:id="@+id/text_name" android:textSize="25dp"
+            android:singleLine="false" />
         <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Location"
                 android:id="@+id/text_location" android:layout_marginBottom="10dp"/>
@@ -142,6 +127,29 @@
                         android:id="@+id/textView6" android:layout_marginLeft="5dp"/>
             </LinearLayout>
         </LinearLayout>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+            android:layout_weight="0">
+            <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/addMonitoring"
+                    android:src="@drawable/btn_star_big_off"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="10dp" android:clickable="true" android:background="#000000FF"
+                    android:adjustViewBounds="false" android:scaleType="fitCenter" android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"/>
+            <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/alarmSetup" android:src="@drawable/alarm_blue"
+                    android:layout_gravity="center" android:layout_marginRight="10dp"
+                    android:clickable="true" android:scaleType="fitCenter" android:background="#000000FF"
+                    android:layout_marginLeft="10dp" android:layout_marginTop="10dp"/>
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
             android:orientation="vertical"
@@ -149,12 +157,11 @@
             android:layout_height="fill_parent">
         <FrameLayout android:layout_width="fill_parent"
                      android:layout_height="fill_parent"
-                     android:layout_weight="1"
-                >
+            android:layout_weight="1">
             <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="match_parent"
                     android:id="@+id/sensorInfoChart">
             </LinearLayout>
             <ProgressBar android:indeterminate="true"
@@ -169,8 +176,8 @@
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:layout_weight="0">
             <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
