@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +28,7 @@ import android.widget.*;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+
 
 public class MainActivity extends ActionBarActivity implements
 		SharedPreferences.OnSharedPreferenceChangeListener,
@@ -69,12 +71,13 @@ public class MainActivity extends ActionBarActivity implements
         boolean canBack = getSupportFragmentManager().getBackStackEntryCount()>0;
         Log.d(TAG,"shouldDisplayHomeUp is " + canBack);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
-        mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
         if (canBack) {
             mOptionsMenu.clear();
         } else {
             supportInvalidateOptionsMenu();
         }
+        if (mDrawerToggle!=null)
+            mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
     }
 
     @Override
@@ -111,9 +114,9 @@ public class MainActivity extends ActionBarActivity implements
 	private LoginStatus loginStatus = LoginStatus.LOGOUT;
 	String uid;
 
-	private DrawerLayout mDrawerLayout;
-	private View mDrawerMenu;
-	private ActionBarDrawerToggle mDrawerToggle;
+	private DrawerLayout mDrawerLayout = null;
+	private View mDrawerMenu = null;
+	private ActionBarDrawerToggle mDrawerToggle = null;
 	private CharSequence mTitle;
 
 
@@ -165,25 +168,14 @@ public class MainActivity extends ActionBarActivity implements
 		trans.replace(R.id.content_frame, sensorListFragment);
 		trans.commit();
 
-//		listAdapter.notifyDataSetChanged();
-
 		updateSensorsList(false);
-
 		startUpdateTimer();
-//		if (uiFlags.uiMode == UiFlags.UiMode.watched) {
-//			Log.d(TAG, "switch to watched");
-//			mPager.setCurrentScreen(2, false);
-//			getSupportActionBar().setSelectedNavigationItem(2);
-//		} else {
-//			Log.d(TAG, "switch to list");
-//			mPager.setCurrentScreen(1, false);
-//			getSupportActionBar().setSelectedNavigationItem(1);
-//		}
 		showProgress = true;
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		if (!pref.getBoolean(getString(R.string.pref_key_use_geocode),false)) {
 			startGpsTimer();
 		}
+
 	}
 
 	@Override
@@ -216,43 +208,49 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		mTitle = "All";
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		mDrawerMenu   = findViewById(R.id.left_menu_view);
-		// set a custom shadow that overlays the main content when the drawer opens
-		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-		// enable ActionBar app icon to behave as action to toggle nav drawer
         getSupportFragmentManager().addOnBackStackChangedListener(this);
-		getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		// ActionBarDrawerToggle ties together the the proper interactions
-		// between the sliding drawer and the action bar app icon
-		mDrawerToggle = new ActionBarDrawerToggle(
-				this,                  /* host Activity */
-				mDrawerLayout,         /* DrawerLayout object */
-				R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
-				R.string.drawer_open,  /* "open drawer" description for accessibility */
-				R.string.drawer_close  /* "close drawer" description for accessibility */
-		) {
-			public void onDrawerClosed(View view) {
-				getSupportActionBar().setTitle(mTitle);
-//				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-			}
+		mTitle = "All";
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (mDrawerLayout != null) {
+            mDrawerMenu = findViewById(R.id.left_menu_view);
+            // set a custom shadow that overlays the main content when the drawer opens
+            mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+            // enable ActionBar app icon to behave as action to toggle nav drawer
 
-			public void onDrawerOpened(View drawerView) {
-				getSupportActionBar().setTitle(mTitle);
+            // ActionBarDrawerToggle ties together the the proper interactions
+            // between the sliding drawer and the action bar app icon
+            mDrawerToggle = new ActionBarDrawerToggle(
+                    this,                  /* host Activity */
+                    mDrawerLayout,         /* DrawerLayout object */
+                    R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+                    R.string.drawer_open,  /* "open drawer" description for accessibility */
+                    R.string.drawer_close  /* "close drawer" description for accessibility */
+            ) {
+                public void onDrawerClosed(View view) {
+                    getSupportActionBar().setTitle(mTitle);
 //				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-			}
-		};
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
+                }
 
+                public void onDrawerOpened(View drawerView) {
+                    getSupportActionBar().setTitle(mTitle);
+//				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                }
+            };
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+        }
+
+        final int menuBackgroundColor = Color.argb(0xff,0x01,0x34,0x6E);
 		// collect menu item views
 		menuItems.add(findViewById(R.id.menu_item0));
 		menuItems.add(findViewById(R.id.menu_item1));
 		menuItems.add(findViewById(R.id.menu_item2));
 		menuItems.add(findViewById(R.id.menu_item3));
 		menuItems.add(findViewById(R.id.menu_item5));
+        menuItems.get(0).setBackgroundColor(menuBackgroundColor);
+
 		int i = 0;
 		for (View view : menuItems) {
 			view.setTag(i++);
@@ -261,7 +259,6 @@ public class MainActivity extends ActionBarActivity implements
 				public void onClick(View v) {
 					clearMenuSelection();
 					Log.d(TAG,"click!" + v.getTag());
-					int menuBackgroundColor = Color.GRAY;
 					switch ((Integer)v.getTag()) {
 						case 0: // all
 							menuAllClicked();
@@ -275,11 +272,7 @@ public class MainActivity extends ActionBarActivity implements
 						case 3: // alarm
 							menuAlarmClicked();
 							break;
-//						case 4: // filter
-//							menuFilterClicked();
-//							setTitle("Filter");
-//							break;
-						case 5: // graph
+						case 4: // graph
 							menuGraphClicked();
 							setTitle("Graphs");
 							break;
@@ -287,7 +280,8 @@ public class MainActivity extends ActionBarActivity implements
 							Log.d(TAG, "unknown tag");
 							break;
 					}
-					mDrawerLayout.closeDrawer(mDrawerMenu);
+                    if (mDrawerLayout != null)
+					    mDrawerLayout.closeDrawer(mDrawerMenu);
 					v.setBackgroundColor(menuBackgroundColor);
 				}
 			});
@@ -332,6 +326,8 @@ public class MainActivity extends ActionBarActivity implements
 		narodmonApi.setOnResultReceiveListener(this);
 
 		narodmonApi.restoreSensorList(this, sensorList);
+        updateMenuSensorCounts();
+
 		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false))
 			doAuthorisation();
 		sendVersion();
@@ -404,7 +400,7 @@ public class MainActivity extends ActionBarActivity implements
 			default:
 		}
 
-		if (mDrawerToggle.onOptionsItemSelected(item)) {
+		if (mDrawerToggle!=null && mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -426,7 +422,8 @@ public class MainActivity extends ActionBarActivity implements
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		// Sync the toggle state after onRestoreInstanceState has occurred.
-		mDrawerToggle.syncState();
+        if (mDrawerToggle != null)
+		    mDrawerToggle.syncState();
 	}
 
 //	@Override
@@ -487,12 +484,6 @@ public class MainActivity extends ActionBarActivity implements
 
 
 	public void updateSensorsList(boolean force) {
-		/* if (!force) { */
-		/* 	if (System.currentTimeMillis()-lastUpdateTime < gpsUpdateIntervalMs) { */
-		/* 		return; */
-		/* 	} */
-		/* } */
-
 		if (force) {
 			lastUpdateTime = 0;
 			Log.d(TAG,"force updateFilter sensor list");
@@ -642,14 +633,13 @@ public class MainActivity extends ActionBarActivity implements
 
 	// called by pressing refresh button (define via xml onClick)
 	public void onUpdateBtnPress(MenuItem item) {
-		/* now we updateFilter only sensor value, not full list for traffic economy */
 		updateSensorsValue();
 	}
 
 	private void setRefreshProgress(boolean refreshing) {
 		if (mOptionsMenu != null) {
 			final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
-			if (refreshItem != null) {
+			if (refreshItem != null && (Build.VERSION.SDK_INT > 10)) {
 				if (refreshing) {
 					refreshItem.setActionView(R.layout.actionbar_indeterminate_progress);
 				} else {
@@ -742,47 +732,6 @@ public class MainActivity extends ActionBarActivity implements
 						getString(getString(R.string.pref_key_interval), "5"))),
 				pi);
 	}
-
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		mOptionsMenu = menu;
-//		final MenuInflater inflater = getMenuInflater();
-//		inflater.inflate(R.menu.icon_menu, menu);
-//		if (showProgress) {
-//			setRefreshProgress(true);
-//			showProgress = false;
-//		}
-//		return super.onCreateOptionsMenu(menu);
-//	}
-
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
-//		Log.d(TAG, "item: " + item + ", itemID: " + item.getItemId());
-//
-//		switch (item.getItemId()) {
-//			case R.id.menu_settings:
-//				Log.d(TAG, "start settings activity");
-//				startActivity(new Intent(MainActivity.this, PreferActivity.class));
-//				break;
-//			case R.id.menu_refresh:
-//				Log.d(TAG, "refresh sensor list");
-//				updateSensorsList(true);
-//				break;
-//			case R.id.menu_login:
-//				Log.d(TAG, "show login dialog");
-//				loginDialog.show(getSupportFragmentManager(), "dlg2");
-//				break;
-//			case R.id.menu_help:
-//				String url = "http://helius.github.com/narmon-client/";
-//				Intent i = new Intent(Intent.ACTION_VIEW);
-//				i.setData(Uri.parse(url));
-//				startActivity(i);
-//				break;
-//			default:
-//				return super.onOptionsItemSelected(item);
-//		}
-//		return false;
-//	}
 
 	@Override
 	public void login() {
