@@ -8,11 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Vibrator;
 import android.util.Log;
+
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
+
 
 public class WatchService extends WakefulIntentService {
     private final static String TAG = "narodmon-service";

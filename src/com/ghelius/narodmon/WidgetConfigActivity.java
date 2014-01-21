@@ -12,6 +12,8 @@ import android.widget.ListView;
 import android.widget.RemoteViews;
 
 
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;

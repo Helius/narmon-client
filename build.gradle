@@ -49,8 +49,14 @@ android {
         }
     }
 }
+repositories {
+    maven {
+        url "https://repo.commonsware.com.s3.amazonaws.com"
+    }
+}
 
 dependencies {
+    compile 'com.commonsware.cwac:wakeful:1.0.1'
     compile 'com.android.support:support-v4:19.0.0'
     compile 'com.android.support:appcompat-v7:19.0.0'
     compile files('libs/achartengine-1.0.0.jar')

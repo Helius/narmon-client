@@ -3,6 +3,9 @@ package com.ghelius.narodmon;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
