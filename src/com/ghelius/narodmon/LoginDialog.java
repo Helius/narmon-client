@@ -3,6 +3,7 @@ package com.ghelius.narodmon;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -54,7 +55,6 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 	interface LoginEventListener {
 		void login();
 		void logout();
-		SharedPreferences getPreference ();
 		MainActivity.LoginStatus loginStatus();
 	}
 	public void setOnChangeListener (LoginEventListener listener) {
@@ -72,7 +72,7 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 		getDialog().setTitle(this.getString(R.string.login_dialog_title));
 		final View v = inflater.inflate(R.layout.login_dialog_activity, null);
 		if (listener != null)
-			prefs = listener.getPreference();
+			prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
 
 
 		TextView loginTextView = (TextView) v.findViewById(R.id.login_textview);

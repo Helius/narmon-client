@@ -33,10 +33,11 @@ import java.util.TimerTask;
 public class MainActivity extends ActionBarActivity implements
 		SharedPreferences.OnSharedPreferenceChangeListener,
         NarodmonApi.onResultReceiveListener,
-        LoginDialog.LoginEventListener,
+//        LoginDialog.LoginEventListener,
         SensorInfoFragment.SensorConfigChangeListener,
         FragmentManager.OnBackStackChangedListener,
-        FilterFragment.OnFilterChangeListener {
+        FilterFragment.OnFilterChangeListener
+    {
 
 	private SensorInfoFragment sensorInfoFragment;
 	private FilterFragment filterFragment;
@@ -320,7 +321,22 @@ public class MainActivity extends ActionBarActivity implements
 		sensorListFragment.setListAdapter(listAdapter);
 
 		loginDialog = new LoginDialog();
-		loginDialog.setOnChangeListener(this);
+        loginDialog.setOnChangeListener(new LoginDialog.LoginEventListener() {
+            @Override
+            public void login() {
+               doAuthorisation();
+            }
+
+            @Override
+            public void logout() {
+                closeAutorisation();
+            }
+
+            @Override
+            public LoginStatus loginStatus() {
+                return loginStatus;
+            }
+        });
 
 		narodmonApi = new NarodmonApi(apiHeader);
 		narodmonApi.setOnResultReceiveListener(this);
@@ -733,24 +749,5 @@ public class MainActivity extends ActionBarActivity implements
 				pi);
 	}
 
-	@Override
-	public void login() {
-		doAuthorisation();
-	}
-
-	@Override
-	public void logout() {
-		closeAutorisation();
-	}
-
-	@Override
-	public SharedPreferences getPreference() {
-		return PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-	}
-
-	@Override
-	public LoginStatus loginStatus() {
-		return loginStatus;
-	}
 }
 
