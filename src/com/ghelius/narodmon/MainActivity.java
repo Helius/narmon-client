@@ -33,10 +33,11 @@ import java.util.TimerTask;
 public class MainActivity extends ActionBarActivity implements
 		SharedPreferences.OnSharedPreferenceChangeListener,
         NarodmonApi.onResultReceiveListener,
-        LoginDialog.LoginEventListener,
+//        LoginDialog.LoginEventListener,
         SensorInfoFragment.SensorConfigChangeListener,
         FragmentManager.OnBackStackChangedListener,
-        FilterFragment.OnFilterChangeListener {
+        FilterFragment.OnFilterChangeListener
+    {
 
 	private SensorInfoFragment sensorInfoFragment;
 	private FilterFragment filterFragment;
@@ -320,7 +321,22 @@ public class MainActivity extends ActionBarActivity implements
 		sensorListFragment.setListAdapter(listAdapter);
 
 		loginDialog = new LoginDialog();
-		loginDialog.setOnChangeListener(this);
+        loginDialog.setOnChangeListener(new LoginDialog.LoginEventListener() {
+            @Override
+            public void login() {
+               doAuthorisation();
+            }
+
+            @Override
+            public void logout() {
+                closeAutorisation();
+            }
+
+            @Override
+            public LoginStatus loginStatus() {
+                return loginStatus;
+            }
+        });
 
 		narodmonApi = new NarodmonApi(apiHeader);
 		narodmonApi.setOnResultReceiveListener(this);
@@ -726,31 +742,12 @@ public class MainActivity extends ActionBarActivity implements
 				getString(getString(R.string.pref_key_interval), "5")));
 
 		am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-				SystemClock.elapsedRealtime() + (1 * 60000), // 1 minute
-				(60000 * Integer.valueOf(PreferenceManager.
-						getDefaultSharedPreferences(this).
-						getString(getString(R.string.pref_key_interval), "5"))),
-				pi);
+                SystemClock.elapsedRealtime() + (1 * 60000), // 1 minute
+                (60000 * Integer.valueOf(PreferenceManager.
+                        getDefaultSharedPreferences(this).
+                        getString(getString(R.string.pref_key_interval), "5"))),
+                pi);
 	}
 
-	@Override
-	public void login() {
-		doAuthorisation();
-	}
-
-	@Override
-	public void logout() {
-		closeAutorisation();
-	}
-
-	@Override
-	public SharedPreferences getPreference() {
-		return PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-	}
-
-	@Override
-	public LoginStatus loginStatus() {
-		return loginStatus;
-	}
 }
 
