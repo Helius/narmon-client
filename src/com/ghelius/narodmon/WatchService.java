@@ -24,7 +24,6 @@ public class WatchService extends WakefulIntentService {
     private final static String TAG = "narodmon-service";
     private int NOTIFICATION = R.string.local_service_started;
     private ArrayList<Integer> ids;
-    SensorDataUpdater updater;
 	DatabaseHandler dbh = null;
 
     public WatchService() {
@@ -101,78 +100,49 @@ public class WatchService extends WakefulIntentService {
         }
         String responseString = inputStreamToString(in);
         Log.d(TAG,"result: " + responseString);
+        handleResult(responseString);
         Log.d(TAG,"------ stop updating ------");
         return false;
     }
 
-    class SensorDataUpdater implements ServerDataGetter.OnResultListener {
-        ServerDataGetter getter;
-        void updateData (ArrayList<Integer> ids) {
-            if (getter!=null) {
-                getter.cancel(true);
-            }
-            getter = new ServerDataGetter();
-            getter.setOnListChangeListener(this);
-            StringBuilder buf = new StringBuilder();
-            for (int i = 0; i < ids.size(); ++i) {
-                if (i != 0) {
-                    buf.append(",");
-                }
-                buf.append(ids.get(i));
-            }
-            String queryId = buf.toString();
-            getter.execute(NarodmonApi.apiUrl, ConfigHolder.getInstance(WatchService.this).getApiHeader() + "\"cmd\":\"sensorInfo\",\"sensor\":[" + queryId + "]}");
 
-        }
+    public void handleResult (String result) {
+        boolean widgetsFound = false;
+        if (result != null) {
+            try {
+                JSONObject JObject = new JSONObject(result);
+                JSONArray sensArray = JObject.getJSONArray("sensors");
+                for (int i = 0; i < sensArray.length(); i++) {
+                    int id = Integer.valueOf(sensArray.getJSONObject(i).getString("id"));
+                    String value = sensArray.getJSONObject(i).getString("value");
+                    String time = sensArray.getJSONObject(i).getString("time");
+                    Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
 
-        @Override
-        public void onResultReceived(String result) {
-//	        RemoteViews remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
-//	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-            getter = null;
-	        boolean widgetsFound = false;
-            if (result != null) {
-                try {
-                    JSONObject JObject = new JSONObject(result);
-                    JSONArray sensArray = JObject.getJSONArray("sensors");
-                    for (int i = 0; i < sensArray.length(); i++) {
-                        int id = Integer.valueOf(sensArray.getJSONObject(i).getString("id"));
-                        String value = sensArray.getJSONObject(i).getString("value");
-                        String time = sensArray.getJSONObject(i).getString("time");
-                        Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
-
-                        // check limits for watched item
-	                    if (ConfigHolder.getInstance(getApplicationContext()).isSensorWatched(id))
-	                        checkLimits(id, Float.valueOf(value), Long.valueOf(time));
+                    // check limits for watched item
+                    if (ConfigHolder.getInstance(getApplicationContext()).isSensorWatched(id))
+                        checkLimits(id, Float.valueOf(value), Long.valueOf(time));
 
 //	                    updateFilter widgets value
-	                    Log.d(TAG,"\nwidget for:" + id);
-	                    ArrayList<Widget> widgets = dbh.getWidgetsBySensorId(id);
-	                    for (Widget w: widgets) {
-		                    widgetsFound = true;
-		                    Log.d(TAG,"sensor is widget, updateFilter value: " + w.screenName + "w.last=" + w.lastValue + "w.cur=" + w.curValue + "will set cur=" + value);
-		                    w.lastValue = w.curValue;
-		                    w.curValue = Float.valueOf(value);
-		                    dbh.updateValueByWidgetId(w);
-	                    }
+                    Log.d(TAG,"\nwidget for:" + id);
+                    ArrayList<Widget> widgets = dbh.getWidgetsBySensorId(id);
+                    for (Widget w: widgets) {
+                        widgetsFound = true;
+                        Log.d(TAG,"sensor is widget, updateFilter value: " + w.screenName + ", w.last=" + w.lastValue + ", w.cur=" + w.curValue + ", will set cur=" + value);
+                        w.lastValue = w.curValue;
+                        w.curValue = Float.valueOf(value);
+                        dbh.updateValueByWidgetId(w);
                     }
-	                if (widgetsFound) {
-		                // Build the intent to call the service
-		                Intent intent = new Intent(getApplicationContext(), UpdateWidgetService.class);
-		                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new Integer[0]);
-		                // Update the widgets via the service
-		                getApplicationContext().startService(intent);
-	                }
-                } catch (JSONException e) {
-                    Log.e(TAG,"Wrong JSON");
                 }
+                if (widgetsFound) {
+                    // Build the intent to call the service
+                    Intent intent = new Intent(getApplicationContext(), UpdateWidgetService.class);
+                    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new Integer[0]);
+                    // Update the widgets via the service
+                    getApplicationContext().startService(intent);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG,"Wrong JSON");
             }
-        }
-
-        @Override
-        public void onNoResult() {
-            getter = null;
-            Log.w(TAG, "noResult!!!!");
         }
     }
 
@@ -185,8 +155,6 @@ public class WatchService extends WakefulIntentService {
         Configuration config = ConfigHolder.getInstance(this).getConfig();
 	    ArrayList<Widget> widgetsList = dbh.getAllWidgets();
 	    Log.d(TAG,"widget size: "+ widgetsList.size());
-        updater = new SensorDataUpdater();
-        Log.d(TAG, "start updateFilter");
         ids.clear();
         for (int i = 0; i < config.watchedId.size(); i++) {
             ids.add(config.watchedId.get(i).id);
