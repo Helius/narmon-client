@@ -725,7 +725,7 @@ public class MainActivity extends ActionBarActivity implements
 				getDefaultSharedPreferences(this).
 				getString(getString(R.string.pref_key_interval), "5")));
 
-		am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+		am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
 				SystemClock.elapsedRealtime() + (1 * 60000), // 1 minute
 				(60000 * Integer.valueOf(PreferenceManager.
 						getDefaultSharedPreferences(this).
