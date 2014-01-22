@@ -8,10 +8,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Vibrator;
 import android.util.Log;
+
+import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class WatchService extends WakefulIntentService {
@@ -59,6 +65,46 @@ public class WatchService extends WakefulIntentService {
         task.timestamp = timeStamp;
     }
 
+    private String inputStreamToString(InputStream is) {
+        String s = "";
+        String line = "";
+        // Wrap a BufferedReader around the InputStream
+        BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+        // Read response until the end
+        try {
+            while ((line = rd.readLine()) != null) { s += line; }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return s;
+    }
+    private boolean updateData (ArrayList<Integer> ids) {
+        Log.d(TAG,"start updating");
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < ids.size(); ++i) {
+            if (i != 0) {
+                buf.append(",");
+            }
+            buf.append(ids.get(i));
+        }
+        String queryId = buf.toString();
+        HttpResponse r = ServerDataGetter.makeRequest(NarodmonApi.apiUrl, ConfigHolder.getInstance(WatchService.this).getApiHeader() + "\"cmd\":\"sensorInfo\",\"sensor\":[" + queryId + "]}");
+        if (r == null) {
+            Log.e(TAG,"HttpResponse is null");
+            return false;
+        }
+        InputStream in = null;
+        try {
+            in = r.getEntity().getContent();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String responseString = inputStreamToString(in);
+        Log.d(TAG,"result: " + responseString);
+        Log.d(TAG,"------ stop updating ------");
+        return false;
+    }
+
     class SensorDataUpdater implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
         void updateData (ArrayList<Integer> ids) {
@@ -75,7 +121,7 @@ public class WatchService extends WakefulIntentService {
                 buf.append(ids.get(i));
             }
             String queryId = buf.toString();
-            getter.execute(NarodmonApi.apiUrl, ConfigHolder.getInstance(WatchService.this).getApiHeader() + "\"cmd\":\"sensorInfo\",\"sensor\":["+ queryId +"]}");
+            getter.execute(NarodmonApi.apiUrl, ConfigHolder.getInstance(WatchService.this).getApiHeader() + "\"cmd\":\"sensorInfo\",\"sensor\":[" + queryId + "]}");
 
         }
 
@@ -132,6 +178,7 @@ public class WatchService extends WakefulIntentService {
 
     @Override
     protected void doWakefulWork(Intent intent) {
+        Log.d(TAG,"#thread: " + Thread.currentThread().getName());
 	    if (dbh == null)
 	        dbh = new DatabaseHandler(getApplicationContext());
         Log.d(TAG,"nmWatcher work...");
@@ -149,7 +196,8 @@ public class WatchService extends WakefulIntentService {
 	    }
         if (!ids.isEmpty()) {
             Log.d(TAG, "start watched with " + ids.size() + " sensors");
-            updater.updateData(ids);
+            //updater.updateData(ids);
+            updateData (ids);
         } else {
             Log.d(TAG, "no watched id, just exit");
         }
