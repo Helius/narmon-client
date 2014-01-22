@@ -632,15 +632,23 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 
-
-	private void sensorItemClick(int position) {
-
-		sensorInfoFragment.setId(listAdapter.getItem(position).id);
-		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-		trans.replace(R.id.content_frame , sensorInfoFragment);
-		trans.addToBackStack(null);
-		trans.commit();
-	}
+    private void sensorItemClick(int position) {
+        sensorInfoFragment.setId(listAdapter.getItem(position).id);
+        sensorInfoFragment.loadInfo();
+        if (findViewById(R.id.content_frame1) != null) {
+            if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
+                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                trans.add(R.id.content_frame1, sensorInfoFragment);
+                trans.addToBackStack(null);
+                trans.commit();
+            }
+        } else {
+            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+            trans.replace(R.id.content_frame, sensorInfoFragment);
+            trans.addToBackStack(null);
+            trans.commit();
+        }
+    }
 
 	// called by action (define via xml onClick)
 	public void showFilterDialog(MenuItem item) {
