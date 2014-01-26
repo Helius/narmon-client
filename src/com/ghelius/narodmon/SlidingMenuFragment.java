@@ -86,12 +86,15 @@ public class SlidingMenuFragment extends Fragment {
     }
 
     public void setMenuAllCount (int count) {
-        ((TextView)menuItems.get(0).findViewById(R.id.cnt)).setText(String.valueOf(count));
+        if (menuItems.size()!=0)
+            ((TextView)menuItems.get(0).findViewById(R.id.cnt)).setText(String.valueOf(count));
     }
     public void setMenuWatchCount (int count) {
-        ((TextView)menuItems.get(1).findViewById(R.id.cnt)).setText(String.valueOf(count));
+        if (menuItems.size()>1)
+            ((TextView)menuItems.get(1).findViewById(R.id.cnt)).setText(String.valueOf(count));
     }
     public void setMenuMyCount (int count) {
-        ((TextView)menuItems.get(2).findViewById(R.id.cnt)).setText(String.valueOf(count));
+        if (menuItems.size()>2)
+            ((TextView)menuItems.get(2).findViewById(R.id.cnt)).setText(String.valueOf(count));
     }
 }
