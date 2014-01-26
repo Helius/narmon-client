@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/menu_item0"
+            android:clickable="true"
+            android:editable="true"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="All"
+                android:id="@+id/allTextView"
+                android:textSize="24dp" android:layout_weight="1"
+                android:layout_margin="10dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/menu_item1"
+            android:clickable="true"
+            android:editable="true"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Watched"
+                android:id="@+id/watchedTextView"
+                android:textSize="24dp" android:layout_weight="1"
+                android:layout_margin="10dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/menu_item2"
+            android:clickable="true"
+            android:editable="true"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="My"
+                android:id="@+id/myTextView"
+                android:layout_weight="1"
+                android:textSize="24dp"
+                android:layout_margin="10dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/menu_item3"
+            android:clickable="true"
+            android:editable="true"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Alarms"
+                android:id="@+id/myTextView"
+                android:layout_weight="1"
+                android:textSize="24dp"
+                android:layout_margin="10dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/menu_item5"
+            android:clickable="true"
+            android:editable="true"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Graph"
+                android:id="@+id/myTextView"
+                android:layout_weight="1"
+                android:textSize="24dp"
+                android:layout_margin="10dp"/>
+        </LinearLayout>
+</LinearLayout>

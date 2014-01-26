@@ -47,13 +47,12 @@ public class MainActivity extends ActionBarActivity implements
 	private long lastUpdateTime;
 	private final static int gpsUpdateIntervalMs = 20*60*1000; // time interval for updateFilter coordinates and sensor list
 	//	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
-	private ArrayList<View> menuItems = new ArrayList<View>();
 
 
 	@Override
 	public void favoritesChange() {
 		int favoritesCnt = new DatabaseHandler(getApplicationContext()).getFavorites().size();
-		((TextView)menuItems.get(1).findViewById(R.id.cnt)).setText(String.valueOf(favoritesCnt));
+        slidingMenu.setMenuWatchCount(favoritesCnt);
 	}
 
 	@Override
@@ -119,6 +118,7 @@ public class MainActivity extends ActionBarActivity implements
 	private View mDrawerMenu = null;
 	private ActionBarDrawerToggle mDrawerToggle = null;
 	private CharSequence mTitle;
+    SlidingMenuFragment slidingMenu;
 
 
 
@@ -165,9 +165,6 @@ public class MainActivity extends ActionBarActivity implements
 		super.onResume();
 		Log.d(TAG, "onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis()-lastUpdateTime));
 
-		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-		trans.replace(R.id.content_frame, sensorListFragment);
-		trans.commit();
 
 		updateSensorsList(false);
 		startUpdateTimer();
@@ -193,11 +190,6 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
-//		savedInstanceState.putBoolean("MyBoolean", true);
-//		savedInstanceState.putDouble("myDouble", 1.9);
-//		savedInstanceState.putInt("MyInt", 1);
-//		savedInstanceState.putString("MyString", "Welcome back to Android");
-//		savedInstanceState.putLong("lastTime" ,System.currentTimeMillis());
 	}
 
 	/**
@@ -243,62 +235,64 @@ public class MainActivity extends ActionBarActivity implements
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
 
-        final int menuBackgroundColor = Color.argb(0xff,0x01,0x34,0x6E);
-		// collect menu item views
-		menuItems.add(findViewById(R.id.menu_item0));
-		menuItems.add(findViewById(R.id.menu_item1));
-		menuItems.add(findViewById(R.id.menu_item2));
-		menuItems.add(findViewById(R.id.menu_item3));
-		menuItems.add(findViewById(R.id.menu_item5));
-        menuItems.get(0).setBackgroundColor(menuBackgroundColor);
+        sensorInfoFragment = new SensorInfoFragment();
+        sensorInfoFragment.setFavoritesChangeListener(this);
+        filterFragment = new FilterFragment();
+        sensorListFragment = new SensorListFragment();
+        sensorListFragment.setOnListItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                sensorItemClick(position);
+            }
+        });
+        slidingMenu = new SlidingMenuFragment();
+        slidingMenu.setOnMenuClickListener(new SlidingMenuFragment.MenuClickListener() {
+            @Override
+            public void menuAllClicked() {
+                listAdapter.setGroups(SensorItemAdapter.SensorGroups.All);
+                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                trans.replace(R.id.content_frame , sensorListFragment);
+                trans.commit();
+                setTitle("All");
+                if (mDrawerLayout != null)
+                    mDrawerLayout.closeDrawer(mDrawerMenu);
+            }
 
-		int i = 0;
-		for (View view : menuItems) {
-			view.setTag(i++);
-			view.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					clearMenuSelection();
-					Log.d(TAG,"click!" + v.getTag());
-					switch ((Integer)v.getTag()) {
-						case 0: // all
-							menuAllClicked();
-							break;
-						case 1: // watched
-							menuWatchedClicked();
-							break;
-						case 2: // my
-							menuMyClicked();
-							break;
-						case 3: // alarm
-							menuAlarmClicked();
-							break;
-						case 4: // graph
-							menuGraphClicked();
-							setTitle("Graphs");
-							break;
-						default:
-							Log.d(TAG, "unknown tag");
-							break;
-					}
-                    if (mDrawerLayout != null)
-					    mDrawerLayout.closeDrawer(mDrawerMenu);
-					v.setBackgroundColor(menuBackgroundColor);
-				}
-			});
-		}
+            @Override
+            public void menuWatchedClicked() {
+                listAdapter.setGroups(SensorItemAdapter.SensorGroups.Watched);
+                setTitle("Favourites");
+                if (listAdapter.getMyCount() == 0) {
+                    //TODO: show message
+                }
+                if (mDrawerLayout != null)
+                    mDrawerLayout.closeDrawer(mDrawerMenu);
+            }
+
+            @Override
+            public void menuMyClicked() {
+                listAdapter.setGroups(SensorItemAdapter.SensorGroups.My);
+                if (listAdapter.getMyCount() == 0) {
+                    //TODO: show message
+                }
+                setTitle("My");
+                if (mDrawerLayout != null)
+                    mDrawerLayout.closeDrawer(mDrawerMenu);
+            }
+
+            @Override
+            public void menuAlarmClicked() {
+                if (mDrawerLayout != null)
+                    mDrawerLayout.closeDrawer(mDrawerMenu);
+            }
+        });
+        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        trans.replace(R.id.content_frame, sensorListFragment);
+        trans.replace(R.id.left_menu_view, slidingMenu);
+        trans.commit();
 
 
-		sensorInfoFragment = new SensorInfoFragment();
-		sensorInfoFragment.setFavoritesChangeListener(this);
-		filterFragment = new FilterFragment();
-		sensorListFragment = new SensorListFragment();
-		sensorListFragment.setOnListItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				sensorItemClick(position);
-			}
-		});
+
 
 		uiFlags = UiFlags.load(this);
 
@@ -360,8 +354,8 @@ public class MainActivity extends ActionBarActivity implements
 
 
 	private void updateMenuSensorCounts () {
-		((TextView)menuItems.get(0).findViewById(R.id.cnt)).setText(String.valueOf(listAdapter.getCount()));
-		((TextView)menuItems.get(2).findViewById(R.id.cnt)).setText(String.valueOf(listAdapter.getMyCount()));
+        slidingMenu.setMenuAllCount(listAdapter.getCount());
+        slidingMenu.setMenuMyCount(listAdapter.getMyCount());
 		favoritesChange();
 	}
 
@@ -449,11 +443,6 @@ public class MainActivity extends ActionBarActivity implements
 //		mDrawerToggle.onConfigurationChanged(newConfig);
 //	}
 
-
-	private void menuGraphClicked() {
-		Toast.makeText(getApplicationContext(), "Graph", Toast.LENGTH_SHORT).show();
-	}
-
 	private void menuFilterClicked() {
 		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
 		trans.replace(R.id.content_frame , filterFragment);
@@ -461,42 +450,6 @@ public class MainActivity extends ActionBarActivity implements
 		trans.commit();
         mOptionsMenu.clear();
 	}
-
-	private void menuWatchedClicked() {
-		listAdapter.setGroups(SensorItemAdapter.SensorGroups.Watched);
-		setTitle("Favourites");
-        if (listAdapter.getMyCount() == 0) {
-            //TODO: show message
-        }
-	}
-
-	private void menuMyClicked() {
-		listAdapter.setGroups(SensorItemAdapter.SensorGroups.My);
-        if (listAdapter.getMyCount() == 0) {
-            //TODO: show message
-        }
-		setTitle("My");
-	}
-
-	private void menuAlarmClicked() {
-		//To change body of created methods use File | Settings | File Templates.
-	}
-
-	private void menuAllClicked() {
-		listAdapter.setGroups(SensorItemAdapter.SensorGroups.All);
-		FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-		trans.replace(R.id.content_frame , sensorListFragment);
-		trans.commit();
-		setTitle("All");
-	}
-
-	private void clearMenuSelection () {
-		for (View item: menuItems ) {
-			item.setBackgroundColor(Color.BLACK);
-		}
-	}
-
-
 
 
 	public void updateSensorsList(boolean force) {
@@ -638,6 +591,7 @@ public class MainActivity extends ActionBarActivity implements
         if (findViewById(R.id.content_frame1) != null) {
             if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                trans.hide(getSupportFragmentManager().findFragmentById(R.id.left_menu_view));
                 trans.add(R.id.content_frame1, sensorInfoFragment);
                 trans.addToBackStack(null);
                 trans.commit();

@@ -18,126 +18,28 @@
 <!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
 <android.support.v4.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/content_frame"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-    </FrameLayout>
+    </LinearLayout>
     <ScrollView android:id="@+id/left_menu_view"
             android:layout_width="240dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:background="@android:color/black"
-            >
-    <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
-        <LinearLayout
-                android:id="@+id/menu_item0"
-                android:clickable="true"
-                android:editable="true"
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="All"
-                    android:id="@+id/allTextView"
-                    android:textSize="24dp" android:layout_weight="1"
-                    android:layout_margin="10dp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
-        </LinearLayout>
-        <LinearLayout
-                android:id="@+id/menu_item1"
-                android:clickable="true"
-                android:editable="true"
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Watched"
-                    android:id="@+id/watchedTextView"
-                    android:textSize="24dp" android:layout_weight="1"
-                    android:layout_margin="10dp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
-        </LinearLayout>
-        <LinearLayout
-                android:id="@+id/menu_item2"
-                android:clickable="true"
-                android:editable="true"
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="My"
-                    android:id="@+id/myTextView"
-                    android:layout_weight="1"
-                    android:textSize="24dp"
-                    android:layout_margin="10dp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
-        </LinearLayout>
-        <LinearLayout
-                android:id="@+id/menu_item3"
-                android:clickable="true"
-                android:editable="true"
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Alarms"
-                    android:id="@+id/myTextView"
-                    android:layout_weight="1"
-                    android:textSize="24dp"
-                    android:layout_margin="10dp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
-        </LinearLayout>
-        <LinearLayout
-                android:id="@+id/menu_item5"
-                android:clickable="true"
-                android:editable="true"
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Graph"
-                    android:id="@+id/myTextView"
-                    android:layout_weight="1"
-                    android:textSize="24dp"
-                    android:layout_margin="10dp"/>
-        </LinearLayout>
-    </LinearLayout>
+            android:background="@android:color/black">
+        <fragment android:name="com.ghelius.narodmon.SlidingMenuFragment"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            tools:layout="@layout/sliding_menu_fragment" />
     </ScrollView>
 
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
