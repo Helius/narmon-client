@@ -8,17 +8,23 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.ArrayList;
-
 public class AlarmsListFragment extends ListFragment {
 
 	private AdapterView.OnItemClickListener listener = null;
+    private AlarmListAdapter adapter;
 
 	public void setOnListItemClickListener (AdapterView.OnItemClickListener listener) {
 		this.listener = listener;
 	}
 
 	@Override
+    public void onCreate (Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        adapter = new AlarmListAdapter(getActivity().getApplicationContext(), R.layout.alarm_item);
+        setListAdapter(adapter);
+    }
+
+    @Override
 	public View onCreateView (LayoutInflater inflater, ViewGroup group, Bundle savedInstanceState) {
 		View v = super.onCreateView(inflater, group, savedInstanceState);
 		return v;
@@ -33,8 +39,6 @@ public class AlarmsListFragment extends ListFragment {
 
 	@Override
 	public void onResume () {
-		DatabaseHandler dbh = new DatabaseHandler(getActivity().getApplicationContext());
-		ArrayList<AlarmSensorTask> tasks = dbh.getAlarmTask();
 		super.onResume();
 	}
 }

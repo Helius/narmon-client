@@ -33,7 +33,7 @@ android {
     buildToolsVersion '19.0.0'
 
     defaultConfig {
-        minSdkVersion 7
+        minSdkVersion 8
         targetSdkVersion 19
     }
     buildTypes {
@@ -44,14 +44,14 @@ android {
     }
     productFlavors {
         defaultFlavor {
-            minSdkVersion 7
+            minSdkVersion 8
             proguardFile 'proguard-rules.txt'
         }
     }
 }
 repositories {
     maven {
-        url "https://repo.commonsware.com.s3.amazonaws.com"
+        url "http://repo.commonsware.com"
     }
 }
 

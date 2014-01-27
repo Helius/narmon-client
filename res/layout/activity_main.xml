@@ -32,14 +32,10 @@
         android:layout_height="match_parent" >
     </LinearLayout>
     <ScrollView android:id="@+id/left_menu_view"
-            android:layout_width="240dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@android:color/black">
-        <fragment android:name="com.ghelius.narodmon.SlidingMenuFragment"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            tools:layout="@layout/sliding_menu_fragment" />
     </ScrollView>
 
     <!-- android:layout_gravity="start" tells DrawerLayout to treat

@@ -13,10 +13,6 @@
             android:layout_gravity="start"
             android:background="@android:color/black"
             >
-        <!--<fragment android:name="com.ghelius.narodmon.SlidingMenuFragment"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--tools:layout="@layout/sliding_menu_fragment" />-->
     </ScrollView>
     <LinearLayout
         android:id="@+id/content_frame"

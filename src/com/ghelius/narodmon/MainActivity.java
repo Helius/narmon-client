@@ -45,6 +45,7 @@ public class MainActivity extends ActionBarActivity implements
     private Menu mOptionsMenu;
     private long lastUpdateTime;
     private final static int gpsUpdateIntervalMs = 20 * 60 * 1000; // time interval for updateFilter coordinates and sensor list
+    private AlarmsListFragment alarmsListFragment;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -229,7 +230,7 @@ public class MainActivity extends ActionBarActivity implements
             };
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
-
+        alarmsListFragment = new AlarmsListFragment();
         sensorInfoFragment = new SensorInfoFragment();
         sensorInfoFragment.setFavoritesChangeListener(this);
         filterFragment = new FilterFragment();
@@ -279,6 +280,11 @@ public class MainActivity extends ActionBarActivity implements
             public void menuAlarmClicked() {
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
+                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                trans.replace(R.id.content_frame, alarmsListFragment);
+                trans.addToBackStack(null);
+                trans.commit();
+                setTitle("Alarms");
             }
         });
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
