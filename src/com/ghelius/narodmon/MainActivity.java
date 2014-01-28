@@ -80,6 +80,7 @@ public class MainActivity extends ActionBarActivity implements
     public void alarmChanged() {
         int cnt = new DatabaseHandler(getApplicationContext()).getAlarmTask().size();
         slidingMenu.setMenuAlarmCount(cnt);
+        listAdapter.updateAlarms();
     }
 
     public void shouldDisplayHomeUp() {

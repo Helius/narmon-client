@@ -26,6 +26,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     private SensorFilter filter = null;
     private static final String TAG = "narodmon-adapter";
     ConfigHolder config;
+    private ArrayList<AlarmSensorTask> alarms;
     private UiFlags uiFlags;
 	private boolean hideValue = false;
 	private SensorGroups groups = SensorGroups.All;
@@ -37,6 +38,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         this.localItems = new ArrayList<Sensor>();
         config = ConfigHolder.getInstance(context);
 	    uiFlags = new UiFlags();
+        updateAlarms();
     }
 
 	enum SensorGroups {All, Watched, My}
@@ -51,6 +53,20 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
     public void updateFilter() {
         getFilter().filter("");
+    }
+
+    public void updateAlarms () {
+        Log.d(TAG,"> start update alarms");
+        alarms = new DatabaseHandler(getContext()).getAlarmTask();
+        for (Sensor s : originItems) {
+            s.alarmed = false;
+            for (AlarmSensorTask a : alarms) {
+                if (s.id == a.id)
+                    s.alarmed = true;
+            }
+        }
+        Log.d(TAG,"< stop update alarms");
+        notifyDataSetChanged();
     }
 
 	public void setGroups (SensorGroups g) {
@@ -122,6 +138,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			} else if (uiFlags.sortType == UiFlags.SortType.time) {
 				Collections.sort(tempFilteredItems, new SensorTimeComparator());
 			}
+
 			filteredResult.values = tempFilteredItems;
 			filteredResult.count = tempFilteredItems.size();
 			Log.d(TAG, filteredResult.count + " items");
@@ -204,12 +221,15 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			} else {
 				holder.name.setTextColor(Color.WHITE);
 			}
-
-			if (ConfigHolder.getInstance(context).isSensorWatched(sensor.id)) {
-				holder.value.setTextColor(Color.argb(0xFF, 0x00, 0xFF, 0x00));
-			} else {
-				holder.value.setTextColor(Color.WHITE);
-			}
+            // !!!!! now watched stores in data base !!!!!!!
+            // and no needed to highlight it in common list
+//			if (ConfigHolder.getInstance(context).isSensorWatched(sensor.id)) {
+//				holder.value.setTextColor(Color.argb(0xFF, 0x00, 0xFF, 0x00));
+//			} else {
+//				holder.value.setTextColor(Color.WHITE);
+//			}
+            if (sensor.alarmed)
+                holder.value.setTextColor(Color.argb(0xFF, 0xFF, 0x00, 0x00));
 			holder.icon.setImageDrawable(SensorTypeProvider.getInstance(context).getIcon(sensor.type));
 
 		} else {

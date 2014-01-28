@@ -14,6 +14,7 @@ public class Sensor implements Serializable {
     public boolean my;
     public boolean pub;
     public boolean online;
+    public boolean alarmed;
 
     // constructor
     Sensor (int id,
@@ -35,6 +36,7 @@ public class Sensor implements Serializable {
         this.my = my;
         this.time = time;
         this.pub = pub;
+        this.alarmed = false;
     }
 
     public Sensor(Configuration.SensorTask storedItem) {
@@ -43,5 +45,6 @@ public class Sensor implements Serializable {
         this.value = String.valueOf(storedItem.lastValue);
         this.time = storedItem.timestamp;
         this.online = false;
+        this.alarmed = false;
     }
 }
