@@ -378,7 +378,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	void addAlarm (AlarmSensorTask task) {
-		Log.d(TAG, "add alarm for " + task.id);
+		Log.d(TAG, "add alarm: " + task.toString());
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();

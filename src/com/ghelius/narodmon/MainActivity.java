@@ -71,14 +71,15 @@ public class MainActivity extends ActionBarActivity implements
 
 
     @Override
-    public void favoritesChange() {
-        int favoritesCnt = new DatabaseHandler(getApplicationContext()).getFavorites().size();
-        slidingMenu.setMenuWatchCount(favoritesCnt);
+    public void favoritesChanged() {
+        int cnt = new DatabaseHandler(getApplicationContext()).getFavorites().size();
+        slidingMenu.setMenuWatchCount(cnt);
     }
 
     @Override
     public void alarmChanged() {
-        //TODO: need to calc alarms and show it
+        int cnt = new DatabaseHandler(getApplicationContext()).getAlarmTask().size();
+        slidingMenu.setMenuAlarmCount(cnt);
     }
 
     public void shouldDisplayHomeUp() {
@@ -354,7 +355,8 @@ public class MainActivity extends ActionBarActivity implements
     private void updateMenuSensorCounts() {
         slidingMenu.setMenuAllCount(listAdapter.getCount());
         slidingMenu.setMenuMyCount(listAdapter.getMyCount());
-        favoritesChange();
+        favoritesChanged();
+        alarmChanged();
     }
 
     @Override

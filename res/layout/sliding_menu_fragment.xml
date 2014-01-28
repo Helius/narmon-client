@@ -88,6 +88,7 @@
         </LinearLayout>
         <LinearLayout
             android:id="@+id/menu_item5"
+            android:visibility="gone"
             android:clickable="true"
             android:editable="true"
             android:orientation="horizontal"

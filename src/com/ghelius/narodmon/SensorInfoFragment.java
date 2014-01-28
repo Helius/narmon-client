@@ -58,6 +58,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 	 */
 	@Override
 	public void onAlarmChange(AlarmSensorTask task) {
+        Log.d(TAG, task.toString());
 		if (task.job == AlarmSensorTask.NOTHING) {
 			((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_gray);
 		} else {
@@ -69,7 +70,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 	}
 
 	interface SensorConfigChangeListener {
-		void favoritesChange();
+		void favoritesChanged();
 		void alarmChanged();
 	}
 
@@ -111,196 +112,9 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 		return inflater.inflate(R.layout.sensorinfo, null);
 	}
 
-
-
 	public void setId(int id) {
 		sensorId = id;
 	}
-
-//	public void onCreate(Bundle savedInstanceState) {
-//		super.onCreate(savedInstanceState);
-//		setContentView(R.layout.sensorinfo);
-//		final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
-//		Bundle extras = getIntent().getExtras();
-//		if (extras == null) {
-//			finish();
-//			return;
-//		}
-//		logGetter = new SensorLogGetter();
-//
-//		Sensor tmp_sensor = (Sensor)extras.getSerializable("Sensor");
-//		if (tmp_sensor == null) {
-//			Log.d(TAG,"extra don't contain sensor, try get ID");
-//			int sensorId = extras.getInt("sensorId", -1);
-//			if (sensorId != -1) {
-//				Log.d(TAG,"id is " + sensorId);
-//				ArrayList<Sensor> sList = getSavedList();
-//				for (Sensor s: sList) {
-//					if (s.id == sensorId) {
-//						tmp_sensor = s;
-//					}
-//				}
-//			} else {
-//				Log.e(TAG,"extra don't contain ID or ID not found, so return");
-//				finish();
-//				return;
-//			}
-//		}
-//		final Sensor sensor = tmp_sensor;
-//		id = sensor.id;
-//		TextView name = (TextView) findViewById(R.id.text_name);
-//		TextView location = (TextView) findViewById(R.id.text_location);
-//		TextView distance = (TextView) findViewById(R.id.text_distance);
-//		TextView time = (TextView) findViewById(R.id.text_time);
-//		TextView value = (TextView) findViewById(R.id.text_value);
-//		TextView units = (TextView) findViewById(R.id.value_units);
-//		TextView type = (TextView) findViewById(R.id.text_type);
-//		TextView id = (TextView) findViewById(R.id.text_id);
-//		TextView ago = (TextView) findViewById(R.id.text_ago);
-//		ImageView icon = (ImageView) findViewById(R.id.info_sensor_icon);
-//
-//		name.setText(sensor.name);
-//		location.setText(sensor.location);
-//		distance.setText(String.valueOf(sensor.distance));
-//
-//		final ImageButton monitor = (ImageButton) findViewById(R.id.addMonitoring);
-//		final ImageButton alarm = (ImageButton) findViewById(R.id.alarmSetup);
-//		final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
-//
-//		dialog.setOnAlarmChangeListener(new AlarmsSetupDialog.AlarmChangeListener() {
-//			@Override
-//			public void onAlarmChange(int job, Float hi, Float lo) {
-//				Log.d(TAG, "new alarm setup: " + job + " " + hi + " " + lo);
-//				ConfigHolder.getInstance(SensorInfo.this).setAlarm(sensor.id, job, hi, lo);
-//				if (job == 0) {
-//					alarm.setImageResource(R.drawable.alarm_gray);
-//					Toast.makeText(SensorInfo.this, getString(R.string.text_alarm_disabled), Toast.LENGTH_SHORT).show();
-//				} else {
-//					alarm.setImageResource(R.drawable.alarm_blue);
-//					Toast.makeText(SensorInfo.this, getString(R.string.text_alarm_enabled), Toast.LENGTH_SHORT).show();
-//				}
-//			}
-//		});
-//		String typeString = SensorTypeProvider.getInstance(this).getNameForType(sensor.type);
-//		type.setText(typeString);
-//		setTitle(typeString);
-//		icon.setImageDrawable(SensorTypeProvider.getInstance(this).getIcon(sensor.type));
-//
-//		units.setText(SensorTypeProvider.getInstance(this).getUnitForType(sensor.type));
-//		value.setText(sensor.value);
-//
-//		id.setText(String.valueOf(sensor.id));
-//
-//		long dv = Long.valueOf(sensor.time)*1000;// its need to be in milisecond
-//		Date df = new java.util.Date(dv);
-//		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-//		sdf.setTimeZone(TimeZone.getDefault());
-//		String vv = sdf.format(df);
-//		time.setText(vv);
-//
-//		ago.setText(getTimeSince(this,sensor.time));
-//
-//
-//		if (config.isSensorWatched(sensor.id)) {
-//			monitor.setImageResource(R.drawable.btn_star_big_on);
-//			alarm.setVisibility(View.VISIBLE);
-//			if (config.isSensorWatchJob(sensor.id)) {
-//				alarm.setImageResource(R.drawable.alarm_blue);
-//			} else {
-//				alarm.setImageResource(R.drawable.alarm_gray);
-//			}
-//		} else {
-//			monitor.setImageResource(R.drawable.btn_star_big_off);
-//			alarm.setVisibility(View.INVISIBLE);
-//		}
-//
-//		monitor.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				Log.d(TAG,"monitoring onClick");
-//				if (config.isSensorWatched(sensor.id)) {
-//					config.setSensorWatched(sensor,false);
-//					alarm.setVisibility(View.INVISIBLE);
-//				} else {
-//					config.setSensorWatched(sensor,true);
-//					alarm.setVisibility(View.VISIBLE);
-//				}
-//				if (config.isSensorWatched(sensor.id)) {
-//					monitor.setImageResource(R.drawable.btn_star_big_on);
-//				} else {
-//					monitor.setImageResource(R.drawable.btn_star_big_off);
-//				}
-//				if (config.isSensorWatchJob(sensor.id)) {
-//					alarm.setImageResource(R.drawable.alarm_blue);
-//				} else {
-//					alarm.setImageResource(R.drawable.alarm_gray);
-//				}
-//			}
-//		});
-//		alarm.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				dialog.setCurrentValue(sensor.value);
-//				Configuration.SensorTask task = ConfigHolder.getInstance(SensorInfo.this).getSensorTask(sensor.id);
-//				Log.d(TAG,"find SensorTask");
-//				if (task != null) {
-//					Log.d(TAG, "SensorTask with job " + task.job);
-//				} else {
-//					Log.e(TAG, "Cant find sensorTask");
-//				}
-//				dialog.setSensorTask(task);
-//				dialog.show(getSupportFragmentManager(), "alarmDialog");
-////                dialog.setShowsDialog(true);
-//				if (config.isSensorWatchJob(sensor.id)) {
-//					alarm.setImageResource(R.drawable.alarm_blue);
-//				} else {
-//					alarm.setImageResource(R.drawable.alarm_gray);
-//				}
-//			}
-//		});
-//
-//		findViewById(R.id.bt_graph_prev).setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				offset += 1;
-//				updateGraph();
-//			}
-//		});
-//		findViewById(R.id.bt_graph_day).setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				period = LogPeriod.day;
-//				offset = 0;
-//				updateGraph();
-//			}
-//		});
-//		findViewById(R.id.bt_graph_week).setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				period = LogPeriod.week;
-//				offset = 0;
-//				updateGraph();
-//			}
-//		});
-//		findViewById(R.id.bt_graph_month).setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				period = LogPeriod.month;
-//				offset = 0;
-//				updateGraph();
-//			}
-//		});
-//		findViewById(R.id.bt_graph_next).setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				if (offset > 0) {
-//					offset -= 1;
-//					updateGraph();
-//				}
-//			}
-//		});
-//
-//	}
 
 	private void updateGraph() {
 		Log.d(TAG,"updating graph...");
@@ -554,7 +368,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
                     monitor.setImageResource(R.drawable.btn_star_big_on);
                 }
                 if (listener != null)
-                    listener.favoritesChange();
+                    listener.favoritesChanged();
             }
         });
 

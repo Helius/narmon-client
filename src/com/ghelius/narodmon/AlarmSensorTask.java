@@ -22,4 +22,9 @@ public class AlarmSensorTask {
 	float lastValue;
 	long timestamp;
 	String name;
+
+    @Override
+    public String toString() {
+       return "Alarm [id: " + id + ", job: " + job + ", hi:" + hi + ", lo:" + lo + ", lastValue: " + lastValue + "]";
+    }
 }

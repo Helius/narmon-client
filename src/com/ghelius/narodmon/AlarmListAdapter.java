@@ -48,7 +48,7 @@ public class AlarmListAdapter extends ArrayAdapter<AlarmSensorTask> {
         }
         ViewHolder holder = (ViewHolder) v.getTag();
         holder.name.setText (tasks.get(position).name +", "+ tasks.get(position).lastValue);
-        Log.d(TAG, "name: " + tasks.get(position) + ", " + tasks.get(position).lastValue);
+        Log.d(TAG, "name: " + tasks.get(position).name + ", " + tasks.get(position).lastValue );
         //TODO: init view value
         return v;
     }

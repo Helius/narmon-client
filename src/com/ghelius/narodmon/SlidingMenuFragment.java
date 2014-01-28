@@ -18,6 +18,7 @@ public class SlidingMenuFragment extends Fragment {
     private ArrayList<View> menuItems = new ArrayList<View>();
     private MenuClickListener listener;
 
+
     interface MenuClickListener {
         void menuAllClicked();
         void menuWatchedClicked();
@@ -96,5 +97,10 @@ public class SlidingMenuFragment extends Fragment {
     public void setMenuMyCount (int count) {
         if (menuItems.size()>2)
             ((TextView)menuItems.get(2).findViewById(R.id.cnt)).setText(String.valueOf(count));
+    }
+
+    public void setMenuAlarmCount(int count) {
+        if (menuItems.size()>3)
+            ((TextView)menuItems.get(3).findViewById(R.id.cnt)).setText(String.valueOf(count));
     }
 }
