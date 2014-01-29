@@ -37,37 +37,10 @@ public class WatchService extends WakefulIntentService {
     }
 
     private void updateNotify (String name, String value, String job, String limit) {
-        showNotification (name, value + " " + job + " " + limit);
+        Log.d(TAG,"!!!!!! Alarm exist: update Notify !!!!!");
+        showNotification(name, value + " " + job + " " + limit);
     }
 
-    private void checkLimits(Integer id, Float value, Long timeStamp) {
-        Configuration.SensorTask task = ConfigHolder.getInstance(this).getSensorTask(id);
-        if (task.job == Configuration.NOTHING) {
-        }
-        if (task.job == Configuration.MORE_THAN) {
-            if (value > task.hi && task.lastValue <= task.hi) {
-                updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_more_than), String.valueOf(task.hi));
-            }
-        } else if (task.job == Configuration.LESS_THAN) {
-            if (value < task.lo && task.lastValue >= task.lo) {
-                updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_less_than), String.valueOf(task.lo));
-            }
-        } else if (task.job == Configuration.OUT_OF) {
-            if (value > task.hi && task.lastValue <= task.hi) {
-                updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_more_than), String.valueOf(task.hi));
-            } else if (value < task.lo && task.lastValue >= task.lo) {
-                updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_less_than), String.valueOf(task.lo));
-            }
-        } else if (task.job == Configuration.WITHIN_OF) {
-            if (value > task.lo && task.lastValue <= task.lo) {
-	            updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_within), String.valueOf(task.lo) + ".." + String.valueOf(task.hi));
-	        } else if (value < task.hi && task.lastValue >= task.hi) {
-                updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_within), String.valueOf(task.lo) + ".." + String.valueOf(task.hi));
-            }
-        }
-        task.lastValue = value;
-        task.timestamp = timeStamp;
-    }
 
     private String inputStreamToString(InputStream is) {
         String s = "";
@@ -92,7 +65,7 @@ public class WatchService extends WakefulIntentService {
             buf.append(ids.get(i));
         }
         String queryId = buf.toString();
-        HttpResponse r = ServerDataGetter.makeRequest(NarodmonApi.apiUrl, ConfigHolder.getInstance(WatchService.this).getApiHeader() + "\"cmd\":\"sensorInfo\",\"sensor\":[" + queryId + "]}");
+        HttpResponse r = ServerDataGetter.makeRequest(NarodmonApi.apiUrl, ConfigHolder.getInstance(getApplicationContext()).getApiHeader() + "\"cmd\":\"sensorInfo\",\"sensor\":[" + queryId + "]}");
         if (r == null) {
             Log.e(TAG,"HttpResponse is null");
             return false;
@@ -124,11 +97,19 @@ public class WatchService extends WakefulIntentService {
                     Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
 
                     // check limits for watched item
-                    if (ConfigHolder.getInstance(getApplicationContext()).isSensorWatched(id))
-                        checkLimits(id, Float.valueOf(value), Long.valueOf(time));
+                    AlarmSensorTask task = dbh.getAlarmById(id);
+                    if (task != null) {
+                        if (task.checkLimits(Float.valueOf(value))) {
+                            //ALARM!!!
+                            updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_alarm), "");
+                        }
+                        task.lastValue = Float.valueOf(value);
+                        task.timestamp = Long.valueOf(time);
+                        //TODO: save new value to alarms table?
+                    }
 
 //	                    updateFilter widgets value
-                    Log.d(TAG,"\nwidget for:" + id);
+                    //Log.d(TAG,"\nwidget for:" + id);
                     ArrayList<Widget> widgets = dbh.getWidgetsBySensorId(id);
                     for (Widget w: widgets) {
                         widgetsFound = true;
@@ -156,24 +137,25 @@ public class WatchService extends WakefulIntentService {
         Log.d(TAG,"#thread: " + Thread.currentThread().getName());
 	    if (dbh == null)
 	        dbh = new DatabaseHandler(getApplicationContext());
-        Log.d(TAG,"nmWatcher work...");
-        Configuration config = ConfigHolder.getInstance(this).getConfig();
+        Log.d(TAG,"nmWatcher start working...");
 	    ArrayList<Widget> widgetsList = dbh.getAllWidgets();
-	    Log.d(TAG,"widget size: "+ widgetsList.size());
+        ArrayList<AlarmSensorTask> alarmList = dbh.getAlarmTask();
+	    Log.d(TAG,"widget amount: "+ widgetsList.size());
         ids.clear();
-        for (int i = 0; i < config.watchedId.size(); i++) {
-            ids.add(config.watchedId.get(i).id);
+        for (int i = 0; i < alarmList.size(); i++) {
+            if (alarmList.get(i).job != AlarmSensorTask.NOTHING)
+                ids.add(alarmList.get(i).id);
         }
 	    for (int i = 0; i < widgetsList.size(); i++) {
 		    ids.add(widgetsList.get(i).sensorId);
 	    }
         if (!ids.isEmpty()) {
             Log.d(TAG, "start watched with " + ids.size() + " sensors");
-            //updater.updateData(ids);
             updateData (ids);
         } else {
             Log.d(TAG, "no watched id, just exit");
         }
+        Log.d(TAG,"nmWatcher stop working...");
     }
 
 

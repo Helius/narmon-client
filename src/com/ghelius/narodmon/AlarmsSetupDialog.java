@@ -75,7 +75,8 @@ public class AlarmsSetupDialog extends android.support.v4.app.DialogFragment {
 				            ((Spinner)getView().findViewById(R.id.AlarmSpinner)).getSelectedItemPosition(),
 				            hi,
 				            lo,
-				            sensorTask.lastValue));
+				            sensorTask.lastValue,
+                            sensorTask.name));
 	            dismiss();
             }
         });

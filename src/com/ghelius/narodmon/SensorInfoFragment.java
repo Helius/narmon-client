@@ -392,9 +392,9 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
                 if (task != null) {
                     Log.d(TAG, "Found: SensorTask with job " + task.job);
                 } else {
-                    Log.e(TAG, "Cant find sensorTask, create empty");
+                    Log.e(TAG, "sensorTask not found, create empty");
                     Float val = Float.valueOf(String.valueOf(value.getText()));
-                    task = new AlarmSensorTask(sensorId,0,0f,0f,val);
+                    task = new AlarmSensorTask(sensorId, 0, 0f, 0f, val, s.name);
                 }
                 dialog.setSensorTask(task);
                 dialog.show(getActivity().getSupportFragmentManager(), "alarmDialog");

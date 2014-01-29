@@ -47,6 +47,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_ALARM_HI = "hi";
 	private static final String KEY_ALARM_LO = "lo";
 	private static final String KEY_ALARM_OLDVALUE = "oldvalue";
+    private static final String KEY_ALARM_NAME = "name";
 
 		/* Sensors Table name */
 	private static final String TABLE_SENSORS = "sensors";
@@ -94,7 +95,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_ALARM_JOB + " INTEGER,"
 				+ KEY_ALARM_HI + " TEXT,"
 				+ KEY_ALARM_LO + " TEXT,"
-				+ KEY_ALARM_OLDVALUE + " TEXT"
+				+ KEY_ALARM_OLDVALUE + " TEXT,"
+                + KEY_ALARM_NAME + " TEXT"
 				+ ")";
 		db.execSQL(CREATE_TABLE);
 //		CREATE_TABLE = "CREATE TABLE " + TABLE_SENSORS + "("
@@ -349,7 +351,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				Float hi    = Float.valueOf(cursor.getString(2));
 				Float lo    = Float.valueOf(cursor.getString(3));
 				Float value = Float.valueOf(cursor.getString(4));
-				tasks.add(new AlarmSensorTask(cursor.getInt(0),cursor.getInt(1),hi,lo,value));
+                String name = cursor.getString(5);
+				tasks.add(new AlarmSensorTask(cursor.getInt(0),cursor.getInt(1),hi,lo,value, name));
 			} while (cursor.moveToNext());
 			cursor.close();
 		}
@@ -359,7 +362,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	AlarmSensorTask getAlarmById(Integer id) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.query(TABLE_ALARMS, new String[] {KEY_ALARM_SID,KEY_ALARM_JOB,KEY_ALARM_HI,KEY_ALARM_LO,KEY_ALARM_OLDVALUE}, KEY_ALARM_SID + " =?",  new String[] {String.valueOf(id)}, null, null,null,null);
+		Cursor cursor = db.query(TABLE_ALARMS, new String[] {KEY_ALARM_SID,KEY_ALARM_JOB,KEY_ALARM_HI,KEY_ALARM_LO,KEY_ALARM_OLDVALUE,KEY_ALARM_NAME}, KEY_ALARM_SID + " =?",  new String[] {String.valueOf(id)}, null, null,null,null);
 		AlarmSensorTask task = null;
 		// looping through all rows and adding to list
 		if (cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()) {
@@ -368,7 +371,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			Float hi = Float.valueOf(cursor.getString(2));
 			Float lo = Float.valueOf(cursor.getString(3));
 			Float value = Float.valueOf(cursor.getString(4));
-			task = new AlarmSensorTask(cursor.getInt(0), cursor.getInt(1), hi, lo, value);
+            String name = cursor.getString(5);
+			task = new AlarmSensorTask(cursor.getInt(0), cursor.getInt(1), hi, lo, value, name);
 		}
 		if (cursor!=null)
 			cursor.close();
@@ -387,6 +391,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		values.put(KEY_ALARM_HI, String.valueOf(task.hi));
 		values.put(KEY_ALARM_LO, String.valueOf(task.lo));
 		values.put(KEY_ALARM_OLDVALUE, String.valueOf(-999));
+        values.put(KEY_ALARM_NAME, task.name);
 
 		// Inserting Row
 		db.insertWithOnConflict(TABLE_ALARMS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
