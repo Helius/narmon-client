@@ -44,6 +44,7 @@
 
 
         <activity android:name="com.ghelius.narodmon.MainActivity"
+                  android:launchMode="singleTop"
                   android:label="@string/app_name"
                 >
             <intent-filter>

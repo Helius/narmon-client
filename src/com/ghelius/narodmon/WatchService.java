@@ -7,6 +7,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Vibrator;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
@@ -21,8 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-
-
+import java.util.HashMap;
 
 
 public class WatchService extends WakefulIntentService {
@@ -30,6 +30,8 @@ public class WatchService extends WakefulIntentService {
     private int NOTIFICATION = R.string.local_service_started;
     private ArrayList<Integer> ids;
 	DatabaseHandler dbh = null;
+    private int lastNotifyId = 0;
+    private HashMap<Integer, Notification> notifications; //массив ключ-значение на все отображаемые пользователю уведомления
 
     public WatchService() {
         super("Narodmon watcher");
@@ -162,6 +164,26 @@ public class WatchService extends WakefulIntentService {
     /**
      * Show a notification while this service is running.
      */
+
+    public int createInfoNotification(String message) {
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent notificationIntent = new Intent(context, HomeActivity.class); // по клику на уведомлении откроется HomeActivity
+        NotificationCompat.Builder nb = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.ic_action_picture) //иконка уведомления
+                .setAutoCancel(true) //уведомление закроется по клику на него
+                .setTicker(message) //текст, который отобразится вверху статус-бара при создании уведомления
+                .setContentText(message) // Основной текст уведомления
+                .setContentIntent(PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+                .setWhen(System.currentTimeMillis()) //отображаемое время уведомления
+                .setContentTitle("AppName") //заголовок уведомления
+                .setDefaults(Notification.DEFAULT_ALL); // звук, вибро и диодный индикатор выставляются по умолчанию
+
+        Notification notification = nb.getNotification(); //генерируем уведомление
+        manager.notify(lastNotifyId, notification); // отображаем его пользователю.
+        notifications.put(lastNotifyId, notification); //теперь мы можем обращаться к нему по id
+        return lastNotifyId++;
+    }
+
     private void showNotification(String name, String value) {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         int dash = 300;     // Length of a Morse Code "dash" in milliseconds
@@ -170,6 +192,9 @@ public class WatchService extends WakefulIntentService {
                 0, dash, gap, dash, gap, dash
         };
         v.vibrate(pattern,-1);
+
+
+
         // In this sample, we'll use the same text for the ticker and the expanded notification
         //CharSequence text = getText(R.string.local_service_started);
         NotificationManager mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
