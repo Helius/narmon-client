@@ -2,7 +2,6 @@ package com.ghelius.narodmon;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +16,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static android.util.Log.e;
-
 public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     private final Context context;
     private final List<Sensor> originItems;
@@ -26,10 +23,10 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     private SensorFilter filter = null;
     private static final String TAG = "narodmon-adapter";
     ConfigHolder config;
-    private ArrayList<AlarmSensorTask> alarms;
     private UiFlags uiFlags;
 	private boolean hideValue = false;
 	private SensorGroups groups = SensorGroups.All;
+    ArrayList<Integer> favorites;
 
     public SensorItemAdapter(Context context, ArrayList<Sensor> values) {
         super(context, R.layout.sensor_list_item);
@@ -39,9 +36,10 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         config = ConfigHolder.getInstance(context);
 	    uiFlags = new UiFlags();
         updateAlarms();
+        updateFavorites();
     }
 
-	enum SensorGroups {All, Watched, My}
+	enum SensorGroups {All, Watched, My, Alarmed}
 
     public void setUiFlags(UiFlags uiFlags) {
         this.uiFlags = uiFlags;
@@ -55,17 +53,24 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         getFilter().filter("");
     }
 
+    public void updateFavorites () {
+		favorites = new DatabaseHandler(context).getFavorites();
+    }
+
     public void updateAlarms () {
         Log.d(TAG,"> start update alarms");
-        alarms = new DatabaseHandler(getContext()).getAlarmTask();
+        int cnt = 0;
+        ArrayList<AlarmSensorTask> alarms = new DatabaseHandler(getContext()).getAlarmTask();
         for (Sensor s : originItems) {
             s.alarmed = false;
             for (AlarmSensorTask a : alarms) {
-                if (s.id == a.id)
+                if ((s.id == a.id) && a.job != AlarmSensorTask.NOTHING) {
                     s.alarmed = true;
+                    cnt++;
+                }
             }
         }
-        Log.d(TAG,"< stop update alarms");
+        Log.d(TAG,"< stop update alarms: " + cnt + " items");
         notifyDataSetChanged();
     }
 
@@ -109,14 +114,16 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			Log.d(TAG, "performFiltering");
 			FilterResults filteredResult = new FilterResults();
 			ArrayList<Sensor> tempFilteredItems = new ArrayList<Sensor>();
-			ArrayList<Integer> favorites = null;
-			if (groups ==  SensorGroups.Watched) {
-				favorites = new DatabaseHandler(context).getFavorites();
-			}
+//			if (groups ==  SensorGroups.Watched) {
+//			}
+//            if (groups == SensorGroups.Alarmed) {
+//                updateAlarms();
+//            }
 
 			for (Sensor originItem : originItems) {
 				boolean show_my = !(!originItem.my && (groups == SensorGroups.My)); // if wants 'my' and it's not my - return false, else true.
 				boolean show_watched = !(groups == SensorGroups.Watched) || favorites.contains(originItem.id); // if wants 'favorites' and it's not - return false, else true.
+                boolean show_alarmed = !(groups == SensorGroups.Alarmed) || originItem.alarmed; // if wants alarm only, and it's not - return false, else true.
 
 				boolean type_match = true;
 				for (int i = 0; i < uiFlags.hidenTypes.size(); i++) {
@@ -125,7 +132,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 					}
 				}
 
-				if (show_my && show_watched && type_match && (originItem.distance < uiFlags.radiusKm)) {
+				if (show_alarmed && show_my && show_watched && type_match && (originItem.distance < uiFlags.radiusKm)) {
 					tempFilteredItems.add(originItem);
 				}
 			}
@@ -172,6 +179,15 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 		return localItems.size();
 	}
 
+    public int getAlarmCount () {
+        int i = 0;
+        for (Sensor s: originItems) {
+            if (s.alarmed)
+                i++;
+        }
+        return i;
+    }
+
 	public int getMyCount() {
 		int i = 0;
 		for (Sensor s: originItems) {
@@ -210,30 +226,21 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			else
 				holder.value.setText(sensor.value);
 
-			if (config.isSensorWatched(sensor.id)) {
-				holder.value.setTypeface(null, Typeface.BOLD);
-			} else {
-				holder.value.setTypeface(null, Typeface.NORMAL);
-			}
-
-			if (sensor.my) {
+			if (sensor.my)
 				holder.name.setTextColor(Color.argb(0xFF, 0x33, 0xb5, 0xe5));
-			} else {
-				holder.name.setTextColor(Color.WHITE);
-			}
-            // !!!!! now watched stores in data base !!!!!!!
-            // and no needed to highlight it in common list
-//			if (ConfigHolder.getInstance(context).isSensorWatched(sensor.id)) {
-//				holder.value.setTextColor(Color.argb(0xFF, 0x00, 0xFF, 0x00));
-//			} else {
-//				holder.value.setTextColor(Color.WHITE);
-//			}
+            else
+                holder.name.setTextColor(Color.WHITE);
+
             if (sensor.alarmed)
                 holder.value.setTextColor(Color.argb(0xFF, 0xFF, 0x00, 0x00));
+			else
+                holder.value.setTextColor(Color.WHITE);
+
+
 			holder.icon.setImageDrawable(SensorTypeProvider.getInstance(context).getIcon(sensor.type));
 
 		} else {
-			e("PlaylistAdapter", "index out of bound results[]");
+			Log.e(TAG, "index out of bound results[]");
 		}
 		return v;
 	}

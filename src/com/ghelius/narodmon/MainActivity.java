@@ -74,6 +74,7 @@ public class MainActivity extends ActionBarActivity implements
     public void favoritesChanged() {
         int cnt = new DatabaseHandler(getApplicationContext()).getFavorites().size();
         slidingMenu.setMenuWatchCount(cnt);
+        listAdapter.updateFavorites();
     }
 
     @Override
@@ -232,7 +233,7 @@ public class MainActivity extends ActionBarActivity implements
             };
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
-        alarmsListFragment = new AlarmsListFragment();
+        //alarmsListFragment = new AlarmsListFragment();
         sensorInfoFragment = new SensorInfoFragment();
         sensorInfoFragment.setFavoritesChangeListener(this);
         filterFragment = new FilterFragment();
@@ -282,10 +283,11 @@ public class MainActivity extends ActionBarActivity implements
             public void menuAlarmClicked() {
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
-                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                trans.replace(R.id.content_frame, alarmsListFragment);
-                trans.addToBackStack(null);
-                trans.commit();
+//                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+//                trans.replace(R.id.content_frame, alarmsListFragment);
+//                trans.addToBackStack(null);
+//                trans.commit();
+                listAdapter.setGroups(SensorItemAdapter.SensorGroups.Alarmed);
                 setTitle("Alarms");
             }
         });
@@ -356,6 +358,7 @@ public class MainActivity extends ActionBarActivity implements
     private void updateMenuSensorCounts() {
         slidingMenu.setMenuAllCount(listAdapter.getCount());
         slidingMenu.setMenuMyCount(listAdapter.getMyCount());
+        slidingMenu.setMenuAlarmCount(listAdapter.getAlarmCount());
         favoritesChanged();
         alarmChanged();
     }
