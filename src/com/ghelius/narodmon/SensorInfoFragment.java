@@ -64,7 +64,12 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 		} else {
 			((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_blue);
 		}
-		new DatabaseHandler(getActivity().getApplicationContext()).addAlarm(task);
+        try {
+            task.lastValue = Float.valueOf(value.getText().toString());
+        } catch (Exception e) {
+            task.lastValue = -999;
+        }
+		new DatabaseHandler(getActivity().getApplicationContext()).addAlarmTask(task);
 		if (listener!=null)
 			listener.alarmChanged();
 	}
@@ -394,6 +399,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
                 } else {
                     Log.e(TAG, "sensorTask not found, create empty");
                     Float val = Float.valueOf(String.valueOf(value.getText()));
+                    //TODO: if value not loaded, it cause exception, need to make alarm button disable, while loading not complite
                     task = new AlarmSensorTask(sensorId, 0, 0f, 0f, val, s.name);
                 }
                 dialog.setSensorTask(task);

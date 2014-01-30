@@ -29,12 +29,13 @@ public class AlarmSensorTask {
 
     @Override
     public String toString() {
-       return "Alarm [id: " + id + ", job: " + job + ", hi:" + hi + ", lo:" + lo + ", lastValue: " + lastValue + "]";
+       return "Alarm [id: " + id + ", job: " + job + ", hi:" + hi + ", lo:" + lo + ", lastValue: " + lastValue + ", timestamp:" + timestamp + "]";
     }
 
-    public boolean checkLimits(Float value) {
+    public boolean checkAlarm(Float value) {
         Log.d(TAG, "Check limit for job: " + this.job);
         if (this.job == Configuration.NOTHING) {
+
         } else if (this.job == Configuration.MORE_THAN) {
             if (value > this.hi && this.lastValue <= this.hi) {
                 return true;
@@ -53,6 +54,32 @@ public class AlarmSensorTask {
             if (value > this.lo && this.lastValue <= this.lo) {
                 return true;
             } else if (value < this.hi && this.lastValue >= this.hi) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isAlarmNow(Float value) {
+
+        if (this.job == Configuration.MORE_THAN) {
+            if (value > this.hi) {
+                return true;
+            }
+        } else if (this.job == Configuration.LESS_THAN) {
+            if (value < this.lo) {
+                return true;
+            }
+        } else if (this.job == Configuration.OUT_OF) {
+            if (value > this.hi) {
+                return true;
+            } else if (value < this.lo) {
+                return true;
+            }
+        } else if (this.job == Configuration.WITHIN_OF) {
+            if (value > this.lo) {
+                return true;
+            } else if (value < this.hi) {
                 return true;
             }
         }

@@ -381,7 +381,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return task;
 	}
 
-	void addAlarm (AlarmSensorTask task) {
+	void addAlarmTask(AlarmSensorTask task) {
 		Log.d(TAG, "add alarm: " + task.toString());
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -390,7 +390,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		values.put(KEY_ALARM_JOB, task.job);
 		values.put(KEY_ALARM_HI, String.valueOf(task.hi));
 		values.put(KEY_ALARM_LO, String.valueOf(task.lo));
-		values.put(KEY_ALARM_OLDVALUE, String.valueOf(-999));
+		values.put(KEY_ALARM_OLDVALUE, String.valueOf(task.lastValue));
         values.put(KEY_ALARM_NAME, task.name);
 
 		// Inserting Row

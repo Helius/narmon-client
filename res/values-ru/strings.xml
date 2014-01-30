@@ -98,4 +98,5 @@
     <string name="enter_widget_name_text">Имя виджета:</string>
     <string name="widget_label">Народный мониторинг</string>
     <string name="text_notify_alarm">Оповещение</string>
+    <string name="alarm_name">Имя</string>
 </resources>

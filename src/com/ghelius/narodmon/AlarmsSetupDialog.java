@@ -76,14 +76,16 @@ public class AlarmsSetupDialog extends android.support.v4.app.DialogFragment {
 				            hi,
 				            lo,
 				            sensorTask.lastValue,
-                            sensorTask.name));
+                            ((EditText)getView().findViewById(R.id.alarm_name)).getText().toString()));
 	            dismiss();
             }
         });
 
 	    EditText textHi = (EditText)getView().findViewById(R.id.hiLimit);
 	    EditText textLo = (EditText)getView().findViewById(R.id.lowLimit);
+        EditText name = (EditText)getView().findViewById(R.id.alarm_name);
 	    Spinner spinner = (Spinner)getView().findViewById(R.id.AlarmSpinner);
+        name.setText(sensorTask.name);
         if (sensorTask != null) {
             textHi.setText(String.valueOf(sensorTask.hi));
             textLo.setText(String.valueOf(sensorTask.lo));

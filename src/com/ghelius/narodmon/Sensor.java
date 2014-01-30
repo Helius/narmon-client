@@ -15,6 +15,7 @@ public class Sensor implements Serializable {
     public boolean pub;
     public boolean online;
     public boolean alarmed;
+    public boolean alarm_fired;
 
     // constructor
     Sensor (int id,
@@ -37,6 +38,7 @@ public class Sensor implements Serializable {
         this.time = time;
         this.pub = pub;
         this.alarmed = false;
+        this.alarm_fired = false;
     }
 
     public Sensor(Configuration.SensorTask storedItem) {
@@ -46,5 +48,14 @@ public class Sensor implements Serializable {
         this.time = storedItem.timestamp;
         this.online = false;
         this.alarmed = false;
+        this.alarm_fired = false;
+    }
+
+    public Float valueToFloat () {
+        Float v = null;
+        try {
+            v = Float.valueOf(value);
+        } catch (Exception e) {}
+        return v;
     }
 }

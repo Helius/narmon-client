@@ -116,5 +116,6 @@
     <string name="action_websearch">Web search</string>
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
     <string name="text_notify_alarm">Alarm</string>
+    <string name="alarm_name">Name</string>
 
 </resources>

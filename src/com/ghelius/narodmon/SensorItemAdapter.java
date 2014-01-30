@@ -51,6 +51,19 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
     public void updateFilter() {
         getFilter().filter("");
+        // calc sensor in alarm state
+        for (Sensor s: originItems) {
+            if (s.alarmed) {
+                Float v = s.valueToFloat();
+                AlarmSensorTask alarm = new DatabaseHandler(getContext()).getAlarmById(s.id);
+                Log.d(TAG,"in UpdateFilter: found alarm on sensor");
+                if (alarm != null && v != null && alarm.isAlarmNow(v))
+                    s.alarm_fired = true;
+                else
+                    s.alarm_fired = false;
+                Log.d(TAG, "alarm_fired: " + s.alarm_fired);
+            }
+        }
     }
 
     public void updateFavorites () {
@@ -231,7 +244,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             else
                 holder.name.setTextColor(Color.WHITE);
 
-            if (sensor.alarmed)
+            if (sensor.alarm_fired)
                 holder.value.setTextColor(Color.argb(0xFF, 0xFF, 0x00, 0x00));
 			else
                 holder.value.setTextColor(Color.WHITE);

@@ -36,11 +36,13 @@ public class WatchService extends WakefulIntentService {
     public WatchService() {
         super("Narodmon watcher");
         ids = new ArrayList<Integer>();
+        notifications = new HashMap<Integer, Notification>();
     }
 
-    private void updateNotify (String name, String value, String job, String limit) {
-        Log.d(TAG,"!!!!!! Alarm exist: update Notify !!!!!");
-        showNotification(name, value + " " + job + " " + limit);
+    private void updateNotify (String message, String name) {
+        Log.d(TAG, "!!!!!! Alarm exist: update Notify !!!!!");
+        createInfoNotification(message, name);
+//        showNotification(name, value + " " + job + " " + limit);
     }
 
 
@@ -100,14 +102,18 @@ public class WatchService extends WakefulIntentService {
 
                     // check limits for watched item
                     AlarmSensorTask task = dbh.getAlarmById(id);
-                    if (task != null) {
-                        if (task.checkLimits(Float.valueOf(value))) {
+                    Float v = null;
+                    try {
+                        v = Float.valueOf(value);
+                    } catch (Exception e ) { }
+                    if (task != null && v != null) {
+                        if (task.checkAlarm(v)) {
                             //ALARM!!!
-                            updateNotify(task.name, String.valueOf(value), getString(R.string.text_notify_alarm), "");
+                            updateNotify(value, task.name);
                         }
-                        task.lastValue = Float.valueOf(value);
+                        task.lastValue = v;
                         task.timestamp = Long.valueOf(time);
-                        //TODO: save new value to alarms table?
+                        dbh.addAlarmTask(task);
                     }
 
 //	                    updateFilter widgets value
@@ -136,6 +142,7 @@ public class WatchService extends WakefulIntentService {
 
     @Override
     protected void doWakefulWork(Intent intent) {
+        //createInfoNotification("Temperature -35 C", "б-р Молодежи, 4");
         Log.d(TAG,"#thread: " + Thread.currentThread().getName());
 	    if (dbh == null)
 	        dbh = new DatabaseHandler(getApplicationContext());
@@ -165,23 +172,25 @@ public class WatchService extends WakefulIntentService {
      * Show a notification while this service is running.
      */
 
-    public int createInfoNotification(String message) {
+    public int createInfoNotification(String message, String name) {
+        Context context = getApplicationContext();
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Intent notificationIntent = new Intent(context, HomeActivity.class); // по клику на уведомлении откроется HomeActivity
+        Intent notificationIntent = new Intent(context, MainActivity.class); // по клику на уведомлении откроется HomeActivity
         NotificationCompat.Builder nb = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_action_picture) //иконка уведомления
+                .setSmallIcon(R.drawable.app_icon) //иконка уведомления
                 .setAutoCancel(true) //уведомление закроется по клику на него
-                .setTicker(message) //текст, который отобразится вверху статус-бара при создании уведомления
-                .setContentText(message) // Основной текст уведомления
+                .setTicker("Public monitoring sensor alarm")   //текст, который отобразится вверху статус-бара при создании уведомления
+                //.setSubText("г.Бердск ул.Горького")
+                .setContentText(name) // Основной текст уведомления
                 .setContentIntent(PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT))
-                .setWhen(System.currentTimeMillis()) //отображаемое время уведомления
-                .setContentTitle("AppName") //заголовок уведомления
+//                .setWhen(System.currentTimeMillis()) //отображаемое время уведомления
+                .setUsesChronometer(true)
+                .setContentTitle(message) //заголовок уведомления
                 .setDefaults(Notification.DEFAULT_ALL); // звук, вибро и диодный индикатор выставляются по умолчанию
 
-        Notification notification = nb.getNotification(); //генерируем уведомление
-        manager.notify(lastNotifyId, notification); // отображаем его пользователю.
-        notifications.put(lastNotifyId, notification); //теперь мы можем обращаться к нему по id
-        return lastNotifyId++;
+        Notification notification = nb.build(); //генерируем уведомление
+        manager.notify(0, notification); // отображаем его пользователю.
+        return 0;
     }
 
     private void showNotification(String name, String value) {
