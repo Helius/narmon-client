@@ -270,6 +270,8 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
             return;
         if (getView()==null)
             return;
+        period = LogPeriod.day;
+        offset = 0;
 
         Sensor sensor = null;
         Log.d(TAG, "id is " + sensorId);
