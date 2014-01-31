@@ -4,27 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:baselineAligned="false">
 
     <ScrollView android:id="@+id/left_menu_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:background="@android:color/black"
-            >
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@android:color/black"
+        >
     </ScrollView>
     <LinearLayout
         android:id="@+id/content_frame"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_weight="0.5">
+        android:layout_weight="1">
     </LinearLayout>
     <LinearLayout
         android:id="@+id/content_frame1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         android:orientation="horizontal">
     </LinearLayout>
 </LinearLayout>

@@ -2,12 +2,23 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_margin="10dp"
+        android:background="@android:color/darker_gray"/>
+    <LinearLayout
+        android:orientation="vertical"
         android:background="@android:color/black"
+        android:layout_marginLeft="10dp"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
     <LinearLayout
                   android:orientation="vertical"
-                  android:layout_width="400dp"
+                  android:layout_width="fill_parent"
                   android:layout_height="wrap_content">
 
         <LinearLayout
@@ -15,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:layout_gravity="left|center_vertical"
                 android:baselineAligned="false"
-            android:paddingBottom="20dp">
+            android:paddingBottom="10dp">
             <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
@@ -31,13 +42,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="140%"
-                        android:id="@+id/text_value" android:textSize="36dp" android:layout_gravity="center"
+                        android:id="@+id/text_value" android:textSize="32dp" android:layout_gravity="center"
                         android:ellipsize="none"/>
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Unit"
-                        android:id="@+id/value_units" android:textSize="36dp" android:layout_gravity="center_vertical"
+                        android:id="@+id/value_units" android:textSize="32dp" android:layout_gravity="center_vertical"
                         android:layout_marginLeft="10dp"/>
             </LinearLayout>
 
@@ -69,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="sensor name"
-                android:id="@+id/text_name" android:textSize="25dp"
+                android:id="@+id/text_name" android:textSize="23dp"
             android:singleLine="false" />
         <TextView
                 android:layout_width="match_parent"
@@ -106,6 +117,30 @@
                 android:layout_height="wrap_content"
                 android:text="Termometr"
                 android:id="@+id/text_type"/>
+            <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent"
+                android:layout_height="wrap_content" android:id="@+id/linearLayout"
+                android:layout_marginLeft="20dp"
+                android:layout_gravity="left|center_vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_lastupdate"
+                    android:id="@+id/textView" android:layout_marginRight="10dp"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="time"
+                        android:id="@+id/text_time"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="agoTime"
+                        android:id="@+id/text_ago" android:layout_marginLeft="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_ago"
+                        android:id="@+id/textView6" android:layout_marginLeft="5dp"/>
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
                 android:orientation="horizontal"
@@ -122,32 +157,10 @@
                     android:text="123"
                     android:id="@+id/text_id" android:layout_marginLeft="10dp" android:visibility="gone"/>
         </LinearLayout>
-        <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent"
-                      android:layout_height="wrap_content" android:id="@+id/linearLayout"
-                      android:layout_gravity="left|center_vertical">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_lastupdate"
-                      android:id="@+id/textView" android:layout_marginRight="10dp"/>
-            <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="time"
-                          android:id="@+id/text_time"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="agoTime"
-                        android:id="@+id/text_ago" android:layout_marginLeft="10dp"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_ago"
-                        android:id="@+id/textView6" android:layout_marginLeft="5dp"/>
-            </LinearLayout>
-        </LinearLayout>
 
     </LinearLayout>
     <LinearLayout
+
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
@@ -200,5 +213,6 @@
                     android:text="\u003e"
                     android:id="@+id/bt_graph_next"/>
         </LinearLayout>
+    </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:background="@android:color/darker_gray"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+                  android:orientation="vertical"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content">
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:baselineAligned="false"
+                android:paddingBottom="10dp">
+            <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:id="@+id/info_sensor_icon"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_launcher"
+                    android:scaleType="fitStart"/>
+
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="0.5"
+                    >
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="140%"
+                        android:id="@+id/text_value" android:textSize="32dp" android:layout_gravity="center"
+                        android:ellipsize="none"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Unit"
+                        android:id="@+id/value_units" android:textSize="32dp" android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="10dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/addMonitoring"
+                    android:src="@drawable/btn_star_big_off"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="10dp" android:clickable="true" android:background="#000000FF"
+                    android:adjustViewBounds="false" android:scaleType="fitCenter" android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"/>
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/alarmSetup" android:src="@drawable/alarm_blue"
+                    android:layout_gravity="center" android:layout_marginRight="10dp"
+                    android:clickable="true" android:scaleType="fitCenter" android:background="#000000FF"
+                    android:layout_marginLeft="10dp" android:layout_marginTop="10dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="sensor name"
+                android:id="@+id/text_name" android:textSize="23dp"
+            android:singleLine="false" />
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:id="@+id/text_location" android:layout_marginBottom="10dp"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" android:layout_gravity="left|center_vertical">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_distance"
+                    android:id="@+id/textView2" android:layout_marginRight="10dp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="31"
+                    android:id="@+id/text_distance" android:layout_marginRight="5dp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_km"
+                    android:id="@+id/textView4"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_height="wrap_content"
+                android:text="@string/text_type"
+                android:id="@+id/textView5" android:layout_marginRight="10dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Termometr"
+                android:id="@+id/text_type"/>
+            <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent"
+                android:layout_height="wrap_content" android:id="@+id/linearLayout"
+                android:layout_marginLeft="20dp"
+                android:layout_gravity="left|center_vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/text_lastupdate"
+                    android:id="@+id/textView" android:layout_marginRight="10dp"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="time"
+                        android:id="@+id/text_time"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="agoTime"
+                        android:id="@+id/text_ago" android:layout_marginLeft="10dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_ago"
+                        android:id="@+id/textView6" android:layout_marginLeft="5dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_id"
+                    android:id="@+id/textView1" android:visibility="gone"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="123"
+                    android:id="@+id/text_id" android:layout_marginLeft="10dp" android:visibility="gone"/>
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+        <FrameLayout android:layout_width="fill_parent"
+                     android:layout_height="0dp"
+            android:layout_weight="0.5">
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/sensorInfoChart">
+            </LinearLayout>
+            <ProgressBar android:indeterminate="true"
+                         android:layout_width="60dp"
+                         android:layout_height="60dp"
+                         android:id="@+id/marker_progress"
+                         style="?android:attr/progressBarStyle"
+                         android:indeterminateBehavior="cycle"
+                         android:layout_centerInParent="true" android:layout_gravity="center"/>
+        </FrameLayout>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+            android:gravity="center_horizontal">
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\u003c"
+                    android:id="@+id/bt_graph_prev"/>
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_day_text"
+                    android:id="@+id/bt_graph_day"/>
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_week_text"
+                    android:id="@+id/bt_graph_week"/>
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_month_text"
+                    android:id="@+id/bt_graph_month"/>
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\u003e"
+                    android:id="@+id/bt_graph_next"/>
+        </LinearLayout>
+    </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

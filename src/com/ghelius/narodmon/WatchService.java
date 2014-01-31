@@ -39,9 +39,9 @@ public class WatchService extends WakefulIntentService {
         notifications = new HashMap<Integer, Notification>();
     }
 
-    private void updateNotify (String message, String name) {
+    private void updateNotify (String message, String name, int id) {
         Log.d(TAG, "!!!!!! Alarm exist: update Notify !!!!!");
-        createInfoNotification(message, name);
+        createInfoNotification(message, name, id);
 //        showNotification(name, value + " " + job + " " + limit);
     }
 
@@ -109,7 +109,7 @@ public class WatchService extends WakefulIntentService {
                     if (task != null && v != null) {
                         if (task.checkAlarm(v)) {
                             //ALARM!!!
-                            updateNotify(value, task.name);
+                            updateNotify(value, task.name, task.id);
                         }
                         task.lastValue = v;
                         task.timestamp = Long.valueOf(time);
@@ -172,7 +172,7 @@ public class WatchService extends WakefulIntentService {
      * Show a notification while this service is running.
      */
 
-    public int createInfoNotification(String message, String name) {
+    public int createInfoNotification(String message, String name, int id) {
         Context context = getApplicationContext();
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent notificationIntent = new Intent(context, MainActivity.class); // по клику на уведомлении откроется HomeActivity
@@ -189,7 +189,7 @@ public class WatchService extends WakefulIntentService {
                 .setDefaults(Notification.DEFAULT_ALL); // звук, вибро и диодный индикатор выставляются по умолчанию
 
         Notification notification = nb.build(); //генерируем уведомление
-        manager.notify(0, notification); // отображаем его пользователю.
+        manager.notify(id, notification); // отображаем его пользователю.
         return 0;
     }
 

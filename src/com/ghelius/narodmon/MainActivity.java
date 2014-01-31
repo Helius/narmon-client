@@ -93,6 +93,7 @@ public class MainActivity extends ActionBarActivity implements
             mOptionsMenu.clear();
         } else {
             supportInvalidateOptionsMenu();
+            findViewById(R.id.content_frame1).setVisibility(View.GONE);
         }
         if (mDrawerToggle != null)
             mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
@@ -103,6 +104,9 @@ public class MainActivity extends ActionBarActivity implements
     public boolean onSupportNavigateUp() {
         Log.d(TAG, "onSupportNavigateUp");
         getSupportFragmentManager().popBackStack();
+        //if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
+            findViewById(R.id.content_frame1).setVisibility(View.GONE);
+        //}
         return true;
     }
 
@@ -595,6 +599,7 @@ public class MainActivity extends ActionBarActivity implements
         sensorInfoFragment.loadInfo();
         if (findViewById(R.id.content_frame1) != null) {
             if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
+                findViewById(R.id.content_frame1).setVisibility(View.VISIBLE);
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.hide(getSupportFragmentManager().findFragmentById(R.id.left_menu_view));
                 trans.add(R.id.content_frame1, sensorInfoFragment);
