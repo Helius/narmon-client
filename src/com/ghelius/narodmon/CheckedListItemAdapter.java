@@ -13,7 +13,6 @@ import java.util.ArrayList;
 
 public class CheckedListItemAdapter extends ArrayAdapter<SensorType> {
 	static final private String TAG = "narodmon-checkedAdapter";
-	private final Context context;
 	private ItemChangeInterface listener = null;
 
 	interface ItemChangeInterface {
@@ -32,14 +31,13 @@ public class CheckedListItemAdapter extends ArrayAdapter<SensorType> {
 
 	public CheckedListItemAdapter(Context context, ArrayList<SensorType> types) {
 		super(context, R.layout.checked_list_item_adapter,  types);
-		this.context = context;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View rowView = convertView;
 		if (rowView == null) {
-			LayoutInflater inflater = LayoutInflater.from(context);
+			LayoutInflater inflater = LayoutInflater.from(getContext());
 			rowView = inflater.inflate(R.layout.checked_list_item_adapter, null);
 			ViewHolder viewHolder = new ViewHolder();
 			viewHolder.text = (TextView) rowView.findViewById(R.id.checkeditem_text);
@@ -52,7 +50,7 @@ public class CheckedListItemAdapter extends ArrayAdapter<SensorType> {
 			holder.checkBox.setChecked(listener.isItemChecked(position));
 		}
 		holder.text.setText(getItem(position).name);
-		holder.image.setImageDrawable(SensorTypeProvider.getInstance(context).getIcon(getItem(position).code));
+		holder.image.setImageDrawable(SensorTypeProvider.getInstance(getContext()).getIcon(getItem(position).code));
 		return rowView;
 	}
 }

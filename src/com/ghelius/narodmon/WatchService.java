@@ -7,6 +7,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -69,7 +70,7 @@ public class WatchService extends WakefulIntentService {
             buf.append(ids.get(i));
         }
         String queryId = buf.toString();
-        HttpResponse r = ServerDataGetter.makeRequest(NarodmonApi.apiUrl, ConfigHolder.getInstance(getApplicationContext()).getApiHeader() + "\"cmd\":\"sensorInfo\",\"sensor\":[" + queryId + "]}");
+        HttpResponse r = ServerDataGetter.makeRequest(NarodmonApi.apiUrl, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("apiHeader","") + "\"cmd\":\"sensorInfo\",\"sensor\":[" + queryId + "]}");
         if (r == null) {
             Log.e(TAG,"HttpResponse is null");
             return false;

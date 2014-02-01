@@ -17,12 +17,10 @@ import java.util.Comparator;
 import java.util.List;
 
 public class SensorItemAdapter extends ArrayAdapter<Sensor> {
-    private final Context context;
     private final List<Sensor> originItems;
     private ArrayList<Sensor> localItems = null;
     private SensorFilter filter = null;
     private static final String TAG = "narodmon-adapter";
-    ConfigHolder config;
     private UiFlags uiFlags;
 	private boolean hideValue = false;
 	private SensorGroups groups = SensorGroups.All;
@@ -30,10 +28,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
     public SensorItemAdapter(Context context, ArrayList<Sensor> values) {
         super(context, R.layout.sensor_list_item);
-        this.context = context;
         this.originItems = values;
         this.localItems = new ArrayList<Sensor>();
-        config = ConfigHolder.getInstance(context);
 	    uiFlags = new UiFlags();
         updateAlarms();
         updateFavorites();
@@ -67,7 +63,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     }
 
     public void updateFavorites () {
-		favorites = new DatabaseHandler(context).getFavorites();
+		favorites = new DatabaseHandler(getContext()).getFavorites();
     }
 
     public void updateAlarms () {
@@ -219,7 +215,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 	public View getView(int position, View v, ViewGroup parent) {
 
 		if (v == null) {
-			LayoutInflater inflater = LayoutInflater.from(context);
+			LayoutInflater inflater = LayoutInflater.from(getContext());
 			v = inflater.inflate(R.layout.sensor_list_item, null);
 			ViewHolder holder = new ViewHolder();
 			holder.name = (TextView) v.findViewById(R.id.text1);
@@ -250,7 +246,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
                 holder.value.setTextColor(Color.WHITE);
 
 
-			holder.icon.setImageDrawable(SensorTypeProvider.getInstance(context).getIcon(sensor.type));
+			holder.icon.setImageDrawable(SensorTypeProvider.getInstance(getContext()).getIcon(sensor.type));
 
 		} else {
 			Log.e(TAG, "index out of bound results[]");

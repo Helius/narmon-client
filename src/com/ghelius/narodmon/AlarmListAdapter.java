@@ -18,7 +18,7 @@ public class AlarmListAdapter extends ArrayAdapter<AlarmSensorTask> {
     public AlarmListAdapter(Context context, int resource) {
         super(context, resource);
 
-        tasks = new DatabaseHandler(context).getAlarmTask();
+        tasks = new DatabaseHandler(getContext()).getAlarmTask();
     }
 
     private DatabaseHandler getDbh () {

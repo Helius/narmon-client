@@ -34,23 +34,23 @@ public class AlarmSensorTask {
 
     public boolean checkAlarm(Float value) {
         Log.d(TAG, "Check limit for job: " + this.job);
-        if (this.job == Configuration.NOTHING) {
+        if (this.job == AlarmSensorTask.NOTHING) {
 
-        } else if (this.job == Configuration.MORE_THAN) {
+        } else if (this.job == AlarmSensorTask.MORE_THAN) {
             if (value > this.hi && this.lastValue <= this.hi) {
                 return true;
             }
-        } else if (this.job == Configuration.LESS_THAN) {
+        } else if (this.job == AlarmSensorTask.LESS_THAN) {
             if (value < this.lo && this.lastValue >= this.lo) {
                 return true;
             }
-        } else if (this.job == Configuration.OUT_OF) {
+        } else if (this.job == AlarmSensorTask.OUT_OF) {
             if (value > this.hi && this.lastValue <= this.hi) {
                 return true;
             } else if (value < this.lo && this.lastValue >= this.lo) {
                 return true;
             }
-        } else if (this.job == Configuration.WITHIN_OF) {
+        } else if (this.job == AlarmSensorTask.WITHIN_OF) {
             if (value > this.lo && this.lastValue <= this.lo) {
                 return true;
             } else if (value < this.hi && this.lastValue >= this.hi) {
@@ -62,21 +62,21 @@ public class AlarmSensorTask {
 
     public boolean isAlarmNow(Float value) {
 
-        if (this.job == Configuration.MORE_THAN) {
+        if (this.job == AlarmSensorTask.MORE_THAN) {
             if (value > this.hi) {
                 return true;
             }
-        } else if (this.job == Configuration.LESS_THAN) {
+        } else if (this.job == AlarmSensorTask.LESS_THAN) {
             if (value < this.lo) {
                 return true;
             }
-        } else if (this.job == Configuration.OUT_OF) {
+        } else if (this.job == AlarmSensorTask.OUT_OF) {
             if (value > this.hi) {
                 return true;
             } else if (value < this.lo) {
                 return true;
             }
-        } else if (this.job == Configuration.WITHIN_OF) {
+        } else if (this.job == AlarmSensorTask.WITHIN_OF) {
             if (value > this.lo) {
                 return true;
             } else if (value < this.hi) {

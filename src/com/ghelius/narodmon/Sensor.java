@@ -41,15 +41,6 @@ public class Sensor implements Serializable {
         this.alarm_fired = false;
     }
 
-    public Sensor(Configuration.SensorTask storedItem) {
-        this.id = storedItem.id;
-        this.name = storedItem.name;
-        this.value = String.valueOf(storedItem.lastValue);
-        this.time = storedItem.timestamp;
-        this.online = false;
-        this.alarmed = false;
-        this.alarm_fired = false;
-    }
 
     public Float valueToFloat () {
         Float v = null;

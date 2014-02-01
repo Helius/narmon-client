@@ -308,13 +308,11 @@ public class MainActivity extends ActionBarActivity implements
         sensorList = new ArrayList<Sensor>();
 
         // get android UUID
-        final ConfigHolder config = ConfigHolder.getInstance(getApplicationContext());
-        apiHeader = config.getApiHeader();
         uid = NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID));
         Log.d(TAG, "android ID: " + uid);
         apiHeader = "{\"uuid\":\"" + uid +
                 "\",\"api_key\":\"" + api_key + "\",";
-        config.setApiHeader(apiHeader);
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("apiHeader",apiHeader).commit();
 
 
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
