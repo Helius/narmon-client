@@ -132,14 +132,6 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
-    @Override
-    public void onPause() {
-        Log.i(TAG, "onPause");
-        stopUpdateTimer();
-        stopGpsTimer();
-        super.onPause();
-    }
-
     void initLocationUpdater() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean useGps = !prefs.getBoolean(getString(R.string.pref_key_use_geocode), false);
@@ -162,7 +154,16 @@ public class MainActivity extends ActionBarActivity implements
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
+        narodmonApi.setOnResultReceiveListener(this);
+        narodmonApi.restoreSensorList(this, sensorList);
+        updateMenuSensorCounts();
 
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false))
+            doAuthorisation();
+        sendVersion();
+        narodmonApi.getTypeDictionary();
+
+        initLocationUpdater();
 
         updateSensorsList(false);
         startUpdateTimer();
@@ -172,6 +173,15 @@ public class MainActivity extends ActionBarActivity implements
             startGpsTimer();
         }
 
+    }
+
+    @Override
+    public void onPause() {
+        narodmonApi.setOnResultReceiveListener(null);
+        Log.i(TAG, "onPause");
+        super.onPause();
+        stopUpdateTimer();
+        stopGpsTimer();
     }
 
     @Override
@@ -338,21 +348,11 @@ public class MainActivity extends ActionBarActivity implements
         });
 
         narodmonApi = new NarodmonApi(apiHeader);
-        narodmonApi.setOnResultReceiveListener(this);
-
-        narodmonApi.restoreSensorList(this, sensorList);
-        updateMenuSensorCounts();
-
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false))
-            doAuthorisation();
-        sendVersion();
-        narodmonApi.getTypeDictionary(this);
 
         Intent intent = new Intent(this, OnBootReceiver.class);
         sendBroadcast(intent);
         scheduleAlarmWatcher();
 
-        initLocationUpdater();
         setTitle(mTitle);
     }
 
@@ -505,7 +505,7 @@ public class MainActivity extends ActionBarActivity implements
 
     void updateLocation() {
         MyLocation myLocation = new MyLocation();
-        myLocation.getLocation(this, new MyLocation.LocationResult() {
+        myLocation.getLocation(getApplicationContext(), new MyLocation.LocationResult() {
             @Override
             public void gotLocation(Location location) {
                 Log.d(TAG, "got location");
@@ -520,6 +520,7 @@ public class MainActivity extends ActionBarActivity implements
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Log.d(TAG, "location: update sensor list!");
                         updateSensorsList(true);
                     }
                 });

@@ -230,8 +230,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				// Adding widgets to list
 				widgetList.add(new Widget(Integer.parseInt(cursor.getString(0)), Integer.parseInt(cursor.getString(1)), cursor.getString(2), cursor.getInt(3), cursor.getString(4), cursor.getString(5)));
 			} while (cursor.moveToNext());
-			cursor.close();
 		}
+        if (cursor != null)
+            cursor.close();
 		db.close();
 		return widgetList;
 	}
@@ -309,8 +310,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				// fill list with row
 				favorList.add(cursor.getInt(0));
 			} while (cursor.moveToNext());
-			cursor.close();
 		}
+        if (cursor != null)
+            cursor.close();
 		db.close();
 		return favorList;
 	}
@@ -354,8 +356,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String name = cursor.getString(5);
 				tasks.add(new AlarmSensorTask(cursor.getInt(0),cursor.getInt(1),hi,lo,value, name));
 			} while (cursor.moveToNext());
-			cursor.close();
 		}
+        if (cursor != null)
+            cursor.close();
 		db.close();
 		return tasks;
 	}

@@ -88,7 +88,7 @@ public class NarodmonApi {
         listUpdater.restoreList(context,list);
     }
 
-    public void getTypeDictionary(Context context) {
+    public void getTypeDictionary() {
         typeDictionaryGetter.getDictionary();
     }
 
