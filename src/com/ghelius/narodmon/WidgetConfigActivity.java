@@ -22,7 +22,6 @@ public class WidgetConfigActivity extends ActionBarActivity {
 	private final static String TAG = "narodmon-widgetConfig";
 	private int mAppWidgetId;
 	private SensorItemAdapter adapter;
-	private DatabaseHandler dbh;
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.widget_config_activity);
@@ -33,7 +32,6 @@ public class WidgetConfigActivity extends ActionBarActivity {
 		adapter = new SensorItemAdapter(getApplicationContext(), getSavedList());
 		adapter.hideValue(true);
 		adapter.updateFilter();
-		dbh = new DatabaseHandler(getApplicationContext());
 
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -48,8 +46,7 @@ public class WidgetConfigActivity extends ActionBarActivity {
 				Sensor sensor = adapter.getItem(position);
 
 				// save to db
-				dbh.addWidget(new Widget(mAppWidgetId, sensor.id, name, adapter.getItem(position).type));
-				dbh.close();
+				DatabaseManager.getInstance().addWidget(new Widget(mAppWidgetId, sensor.id, name, adapter.getItem(position).type));
 
 				// set up widget icon and name
 //				views.setTextViewText(R.id.name, name);

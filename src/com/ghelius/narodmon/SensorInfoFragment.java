@@ -69,7 +69,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
         } catch (Exception e) {
             task.lastValue = -999;
         }
-		new DatabaseHandler(getActivity().getApplicationContext()).addAlarmTask(task);
+		DatabaseManager.getInstance().addAlarmTask(task);
 		if (listener!=null)
 			listener.alarmChanged();
 	}
@@ -352,8 +352,8 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 
         final ImageButton monitor = (ImageButton) getActivity().findViewById(R.id.addMonitoring);
 
-        DatabaseHandler dbh = new DatabaseHandler(getActivity().getApplicationContext());
-        ArrayList<Integer> favorites = dbh.getFavorites();
+
+        ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavorites();
         if (favorites.contains(sensorId)) { // we are favorite!
             monitor.setImageResource(R.drawable.btn_star_big_on);
         } else {
@@ -363,15 +363,15 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
             @Override
             public void onClick(View v) {
                 Log.d(TAG,"monitoring onClick");
-                DatabaseHandler dbh = new DatabaseHandler(getActivity().getApplicationContext());
-                ArrayList<Integer> favorites = dbh.getFavorites();
+                DatabaseHelper dbh = new DatabaseHelper(getActivity().getApplicationContext());
+                ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavorites();
                 if (favorites.contains(sensorId)) { // we are favorite!
                     // remove us
-                    dbh.removeFavorites(sensorId);
+                    DatabaseManager.getInstance().removeFavorites(sensorId);
                     monitor.setImageResource(R.drawable.btn_star_big_off);
                 } else {
                     // add us
-                    dbh.addFavorites(sensorId);
+                    DatabaseManager.getInstance().addFavorites(sensorId);
                     monitor.setImageResource(R.drawable.btn_star_big_on);
                 }
                 if (listener != null)
@@ -384,7 +384,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
         dialog.setOnAlarmChangeListener(this);
         final Sensor s = sensor;
 
-        AlarmSensorTask task = new DatabaseHandler(getActivity().getApplicationContext()).getAlarmById(s.id);
+        AlarmSensorTask task = DatabaseManager.getInstance().getAlarmById(s.id);
         if (task == null || task.job == AlarmSensorTask.NOTHING) {
             ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_gray);
         } else {
@@ -394,8 +394,8 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
             @Override
             public void onClick(View v) {
                 dialog.setCurrentValue(String.valueOf(value.getText()));
-                DatabaseHandler dbh = new DatabaseHandler(getActivity().getApplicationContext());
-                AlarmSensorTask task = dbh.getAlarmById(s.id);
+
+                AlarmSensorTask task = DatabaseManager.getInstance().getAlarmById(s.id);
                 if (task != null) {
                     Log.d(TAG, "Found: SensorTask with job " + task.job);
                 } else {

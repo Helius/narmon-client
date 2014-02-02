@@ -72,31 +72,16 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void favoritesChanged() {
-        int cnt = new DatabaseHandler(getApplicationContext()).getFavorites().size();
+        int cnt = DatabaseManager.getInstance().getFavorites().size();
         slidingMenu.setMenuWatchCount(cnt);
         listAdapter.updateFavorites();
     }
 
     @Override
     public void alarmChanged() {
-        int cnt = new DatabaseHandler(getApplicationContext()).getAlarmTask().size();
+        int cnt = DatabaseManager.getInstance().getAlarmTask().size();
         slidingMenu.setMenuAlarmCount(cnt);
         listAdapter.updateAlarms();
-    }
-
-    public void shouldDisplayHomeUp() {
-        //Enable Up button only  if there are entries in the back stack
-        boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
-        Log.d(TAG, "shouldDisplayHomeUp is " + canBack);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
-        if (canBack) {
-            mOptionsMenu.clear();
-        } else {
-            supportInvalidateOptionsMenu();
-            findViewById(R.id.content_frame1).setVisibility(View.GONE);
-        }
-        if (mDrawerToggle != null)
-            mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
     }
 
     //This method is called when the up button is pressed. Just the pop back stack.
@@ -104,9 +89,9 @@ public class MainActivity extends ActionBarActivity implements
     public boolean onSupportNavigateUp() {
         Log.d(TAG, "onSupportNavigateUp");
         getSupportFragmentManager().popBackStack();
-        //if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
-            findViewById(R.id.content_frame1).setVisibility(View.GONE);
-        //}
+        View v = findViewById(R.id.content_frame1);
+        if (v != null)
+            v.setVisibility(View.GONE);
         return true;
     }
 
@@ -212,9 +197,24 @@ public class MainActivity extends ActionBarActivity implements
         getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                shouldDisplayHomeUp();
+                //Enable Up button only  if there are entries in the back stack
+                boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
+                Log.d(TAG, "shouldDisplayHomeUp is " + canBack);
+                //getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
+                if (canBack) {
+                    mOptionsMenu.clear();
+                } else {
+                    supportInvalidateOptionsMenu();
+                    View v = findViewById(R.id.content_frame1);
+                    if (v != null)
+                        v.setVisibility(View.GONE);
+                }
+                if (mDrawerToggle != null)
+                    mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
+
             }
         });
+
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

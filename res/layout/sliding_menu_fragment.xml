@@ -2,7 +2,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="300dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
         <LinearLayout
             android:id="@+id/menu_item0"
@@ -16,13 +16,16 @@
                 android:layout_height="wrap_content"
                 android:text="All"
                 android:id="@+id/allTextView"
-                android:textSize="24dp" android:layout_weight="1"
+                android:textSize="24dp"
+                android:layout_weight="1"
                 android:layout_margin="10dp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
+                android:id="@+id/cnt"
+                android:textSize="18dp"
+                android:layout_marginRight="8dp"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/menu_item1"
@@ -36,13 +39,16 @@
                 android:layout_height="wrap_content"
                 android:text="Watched"
                 android:id="@+id/watchedTextView"
-                android:textSize="24dp" android:layout_weight="1"
+                android:textSize="24dp"
+                android:layout_weight="1"
                 android:layout_margin="10dp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
+                android:id="@+id/cnt"
+                android:textSize="18dp"
+                android:layout_marginRight="8dp"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/menu_item2"
@@ -63,7 +69,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
+                android:id="@+id/cnt"
+                android:textSize="18dp"
+                android:layout_marginRight="8dp"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/menu_item3"
@@ -84,7 +92,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:id="@+id/cnt" android:textSize="18dp" android:layout_marginRight="8dp"/>
+                android:id="@+id/cnt"
+                android:textSize="18dp"
+                android:layout_marginRight="8dp"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/menu_item5"

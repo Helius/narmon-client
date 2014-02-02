@@ -14,22 +14,17 @@ import java.util.ArrayList;
 public class AlarmListAdapter extends ArrayAdapter<AlarmSensorTask> {
     private static final String TAG = "narodmon-alarmAdapter";
     private ArrayList<AlarmSensorTask> tasks;
-    private DatabaseHandler dbh;
+    private DatabaseHelper dbh;
     public AlarmListAdapter(Context context, int resource) {
         super(context, resource);
 
-        tasks = new DatabaseHandler(getContext()).getAlarmTask();
+        tasks = DatabaseManager.getInstance().getAlarmTask();
     }
 
-    private DatabaseHandler getDbh () {
-        if (dbh == null)
-            dbh = new DatabaseHandler(getContext());
-        return dbh;
-    }
 
     public void update () {
         tasks.clear();
-        tasks.addAll(getDbh().getAlarmTask());
+        tasks.addAll(DatabaseManager.getInstance().getAlarmTask());
     }
 
     @Override

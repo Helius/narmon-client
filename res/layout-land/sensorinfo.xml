@@ -8,7 +8,7 @@
     <LinearLayout
                   android:orientation="vertical"
                   android:layout_width="wrap_content"
-                  android:layout_height="wrap_content">
+                  android:layout_height="fill_parent">
 
         <LinearLayout
                 android:orientation="horizontal"
@@ -27,19 +27,25 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="140%"
-                        android:id="@+id/text_value" android:textSize="30dp"
-                        android:ellipsize="none" android:layout_gravity="center_vertical"/>
+                        android:text="110%"
+                        android:id="@+id/text_value"
+                        android:textSize="26dp"
+                        android:ellipsize="none"
+                        android:layout_gravity="center_vertical"
+                    android:paddingRight="5dp" />
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="units"
-                        android:id="@+id/value_units" android:textSize="30dp" android:layout_gravity="center_vertical"/>
+                        android:id="@+id/value_units"
+                        android:textSize="26dp"
+                        android:layout_gravity="center_vertical"/>
             </LinearLayout>
             <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:layout_marginLeft="10dp">
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp">
                 <ImageButton
                         android:layout_width="40dp"
                         android:layout_height="30dp"
@@ -62,7 +68,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="name name name name name"
-                android:id="@+id/text_name" android:textSize="25dp"/>
+                android:id="@+id/text_name"
+                android:textSize="25dp"/>
         <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -148,7 +155,7 @@
             android:layout_height="fill_parent">
         <FrameLayout android:layout_width="fill_parent"
                      android:layout_height="fill_parent"
-                     android:layout_weight="1"
+                     android:layout_weight="0.5"
                 >
             <LinearLayout
                     android:orientation="vertical"
@@ -162,12 +169,14 @@
                          android:id="@+id/marker_progress"
                          style="?android:attr/progressBarStyle"
                          android:indeterminateBehavior="cycle"
-                         android:layout_centerInParent="true" android:layout_gravity="center"/>
+                         android:layout_centerInParent="true"
+                         android:layout_gravity="center"/>
         </FrameLayout>
         <LinearLayout
                 android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:layout_weight="0" android:gravity="center_vertical|center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|center_horizontal"
                 android:layout_gravity="center_horizontal">
             <Button
                     android:layout_width="40dp"

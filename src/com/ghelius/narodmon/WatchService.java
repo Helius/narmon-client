@@ -30,7 +30,7 @@ public class WatchService extends WakefulIntentService {
     private final static String TAG = "narodmon-service";
     private int NOTIFICATION = R.string.local_service_started;
     private ArrayList<Integer> ids;
-	DatabaseHandler dbh = null;
+
     private int lastNotifyId = 0;
     private HashMap<Integer, Notification> notifications; //массив ключ-значение на все отображаемые пользователю уведомления
 
@@ -102,7 +102,7 @@ public class WatchService extends WakefulIntentService {
                     Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
 
                     // check limits for watched item
-                    AlarmSensorTask task = dbh.getAlarmById(id);
+                    AlarmSensorTask task = DatabaseManager.getInstance().getAlarmById(id);
                     Float v = null;
                     try {
                         v = Float.valueOf(value);
@@ -114,18 +114,18 @@ public class WatchService extends WakefulIntentService {
                         }
                         task.lastValue = v;
                         task.timestamp = Long.valueOf(time);
-                        dbh.addAlarmTask(task);
+                        DatabaseManager.getInstance().addAlarmTask(task);
                     }
 
 //	                    updateFilter widgets value
                     //Log.d(TAG,"\nwidget for:" + id);
-                    ArrayList<Widget> widgets = dbh.getWidgetsBySensorId(id);
+                    ArrayList<Widget> widgets = DatabaseManager.getInstance().getWidgetsBySensorId(id);
                     for (Widget w: widgets) {
                         widgetsFound = true;
                         Log.d(TAG,"sensor is widget, updateFilter value: " + w.screenName + ", w.last=" + w.lastValue + ", w.cur=" + w.curValue + ", will set cur=" + value);
                         w.lastValue = w.curValue;
                         w.curValue = Float.valueOf(value);
-                        dbh.updateValueByWidgetId(w);
+                        DatabaseManager.getInstance().updateValueByWidgetId(w);
                     }
                 }
                 if (widgetsFound) {
@@ -145,11 +145,10 @@ public class WatchService extends WakefulIntentService {
     protected void doWakefulWork(Intent intent) {
         //createInfoNotification("Temperature -35 C", "б-р Молодежи, 4");
         Log.d(TAG,"#thread: " + Thread.currentThread().getName());
-	    if (dbh == null)
-	        dbh = new DatabaseHandler(getApplicationContext());
+
         Log.d(TAG,"nmWatcher start working...");
-	    ArrayList<Widget> widgetsList = dbh.getAllWidgets();
-        ArrayList<AlarmSensorTask> alarmList = dbh.getAlarmTask();
+	    ArrayList<Widget> widgetsList = DatabaseManager.getInstance().getAllWidgets();
+        ArrayList<AlarmSensorTask> alarmList = DatabaseManager.getInstance().getAlarmTask();
 	    Log.d(TAG,"widget amount: "+ widgetsList.size());
         ids.clear();
         for (int i = 0; i < alarmList.size(); i++) {

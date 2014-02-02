@@ -61,8 +61,7 @@ public class UpdateWidgetService extends Service {
 		RemoteViews remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
 		// updateFilter widgets for with sensor
-		DatabaseHandler dbh = new DatabaseHandler(getApplicationContext());
-		ArrayList<Widget> widgets = dbh.getAllWidgets();
+		ArrayList<Widget> widgets = DatabaseManager.getInstance().getAllWidgets();
 		for (Widget w: widgets) {
 			Log.d(TAG,"updateFilter: " + w.screenName + ", curr: " + w.curValue + ", last: " + w.lastValue);
 			remoteViews.setTextViewText(R.id.value, String.valueOf(w.curValue));
@@ -89,7 +88,6 @@ public class UpdateWidgetService extends Service {
 //			remoteViews.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
 			appWidgetManager.updateAppWidget(w.widgetId, remoteViews);
 		}
-		dbh.close();
 
 		stopSelf();
 

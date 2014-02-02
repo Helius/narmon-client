@@ -21,8 +21,8 @@ public class SensorTypeProvider {
 
 
 	private SensorTypeProvider (Context context) {
-		DatabaseHandler dbh = new DatabaseHandler(context);
-		typesList = dbh.getAllTypes();
+
+		typesList = DatabaseManager.getInstance().getAllTypes();
 	}
 
     static public SensorTypeProvider getInstance (Context context) {
@@ -57,10 +57,9 @@ public class SensorTypeProvider {
 
     public void setTypesFromString (String res) {
 	    Log.d(TAG,"updateFilter types");
-        DatabaseHandler dbh = new DatabaseHandler(context);
 	    parseString(res);
 	    for (SensorType t : typesList) {
-		    dbh.updateType(t);
+		    DatabaseManager.getInstance().updateType(t);
 	    }
 	    WakefulIntentService.sendWakefulWork(context, WatchService.class);
     }

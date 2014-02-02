@@ -13,7 +13,7 @@ public class MyWidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 	                     int[] appWidgetIds) {
-		DatabaseHandler dbh = new DatabaseHandler(context);
+		DatabaseHelper dbh = new DatabaseHelper(context);
 		Log.w(LOG, "onUpdate WidgetProvider's method called with " + appWidgetIds.length + "widgets");
 		// Build the intent to call the service
 		Intent intent = new Intent(context, UpdateWidgetService.class);
@@ -25,9 +25,7 @@ public class MyWidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		super.onDeleted(context, appWidgetIds);
-		DatabaseHandler dbh = new DatabaseHandler(context);
-		dbh.deleteWidgetByWidgetId(appWidgetIds[0]);
-		dbh.close();
+		DatabaseManager.getInstance().deleteWidgetByWidgetId(appWidgetIds[0]);
 	}
 //	@Override
 //	public void onDisabled(Context context)	{}
