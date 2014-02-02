@@ -200,7 +200,6 @@ public class MainActivity extends ActionBarActivity implements
                 //Enable Up button only  if there are entries in the back stack
                 boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
                 Log.d(TAG, "shouldDisplayHomeUp is " + canBack);
-                //getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
                 if (canBack) {
                     mOptionsMenu.clear();
                 } else {
@@ -211,6 +210,13 @@ public class MainActivity extends ActionBarActivity implements
                 }
                 if (mDrawerToggle != null)
                     mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
+                if (getSupportFragmentManager().findFragmentById(R.id.left_menu_view).isHidden()) {
+                    Log.d(TAG,"menu fragment is hidden");
+                    findViewById(R.id.left_menu_view).setVisibility(View.GONE);
+                } else {
+                    Log.d(TAG,"menu fragment is not hidden");
+                    findViewById(R.id.left_menu_view).setVisibility(View.VISIBLE);
+                }
 
             }
         });
