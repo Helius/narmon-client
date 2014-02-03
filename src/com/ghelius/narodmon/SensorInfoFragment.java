@@ -297,8 +297,12 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 				prevTime = data.time;
 			}
 			mRenderer.initAxesRange(1);
-			mRenderer.setYAxisMin(min - (max-min)/10);
-			mRenderer.setYAxisMax(max + (max-min)/10);
+            if (task!=null && task.job != AlarmSensorTask.NOTHING) {
+                min = task.lo < min ? task.lo : min;
+                max = task.hi > max ? task.hi : max;
+            }
+			mRenderer.setYAxisMin(min-(max-min)/10);
+			mRenderer.setYAxisMax(max+(max-min)/10);
             TextView seriesInfo = (TextView) getView().findViewById(R.id.series_info);
             if (seriesInfo != null)
                 seriesInfo.setText("max: " + max + "\nmin: " + min + "\navg: " + summ/logData.size());
