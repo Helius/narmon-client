@@ -155,8 +155,9 @@ public class NarodmonApi {
             try {
                 makeSensorListFromJson(result);
                 Log.d(TAG,"asyncJob done with " + sensorList.size() + " sensor");
-                Log.d(TAG,"make sensor list done");
+                Log.d(TAG,"listUpdater: make sensor list done");
             } catch (JSONException e) {
+                Log.e(TAG,e.getMessage());
                 return false;
             }
             return true;
@@ -248,8 +249,9 @@ public class NarodmonApi {
             try {
                 parseValue(result);
                 Log.d(TAG,"asyncJob done with " + sensorList.size() + " sensor");
-                Log.d(TAG,"make sensor list done");
+                Log.d(TAG,"valueUpdater: make sensor list done");
             } catch (JSONException e) {
+                Log.e(TAG,e.getMessage());
                 return false;
             }
             return true;

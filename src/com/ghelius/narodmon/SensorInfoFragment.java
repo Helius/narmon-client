@@ -44,12 +44,17 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 	private SensorLogGetter logGetter;
 	private LogPeriod oldPeriod;
 	private TextView value;
+    AlarmSensorTask task = null;
 
 	private GraphicalView mChart;
 	private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
 	private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
 	private TimeSeries timeSeries;
+    private TimeSeries mHiLevel;
+    private TimeSeries mLowLevel;
 	private XYSeriesRenderer mCurrentRenderer;
+    private XYSeriesRenderer mCurrentRendereHiLevel ;
+    private XYSeriesRenderer mCurrentRendereLowLevel ;
 
 	private SensorConfigChangeListener listener = null;
 
@@ -176,14 +181,24 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 
 	private void initChart() {
 		Log.d(TAG,"init chart");
-		timeSeries = new TimeSeries("");
-		if (mDataset.getSeriesCount() != 0)
+        mHiLevel = new TimeSeries("hi level");
+        mLowLevel = new TimeSeries("low level");
+		timeSeries = new TimeSeries("value");
+		while (mDataset.getSeriesCount() != 0) {
+            Log.d(TAG,"removeSeries");
 			mDataset.removeSeries(mDataset.getSeriesCount()-1);
+        }
 		mDataset.addSeries(timeSeries);
+        mDataset.addSeries(mHiLevel);
+        mDataset.addSeries(mLowLevel);
 		mCurrentRenderer = new XYSeriesRenderer();
+        mCurrentRendereHiLevel = new XYSeriesRenderer();
+        mCurrentRendereLowLevel = new XYSeriesRenderer();
 
 		mRenderer.removeAllRenderers();
 		mRenderer.addSeriesRenderer(mCurrentRenderer);
+        mRenderer.addSeriesRenderer(mCurrentRendereHiLevel);
+        mRenderer.addSeriesRenderer(mCurrentRendereLowLevel);
 		mRenderer.setShowLabels(true);
 		mRenderer.setShowGrid(true);
 		mRenderer.setGridColor(0xFF505050);
@@ -193,20 +208,33 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 		mRenderer.setPointSize(2f);
 		mRenderer.setAxisTitleTextSize(20);
 		mRenderer.setChartTitleTextSize(20);
-		mRenderer.setLabelsTextSize(15);
-		mRenderer.setLegendTextSize(10);
+		mRenderer.setLabelsTextSize(12);
+		mRenderer.setLegendTextSize(12);
 		mRenderer.setYLabelsPadding(-20);
 		mRenderer.setXLabelsAlign(Paint.Align.CENTER);
-		mRenderer.setXLabels(10);
+		mRenderer.setXLabels(12);
 
 
 		mCurrentRenderer.setColor(0xFF00FF00);
 		mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
 		mCurrentRenderer.setFillPoints(true);
 		mCurrentRenderer.setChartValuesTextSize(15);
+
+        mCurrentRendereHiLevel.setColor(0xFFFF0000);
+//        mCurrentRendereHiLevel.setPointStyle(PointStyle.CIRCLE);
+        mCurrentRendereHiLevel.setFillPoints(true);
+        mCurrentRendereHiLevel.setChartValuesTextSize(18);
+        mCurrentRendereHiLevel.setLineWidth(1);
+
+        mCurrentRendereLowLevel.setColor(0xFF0000FF);
+//        mCurrentRendereHiLevel.setPointStyle(PointStyle.CIRCLE);
+        mCurrentRendereLowLevel.setFillPoints(true);
+        mCurrentRendereLowLevel.setChartValuesTextSize(18);
+        mCurrentRendereLowLevel.setLineWidth(1);
 	}
 
 	private void addSampleData() {
+        Log.d(TAG,"addSampleData");
 		if ((period == LogPeriod.day) && (offset == 0)) {
 			value.setText(String.valueOf(logData.get(logData.size()-1).value));
 		}
@@ -236,11 +264,27 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 			layout.addView(mChart);
 		}
 		timeSeries.clear();
+        mHiLevel.clear();
+        mLowLevel.clear();
 		if (!logData.isEmpty()) {
+            Log.d(TAG,"logData isn't empty: " + logData.size());
 			long prevTime = logData.get(0).time;
 			float max = logData.get(0).value;
 			float min = logData.get(0).value;
             float summ = 0;
+            if (task != null && logData.size()>1) {
+                Log.d(TAG,"task not null");
+                if (task.job != AlarmSensorTask.NOTHING) {
+                    Log.d(TAG,"add hi level");
+                    mHiLevel.add((logData.get(0).time-1)*1000, task.hi);
+                    mHiLevel.add((logData.get(logData.size()-1).time-1)*1000, task.hi);
+                }
+                if (task.job == AlarmSensorTask.OUT_OF || task.job == AlarmSensorTask.WITHIN_OF) {
+                    Log.d(TAG,"add low level");
+                    mLowLevel.add((logData.get(0).time-1)*1000, task.lo);
+                    mLowLevel.add((logData.get(logData.size()-1).time-1)*1000, task.lo);
+                }
+            }
 			for (Point data : logData) {
                 summ +=data.value;
 				if (data.value > max) max = data.value;
@@ -259,7 +303,9 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
             if (seriesInfo != null)
                 seriesInfo.setText("max: " + max + "\nmin: " + min + "\navg: " + summ/logData.size());
 
-		}
+		} else {
+            Log.e(TAG,"logData is empty: " + logData.size());
+        }
 		mChart.repaint();
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
 	}
@@ -390,7 +436,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
         dialog.setOnAlarmChangeListener(this);
         final Sensor s = sensor;
 
-        AlarmSensorTask task = DatabaseManager.getInstance().getAlarmById(s.id);
+        task = DatabaseManager.getInstance().getAlarmById(s.id);
         if (task == null || task.job == AlarmSensorTask.NOTHING) {
             ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_gray);
         } else {
@@ -465,7 +511,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 		@Override
 		public void onResultReceived(String result) {
 			logData.clear();
-			//Log.d(TAG,"sensorLog received: " + result);
+			Log.d(TAG,"sensorLog received: " + result);
 			try {
 				JSONObject jsonObject = new JSONObject(result);
 				JSONArray arr = jsonObject.getJSONArray("data");
