@@ -214,8 +214,8 @@ public class WatchService extends WakefulIntentService {
 	    notification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_AUTO_CANCEL;
 
         // The PendingIntent to launch our activity if the user selects this notification
-        //TODO: we must show AlarmInfo or watched list, do it later...
-        Intent i = new Intent (this, MainActivity.class);
+        //TODO: we must show AlarmInfo or watched list
+        Intent i = new Intent (getApplicationContext(),MainActivity.class);
 	    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         //i.putExtra("Mode","watch");
         //i.putExtra("Sensor", watchAdapter.getItem(position));

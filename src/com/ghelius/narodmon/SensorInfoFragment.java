@@ -240,7 +240,9 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 			long prevTime = logData.get(0).time;
 			float max = logData.get(0).value;
 			float min = logData.get(0).value;
+            float summ = 0;
 			for (Point data : logData) {
+                summ +=data.value;
 				if (data.value > max) max = data.value;
 				if (data.value < min) min = data.value;
 				timeSeries.add((data.time * 1000), data.value);
@@ -253,6 +255,10 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 			mRenderer.initAxesRange(1);
 			mRenderer.setYAxisMin(min - (max-min)/10);
 			mRenderer.setYAxisMax(max + (max-min)/10);
+            TextView seriesInfo = (TextView) getView().findViewById(R.id.series_info);
+            if (seriesInfo != null)
+                seriesInfo.setText("max: " + max + "\nmin: " + min + "\navg: " + summ/logData.size());
+
 		}
 		mChart.repaint();
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
@@ -400,8 +406,14 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
                     Log.d(TAG, "Found: SensorTask with job " + task.job);
                 } else {
                     Log.e(TAG, "sensorTask not found, create empty");
-                    Float val = Float.valueOf(String.valueOf(value.getText()));
-                    //TODO: if value not loaded, it cause exception, need to make alarm button disable, while loading not complite
+                    Float val;
+                    try {
+                        val = Float.valueOf(String.valueOf(value.getText()));
+                    } catch (Exception e) {
+                        Log.e(TAG,"sensor value not valid");
+                        val = 0f;
+                    }
+
                     task = new AlarmSensorTask(sensorId, 0, 0f, 0f, val, s.name);
                 }
                 dialog.setSensorTask(task);
@@ -446,7 +458,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 				default:
 					break;
 			}
-			getter.execute(NarodmonApi.apiUrl, PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getString("apiHeader","") + "\"cmd\":\"sensorLog\"," +
+			getter.execute(NarodmonApi.apiUrl, PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getString("apiHeader", "") + "\"cmd\":\"sensorLog\"," +
 					"\"id\":\""+id+"\",\"period\":\"" + sPeriod + "\",\"offset\":\""+ offset +"\"}");
 		}
 

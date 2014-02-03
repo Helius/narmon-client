@@ -157,6 +157,13 @@
                      android:layout_height="fill_parent"
                      android:layout_weight="0.5"
                 >
+            <TextView
+                android:id="@+id/series_info"
+                android:singleLine="false"
+                android:layout_marginTop="15dp"
+                android:layout_gravity="right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
             <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="fill_parent"
