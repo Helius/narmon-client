@@ -44,6 +44,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 	private SensorLogGetter logGetter;
 	private LogPeriod oldPeriod;
 	private TextView value;
+    private int type;
     AlarmSensorTask task = null;
 
 	private GraphicalView mChart;
@@ -235,8 +236,9 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 
 	private void addSampleData() {
         Log.d(TAG,"addSampleData");
-		if ((period == LogPeriod.day) && (offset == 0)) {
-			value.setText(String.valueOf(logData.get(logData.size()-1).value));
+		if ((period == LogPeriod.day) && (offset == 0) && logData.size()>1) {
+			value.setText(String.valueOf(logData.get(logData.size()-1).value) + " " +
+                    SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getUnitForType(type));
 		}
 		int max_gap = 1000*60;
 		if (period == LogPeriod.day) {
@@ -342,10 +344,11 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
             return; // TODO: hide fragment or report 'sensor not found'
         }
 
+        type = sensor.type;
         ((TextView) getView().findViewById(R.id.text_name)).setText(sensor.name);
         ((TextView) getView().findViewById(R.id.text_location)).setText(sensor.location);
         ((TextView) getView().findViewById(R.id.text_distance)).setText(String.valueOf(sensor.distance));
-        ((TextView) getView().findViewById(R.id.value_units)).setText(SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getUnitForType(sensor.type));
+
         ((TextView) getView().findViewById(R.id.text_type)).setText(SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getNameForType(sensor.type));
 //		((TextView) getView().findViewById(R.id.text_id)).setText(sensor.id);
         ((ImageView) getView().findViewById(R.id.info_sensor_icon)).setImageDrawable(SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getIcon(sensor.type));
