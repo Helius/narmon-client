@@ -16,6 +16,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
@@ -540,7 +542,9 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 		@Override
 		public void onNoResult() {
 			Log.e(TAG, "getLog: no data");
-		}
+            Toast.makeText(getActivity().getApplicationContext(), "Server not responds, try later", Toast.LENGTH_SHORT).show();
+            getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+        }
 	}
 
 

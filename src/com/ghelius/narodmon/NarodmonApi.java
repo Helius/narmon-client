@@ -137,7 +137,7 @@ public class NarodmonApi {
         }
         @Override
         public void onResultReceived(String result) {
-            Log.d(TAG,"listUpdate: result receive");
+            Log.d(TAG,"listUpdater: result received, call listener");
             if (listener != null)
                 listener.onSensorListResult(true, "");
         }
@@ -155,7 +155,6 @@ public class NarodmonApi {
             try {
                 makeSensorListFromJson(result);
                 Log.d(TAG,"asyncJob done with " + sensorList.size() + " sensor");
-                Log.d(TAG,"listUpdater: make sensor list done");
             } catch (JSONException e) {
                 Log.e(TAG,e.getMessage());
                 return false;

@@ -76,8 +76,9 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... uri) {
-//        Log.d(TAG,"doInBackground");
+        Log.d(TAG,"doInBackground");
         String responseString = null;
+        asyncJobFail = true;
         try {
 //            Log.d(TAG, uri[0] + ":" + uri[1]);
             HttpResponse r = makeRequest(uri[0],uri[1]);
@@ -88,11 +89,13 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
             InputStream in = r.getEntity().getContent();
             responseString = inputStreamToString(in);
             if (asyncCallback!=null && !isCancelled()) {
-//                Log.d(TAG,"call asyncJob");
-                if (!asyncCallback.asyncJobWithResult(responseString)) {
-                    asyncJobFail = true;
+                Log.d(TAG,"call asyncJob");
+                if (asyncCallback.asyncJobWithResult(responseString)) {
+                    Log.d(TAG,"asyncJob return ok");
+                    asyncJobFail = false;
                 }
-            }
+            } else if (asyncCallback == null)
+                asyncJobFail = false; // if there is no asyncJob, it can't fail
             if (asyncJobFail) {
                 Log.e(TAG,"asyncJob report fail to asyncTask");
             }
@@ -108,16 +111,17 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-//        Log.d(TAG,"---------getter finished------");
+        Log.d(TAG,"onPostExecute");
         //Log.d(TAG,"result: " + result);
         if (isCancelled()) {
             Log.w(TAG,"task was cancelled");
             return;
         }
-        if ((result == null)||(asyncJobFail)) {
-//            Log.e(TAG,"asyncJob report about fail, so finished with NoResult");
+        if ((result == null) ||(asyncJobFail)) {
+            Log.e(TAG,"asyncJob report about fail, so finished with NoResult");
             listener.onNoResult();
         } else {
+            Log.d(TAG,"call listener onResultReceived");
             listener.onResultReceived(result);
         }
     }

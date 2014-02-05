@@ -26,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -587,6 +588,9 @@ public class MainActivity extends ActionBarActivity implements
         setRefreshProgress(false);
         listAdapter.updateFilter();
         updateMenuSensorCounts();
+        if (!ok) {
+            Toast.makeText(getApplicationContext(),"Server not respond, try later",Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
