@@ -53,8 +53,8 @@
                 android:background="#000000FF"
                 android:adjustViewBounds="false"
                 android:scaleType="fitCenter"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginLeft="3dp"
                 android:layout_marginTop="3dp" />
 
             <ImageButton
@@ -66,8 +66,8 @@
                 android:clickable="true"
                 android:scaleType="fitCenter"
                 android:background="#000000FF"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginLeft="3dp"
                 android:layout_marginTop="10dp" />
         </LinearLayout>
     </LinearLayout>
@@ -239,45 +239,39 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:gravity="center_vertical|center_horizontal"
-        android:layout_gravity="center_horizontal">
+        android:gravity="center_horizontal">
 
         <Button
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:text="\u003c"
-            android:layout_weight="0"
             android:id="@+id/bt_graph_prev" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_day_text"
-            android:layout_weight="0"
             android:id="@+id/bt_graph_day" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_week_text"
-            android:layout_weight="0"
             android:id="@+id/bt_graph_week" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_month_text"
-            android:layout_weight="0"
             android:id="@+id/bt_graph_month" />
 
         <Button
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:text="\u003e"
-            android:layout_weight="0"
             android:id="@+id/bt_graph_next" />
     </LinearLayout>
 </LinearLayout>
