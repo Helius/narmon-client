@@ -5,73 +5,66 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/appwidget_shape"
     android:padding="@dimen/widget_margin"
     android:id="@+id/widget_body">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name"
+        android:textSize="12dp"
+        android:singleLine="true"
+        android:layout_marginBottom="3dp"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp" />
+
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#0d131c"
-        android:gravity="center">
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingRight="3dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/imageView"
+            android:scaleType="fitCenter" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/name"
-            android:textSize="12dp"
+            android:id="@+id/unit"
             android:singleLine="true"
-            android:layout_marginBottom="3dp"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp" />
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingRight="3dp">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:id="@+id/imageView"
-                android:scaleType="fitCenter" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/unit"
-                android:singleLine="true"
-                android:layout_weight="1" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:id="@+id/arrowDown"
-                android:gravity="center|right"
-                android:textColor="#0178be"
-                android:textStyle="bold"
-                android:textSize="18dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:id="@+id/arrowUp"
-                android:gravity="center|right"
-                android:textColor="#e10051"
-                android:textStyle="bold"
-                android:textSize="18dp" />
-        </LinearLayout>
+            android:layout_weight="1" />
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="--"
-            android:id="@+id/value"
-            android:gravity="center_vertical|center_horizontal"
-            android:singleLine="true"
-            android:textSize="25dp"
-            android:textColor="#88c2e2" />
+            android:layout_height="fill_parent"
+            android:id="@+id/arrowDown"
+            android:gravity="center|right"
+            android:textColor="#0178be"
+            android:textStyle="bold"
+            android:textSize="18dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:id="@+id/arrowUp"
+            android:gravity="center|right"
+            android:textColor="#e10051"
+            android:textStyle="bold"
+            android:textSize="18dp" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="--"
+        android:id="@+id/value"
+        android:gravity="center_vertical|center_horizontal"
+        android:singleLine="true"
+        android:textSize="25dp"
+        android:textColor="#88c2e2" />
 </LinearLayout>

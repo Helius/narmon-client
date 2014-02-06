@@ -126,4 +126,9 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         }
     }
 
+    @Override
+    protected void onCancelled() {
+        Log.e(TAG,"task was cancelled");
+    }
+
 }
