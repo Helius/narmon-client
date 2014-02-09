@@ -32,12 +32,10 @@ public class WatchService extends WakefulIntentService {
     private ArrayList<Integer> ids;
 
     private int lastNotifyId = 0;
-    private HashMap<Integer, Notification> notifications; //массив ключ-значение на все отображаемые пользователю уведомления
 
     public WatchService() {
         super("Narodmon watcher");
         ids = new ArrayList<Integer>();
-        notifications = new HashMap<Integer, Notification>();
     }
 
     private void updateNotify (String message, String name, int id) {
@@ -70,7 +68,7 @@ public class WatchService extends WakefulIntentService {
             buf.append(ids.get(i));
         }
         String queryId = buf.toString();
-        HttpResponse r = ServerDataGetter.makeRequest(NarodmonApi.apiUrl, PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("apiHeader","") + "\"cmd\":\"sensorInfo\",\"sensor\":[" + queryId + "]}");
+        HttpResponse r = ServerDataGetter.makeRequest(getApplicationContext().getString(R.string.api_url), PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("apiHeader","") + "\"cmd\":\"sensorInfo\",\"sensor\":[" + queryId + "]}");
         if (r == null) {
             Log.e(TAG,"HttpResponse is null");
             return false;

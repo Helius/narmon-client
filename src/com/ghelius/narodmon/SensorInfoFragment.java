@@ -514,7 +514,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 				default:
 					break;
 			}
-			getter.execute(NarodmonApi.apiUrl, PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getString("apiHeader", "") + "\"cmd\":\"sensorLog\"," +
+			getter.execute(getActivity().getApplicationContext().getString(R.string.api_url), PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getString("apiHeader", "") + "\"cmd\":\"sensorLog\"," +
 					"\"id\":\""+id+"\",\"period\":\"" + sPeriod + "\",\"offset\":\""+ offset +"\"}");
 		}
 

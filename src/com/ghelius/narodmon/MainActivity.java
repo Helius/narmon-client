@@ -195,11 +195,6 @@ public class MainActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try {
-            Class.forName("android.os.AsyncTask");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
 
         getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
@@ -360,7 +355,7 @@ public class MainActivity extends ActionBarActivity implements
             }
         });
 
-        narodmonApi = new NarodmonApi(apiHeader);
+        narodmonApi = new NarodmonApi(getApplicationContext().getString(R.string.api_url), apiHeader);
 
         Intent intent = new Intent(this, OnBootReceiver.class);
         sendBroadcast(intent);
@@ -523,17 +518,17 @@ public class MainActivity extends ActionBarActivity implements
             public void gotLocation(Location location) {
                 Log.d(TAG, "got location");
                 if (location == null) return;
-                double lat = location.getLatitude();
-                double lon = location.getLongitude();
+                final double lat = location.getLatitude();
+                final double lon = location.getLongitude();
                 // use API to send location
                 Log.d(TAG, "location was updated and set into api : " + lat + " " + lon);
-                narodmonApi.setLocation((float) lat, (float) lon);
                 SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 pref.edit().putFloat("lat", (float) lat).putFloat("lng", (float) lon).commit();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Log.d(TAG, "location: update sensor list!");
+                        narodmonApi.setLocation((float) lat, (float) lon);
                         updateSensorsList(true);
                     }
                 });

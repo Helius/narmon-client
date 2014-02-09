@@ -17,7 +17,7 @@ import java.util.Locale;
 
 public class NarodmonApi {
 
-    public static final String apiUrl = "http://narodmon.ru/client.php";
+    private String apiUrl;
     private onResultReceiveListener listener;
     private ListUpdater listUpdater;
     private LocationSender locationSender;
@@ -43,7 +43,7 @@ public class NarodmonApi {
         void onSensorTypeResult (boolean ok, String res);
     }
 
-    NarodmonApi (String apiHeader) {
+    NarodmonApi (String apiUrl, String apiHeader) {
         listUpdater    = new ListUpdater();
         locationSender = new LocationSender();
         loginer        = new Loginer();
@@ -51,6 +51,7 @@ public class NarodmonApi {
         valueUpdater   = new ValueUpdater();
         typeDictionaryGetter = new SensorTypeDictionaryGetter();
         this.apiHeader = apiHeader;
+        this.apiUrl = apiUrl;
     }
 
     public void setOnResultReceiveListener (onResultReceiveListener listener) {

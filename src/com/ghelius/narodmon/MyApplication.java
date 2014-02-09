@@ -11,6 +11,11 @@ public class MyApplication extends Application {
 		super.onCreate();
 		// The following line triggers the initialization of ACRA
 		ACRA.init(this);
+        try {
+            Class.forName("android.os.AsyncTask");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         DatabaseManager.initializeInstance(new DatabaseHelper(getApplicationContext()));
 	}
 }
