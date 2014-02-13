@@ -35,7 +35,7 @@ import java.io.ObjectInputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.AlarmChangeListener {
+public class SensorInfoFragment extends Fragment {
 
 	private final String TAG = "narodmon-info";
 	private int sensorId = -1;
@@ -61,26 +61,6 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 
 	private SensorConfigChangeListener listener = null;
 
-	/**
-	 * Called when user press Ok button on dialog
-	 */
-	@Override
-	public void onAlarmChange(AlarmSensorTask task) {
-        Log.d(TAG, task.toString());
-		if (task.job == AlarmSensorTask.NOTHING) {
-			((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_gray);
-		} else {
-			((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_blue);
-		}
-        try {
-            task.lastValue = Float.valueOf(value.getText().toString());
-        } catch (Exception e) {
-            task.lastValue = -999;
-        }
-		DatabaseManager.getInstance().addAlarmTask(task);
-		if (listener!=null)
-			listener.alarmChanged();
-	}
 
 	interface SensorConfigChangeListener {
 		void favoritesChanged();
@@ -202,6 +182,7 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 		mRenderer.addSeriesRenderer(mCurrentRenderer);
         mRenderer.addSeriesRenderer(mCurrentRendereHiLevel);
         mRenderer.addSeriesRenderer(mCurrentRendereLowLevel);
+
 		mRenderer.setShowLabels(true);
 		mRenderer.setShowGrid(true);
 		mRenderer.setGridColor(0xFF505050);
@@ -217,20 +198,22 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 		mRenderer.setXLabelsAlign(Paint.Align.CENTER);
 		mRenderer.setXLabels(12);
 
+        mRenderer.setLegendHeight(10);
+//        mRenderer.setShowLabels(false);
+        mRenderer.setShowLegend(false);
+
 
 		mCurrentRenderer.setColor(0xFF00FF00);
 		mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
 		mCurrentRenderer.setFillPoints(true);
 		mCurrentRenderer.setChartValuesTextSize(15);
 
-        mCurrentRendereHiLevel.setColor(0xFFFF0000);
-//        mCurrentRendereHiLevel.setPointStyle(PointStyle.CIRCLE);
+        mCurrentRendereHiLevel.setColor(0xFFFF4040);
         mCurrentRendereHiLevel.setFillPoints(true);
         mCurrentRendereHiLevel.setChartValuesTextSize(18);
         mCurrentRendereHiLevel.setLineWidth(1);
 
-        mCurrentRendereLowLevel.setColor(0xFF0000FF);
-//        mCurrentRendereHiLevel.setPointStyle(PointStyle.CIRCLE);
+        mCurrentRendereLowLevel.setColor(0xFF4040FF);
         mCurrentRendereLowLevel.setFillPoints(true);
         mCurrentRendereLowLevel.setChartValuesTextSize(18);
         mCurrentRendereLowLevel.setLineWidth(1);
@@ -443,7 +426,26 @@ public class SensorInfoFragment extends Fragment implements AlarmsSetupDialog.Al
 
         final ImageButton alarm = (ImageButton) getActivity().findViewById(R.id.alarmSetup);
         final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
-        dialog.setOnAlarmChangeListener(this);
+        dialog.setOnAlarmChangeListener(new AlarmsSetupDialog.AlarmChangeListener() {
+            @Override
+            public void onAlarmChange(AlarmSensorTask task) {
+                Log.d(TAG, task.toString());
+                if (task.job == AlarmSensorTask.NOTHING) {
+                    ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_gray);
+                } else {
+                    ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_blue);
+                }
+                try {
+                    task.lastValue = Float.valueOf(value.getText().toString());
+                } catch (Exception e) {
+                    task.lastValue = -999;
+                }
+                DatabaseManager.getInstance().addAlarmTask(task);
+                if (listener!=null)
+                    listener.alarmChanged();
+                addSampleData();
+            }
+        });
         final Sensor s = sensor;
 
         task = DatabaseManager.getInstance().getAlarmById(s.id);
