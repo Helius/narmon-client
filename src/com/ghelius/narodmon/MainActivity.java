@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,6 +17,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -35,7 +35,6 @@ import java.util.TimerTask;
 
 public class MainActivity extends ActionBarActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener,
-        NarodmonApi.onResultReceiveListener,
         SensorInfoFragment.SensorConfigChangeListener,
         FilterFragment.OnFilterChangeListener {
 
@@ -47,6 +46,7 @@ public class MainActivity extends ActionBarActivity implements
     private long lastUpdateTime;
     private final static int gpsUpdateIntervalMs = 20 * 60 * 1000; // time interval for updateFilter coordinates and sensor list
     private AlarmsListFragment alarmsListFragment;
+    private NarodmonApi.onResultReceiveListener apiListener;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -59,7 +59,7 @@ public class MainActivity extends ActionBarActivity implements
     private Timer gpsUpdateTimer = null;
     private LoginDialog loginDialog;
     private UiFlags uiFlags;
-    private NarodmonApi narodmonApi;
+    private NarodmonApi mNarodmonApi;
     private String apiHeader;
     private LoginStatus loginStatus = LoginStatus.LOGOUT;
     String uid;
@@ -125,29 +125,29 @@ public class MainActivity extends ActionBarActivity implements
         Float lng = prefs.getFloat("lng", 0.0f);
         // it's first start, gps data may be not ready or gps not used, so we use prev coordinates always first time
         if (lat != 0.0f && lng != 0.0f)
-            narodmonApi.setLocation(lat, lng);
+            mNarodmonApi.setLocation(lat, lng);
         if (useGps) { // if use gps, just updateFilter location periodically, set to api, don't use saved value
             Log.d(TAG, "init location updater: we use gps");
             startGpsTimer();
             updateLocation();
         } else { // if use address, use this value and set to api, this value updateFilter and save in location result callback
             Log.d(TAG, "init location updater: we use address");
-            narodmonApi.sendLocation(prefs.getString(getString(R.string.pref_key_geoloc), ""));
+            mNarodmonApi.sendLocation(prefs.getString(getString(R.string.pref_key_geoloc), ""));
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
-        narodmonApi.setOnResultReceiveListener(this);
-        narodmonApi.restoreSensorList(this, sensorList);
+        Log.d(TAG, ">>>>>>>> onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
+        mNarodmonApi.setOnResultReceiveListener(apiListener);
+        mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
         updateMenuSensorCounts();
 
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false))
             doAuthorisation();
         sendVersion();
-        narodmonApi.getTypeDictionary();
+        mNarodmonApi.getTypeDictionary();
 
         initLocationUpdater();
 
@@ -158,13 +158,12 @@ public class MainActivity extends ActionBarActivity implements
         if (!pref.getBoolean(getString(R.string.pref_key_use_geocode), false)) {
             startGpsTimer();
         }
-
     }
 
     @Override
     public void onPause() {
-        narodmonApi.setOnResultReceiveListener(null);
-        Log.i(TAG, "onPause");
+        mNarodmonApi.setOnResultReceiveListener(null);
+        Log.i(TAG, ">>>>>>>>> onPause");
         super.onPause();
         stopUpdateTimer();
         stopGpsTimer();
@@ -172,7 +171,7 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "onDestroy");
+        Log.i(TAG, ">>>>>>>>>> onDestroy");
         uiFlags.save(this);
         stopUpdateTimer();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
@@ -191,10 +190,11 @@ public class MainActivity extends ActionBarActivity implements
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
+        Log.i(TAG, ">>>>>>>> onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        apiListener = new ApiListener();
 
         getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
@@ -355,7 +355,7 @@ public class MainActivity extends ActionBarActivity implements
             }
         });
 
-        narodmonApi = new NarodmonApi(getApplicationContext().getString(R.string.api_url), apiHeader);
+        mNarodmonApi = new NarodmonApi(getApplicationContext().getString(R.string.api_url), apiHeader);
 
         Intent intent = new Intent(this, OnBootReceiver.class);
         sendBroadcast(intent);
@@ -479,7 +479,7 @@ public class MainActivity extends ActionBarActivity implements
 
         Log.d(TAG, "start list updating...");
         setRefreshProgress(true);
-        narodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
+        mNarodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
         lastUpdateTime = System.currentTimeMillis();
     }
 
@@ -487,12 +487,12 @@ public class MainActivity extends ActionBarActivity implements
 
         Log.d(TAG, "------------ updateFilter sensor value ---------------");
         setRefreshProgress(true);
-        narodmonApi.updateSensorsValue(sensorList);
+        mNarodmonApi.updateSensorsValue(sensorList);
     }
 
 
     private void sendVersion() {
-        narodmonApi.sendVersion(getString(R.string.app_version_name));
+        mNarodmonApi.sendVersion(getString(R.string.app_version_name));
     }
 
     private void doAuthorisation() {
@@ -501,14 +501,14 @@ public class MainActivity extends ActionBarActivity implements
         String login = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
         String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)), "");
         if (!login.equals("")) {// don't try if login is empty
-            narodmonApi.doAuthorisation(login, passwd, uid);
+            mNarodmonApi.doAuthorisation(login, passwd, uid);
         } else {
             Log.w(TAG, "login is empty, do not authorisation");
         }
     }
 
     private void closeAutorisation() {
-        narodmonApi.closeAuthorisation();
+        mNarodmonApi.closeAuthorisation();
     }
 
     void updateLocation() {
@@ -528,81 +528,13 @@ public class MainActivity extends ActionBarActivity implements
                     @Override
                     public void run() {
                         Log.d(TAG, "location: update sensor list!");
-                        narodmonApi.setLocation((float) lat, (float) lon);
+                        mNarodmonApi.setLocation((float) lat, (float) lon);
                         updateSensorsList(true);
                     }
                 });
             }
         });
     }
-
-    /**
-     * <p>Calls for result on sending address string (Russia, Moscow, Lenina 1) to server</p>
-     *
-     * @param ok
-     * @param addr    - contain address (if lat/lng was sended), empty if address was sended
-     * @param lat,lng - contain coordinates, if address string was sended
-     */
-    @Override
-    public void onLocationResult(boolean ok, String addr, Float lat, Float lng) {
-//		Log.d(TAG, "on location Result (server answer): " + addr);
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        // if use gps save address
-        if (ok && !pref.getBoolean(getString(R.string.pref_key_use_geocode), false)) {
-            Log.d(TAG, "on location result: we use gps, so sawe address string to shared pref: " + addr);
-            pref.edit().putString(getString(R.string.pref_key_geoloc), addr).commit();
-//			Toast.makeText(getApplicationContext(), addr, Toast.LENGTH_SHORT);
-        } else if (ok) { // if use address, save coordinates and set it to api
-            Log.d(TAG, "on location result: we use addres, so save coordinates to shared pref: " + lat + ", " + lng);
-            pref.edit().putFloat("lat", lat).putFloat("lng", lng).commit();
-            narodmonApi.setLocation(lat, lng);
-        }
-        updateSensorsList(true);
-    }
-
-    @Override
-    public void onAuthorisationResult(boolean ok, String res) {
-        if (ok) {
-            if (res.equals("")) {
-                loginStatus = LoginStatus.LOGOUT;
-                loginDialog.updateLoginStatus();
-            } else {
-                Log.d(TAG, "authorisation: ok, result:" + res);
-                loginStatus = LoginStatus.LOGIN;
-                loginDialog.updateLoginStatus();
-            }
-        } else {
-            Log.e(TAG, "authorisation: fail, result: " + res);
-            loginStatus = LoginStatus.ERROR;
-            loginDialog.updateLoginStatus();
-        }
-        updateSensorsList(true);
-    }
-
-    @Override
-    public void onSendVersionResult(boolean ok, String res) {
-    }
-
-    @Override
-    public void onSensorListResult(boolean ok, String res) {
-        Log.d(TAG, "---------------- List updated --------------");
-        setRefreshProgress(false);
-        listAdapter.updateFilter();
-        updateMenuSensorCounts();
-        if (!ok) {
-            Toast.makeText(getApplicationContext(),"Server not respond, try later",Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onSensorTypeResult(boolean ok, String res) {
-        //parse res to container
-        Log.d(TAG, "---------------- TypeDict updated --------------");
-        if (!ok) return;
-        SensorTypeProvider.getInstance(getApplicationContext()).setTypesFromString(res);
-        listAdapter.notifyDataSetChanged();
-    }
-
 
     private void sensorItemClick(int position) {
         sensorInfoFragment.setId(listAdapter.getItem(position).id);
@@ -637,11 +569,11 @@ public class MainActivity extends ActionBarActivity implements
     private void setRefreshProgress(boolean refreshing) {
         if (mOptionsMenu != null) {
             final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
-            if (refreshItem != null && (Build.VERSION.SDK_INT > 10)) {
+            if (refreshItem != null) {
                 if (refreshing) {
-                    refreshItem.setActionView(R.layout.actionbar_indeterminate_progress);
+                    MenuItemCompat.setActionView(refreshItem, R.layout.actionbar_indeterminate_progress);
                 } else {
-                    refreshItem.setActionView(null);
+                    MenuItemCompat.setActionView(refreshItem, null);
                 }
             }
         }
@@ -730,5 +662,74 @@ public class MainActivity extends ActionBarActivity implements
                 pi);
     }
 
+
+    private class ApiListener implements NarodmonApi.onResultReceiveListener {
+        /**
+         * <p>Calls for result on sending address string (Russia, Moscow, Lenina 1) to server</p>
+         *
+         * @param ok
+         * @param addr    - contain address (if lat/lng was sended), empty if address was sended
+         * @param lat,lng - contain coordinates, if address string was sended
+         */
+        @Override
+        public void onLocationResult(boolean ok, String addr, Float lat, Float lng) {
+//		Log.d(TAG, "on location Result (server answer): " + addr);
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            // if use gps save address
+            if (ok && !pref.getBoolean(getString(R.string.pref_key_use_geocode), false)) {
+                Log.d(TAG, "on location result: we use gps, so sawe address string to shared pref: " + addr);
+                pref.edit().putString(getString(R.string.pref_key_geoloc), addr).commit();
+//			Toast.makeText(getApplicationContext(), addr, Toast.LENGTH_SHORT);
+            } else if (ok) { // if use address, save coordinates and set it to api
+                Log.d(TAG, "on location result: we use addres, so save coordinates to shared pref: " + lat + ", " + lng);
+                pref.edit().putFloat("lat", lat).putFloat("lng", lng).commit();
+                mNarodmonApi.setLocation(lat, lng);
+            }
+            updateSensorsList(true);
+        }
+
+        @Override
+        public void onAuthorisationResult(boolean ok, String res) {
+            if (ok) {
+                if (res.equals("")) {
+                    loginStatus = LoginStatus.LOGOUT;
+                    loginDialog.updateLoginStatus();
+                } else {
+                    Log.d(TAG, "authorisation: ok, result:" + res);
+                    loginStatus = LoginStatus.LOGIN;
+                    loginDialog.updateLoginStatus();
+                }
+            } else {
+                Log.e(TAG, "authorisation: fail, result: " + res);
+                loginStatus = LoginStatus.ERROR;
+                loginDialog.updateLoginStatus();
+            }
+            updateSensorsList(true);
+        }
+
+        @Override
+        public void onSendVersionResult(boolean ok, String res) {
+        }
+
+        @Override
+        public void onSensorListResult(boolean ok, String res) {
+            Log.d(TAG, "---------------- List updated --------------");
+            setRefreshProgress(false);
+            listAdapter.updateFilter();
+            updateMenuSensorCounts();
+            if (!ok) {
+                Toast.makeText(getApplicationContext(),"Server not respond, try later",Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onSensorTypeResult(boolean ok, String res) {
+            //parse res to container
+            Log.d(TAG, "---------------- TypeDict updated --------------");
+            if (!ok) return;
+            SensorTypeProvider.getInstance(getApplicationContext()).setTypesFromString(res);
+            listAdapter.notifyDataSetChanged();
+        }
+    }
 }
 
