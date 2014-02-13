@@ -409,7 +409,6 @@ public class SensorInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG,"monitoring onClick");
-                DatabaseHelper dbh = new DatabaseHelper(getActivity().getApplicationContext());
                 ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavorites();
                 if (favorites.contains(sensorId)) { // we are favorite!
                     // remove us

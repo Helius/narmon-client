@@ -14,14 +14,12 @@ public class MyWidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 	                     int[] appWidgetIds) {
-		DatabaseHelper dbh = new DatabaseHelper(context);
 		Log.w(TAG, "onUpdate WidgetProvider's method called with " + appWidgetIds.length + "widgets");
 		// Build the intent to call the service
 		Intent intent = new Intent(context, UpdateWidgetService.class);
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new Integer[0]);
 		// Update the widgets via the service
 		context.startService(intent);
-		dbh.close();
 	}
 
     @Override
