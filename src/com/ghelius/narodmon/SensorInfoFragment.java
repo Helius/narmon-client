@@ -211,12 +211,12 @@ public class SensorInfoFragment extends Fragment {
         mCurrentRendereHiLevel.setColor(0xFFFF4040);
         mCurrentRendereHiLevel.setFillPoints(true);
         mCurrentRendereHiLevel.setChartValuesTextSize(18);
-        mCurrentRendereHiLevel.setLineWidth(1);
+        mCurrentRendereHiLevel.setLineWidth(2);
 
         mCurrentRendereLowLevel.setColor(0xFF4040FF);
         mCurrentRendereLowLevel.setFillPoints(true);
         mCurrentRendereLowLevel.setChartValuesTextSize(18);
-        mCurrentRendereLowLevel.setLineWidth(1);
+        mCurrentRendereLowLevel.setLineWidth(2);
 	}
 
 	private void addSampleData() {
@@ -286,7 +286,7 @@ public class SensorInfoFragment extends Fragment {
 			mRenderer.initAxesRange(1);
             TextView seriesInfo = (TextView) getView().findViewById(R.id.series_info);
             if (seriesInfo != null) {
-                seriesInfo.setText("max: " + max + "\nmin: " + min + "\navg: " + String.format("%.2f%n", summ/logData.size()));
+                seriesInfo.setText("max: " + max + "\navg: " + String.format("%.2f%n", summ/logData.size())+ "min: " + min );
             }
             if (task!=null && task.job != AlarmSensorTask.NOTHING) {
                 min = task.lo < min ? task.lo : min;
@@ -298,6 +298,7 @@ public class SensorInfoFragment extends Fragment {
 		} else {
             Log.e(TAG,"logData is empty: " + logData.size());
         }
+        Log.d(TAG,"repaint");
 		mChart.repaint();
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
 	}
@@ -428,7 +429,8 @@ public class SensorInfoFragment extends Fragment {
         final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
         dialog.setOnAlarmChangeListener(new AlarmsSetupDialog.AlarmChangeListener() {
             @Override
-            public void onAlarmChange(AlarmSensorTask task) {
+            public void onAlarmChange(AlarmSensorTask task_) {
+                task = task_;
                 Log.d(TAG, task.toString());
                 if (task.job == AlarmSensorTask.NOTHING) {
                     ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_gray);
@@ -443,6 +445,7 @@ public class SensorInfoFragment extends Fragment {
                 DatabaseManager.getInstance().addAlarmTask(task);
                 if (listener!=null)
                     listener.alarmChanged();
+
                 addSampleData();
             }
         });

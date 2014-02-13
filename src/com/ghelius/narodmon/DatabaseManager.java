@@ -29,12 +29,13 @@ public class DatabaseManager {
             throw new IllegalStateException(DatabaseManager.class.getSimpleName() +
                     " is not initialized, call initializeInstance(..) method first.");
         }
-
         return instance;
     }
 
     public SQLiteDatabase openDatabase() {
+        Log.d(TAG,"open db");
         if(mOpenCounter.incrementAndGet() == 1) {
+            Log.d(TAG,"real open db");
             // Opening new database
             mDatabase = mDatabaseHelper.getWritableDatabase();
         }
@@ -42,7 +43,9 @@ public class DatabaseManager {
     }
 
     public void closeDatabase() {
+        Log.d(TAG,"close db");
         if(mOpenCounter.decrementAndGet() == 0) {
+            Log.d(TAG,"real close db");
             // Closing database
             mDatabase.close();
 
@@ -151,19 +154,7 @@ public class DatabaseManager {
         getInstance().closeDatabase();
     }
 
-    //	public int updateWidget(Contact contact) {
-//		SQLiteDatabase db = this.getWritableDatabase();
-//
-//		ContentValues values = new ContentValues();
-//		values.put(KEY_NAME, contact.getName());
-//		values.put(KEY_PH_NO, contact.getPhoneNumber());
-//
-//		// updating row
-//		return db.updateFilter(TABLE_WIDGETS, values, KEY_ID + " = ?",
-//				new String[] { String.valueOf(contact.getID()) });
-//	}
     public void updateValueByWidgetId(Widget w) {
-//		Log.d(TAG,"for " + w.screenName + ", last " + w.lastValue + ", cur " + w.curValue);
 
         SQLiteDatabase db = getInstance().openDatabase();
 
