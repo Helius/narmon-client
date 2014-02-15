@@ -188,13 +188,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 		return localItems.size();
 	}
 
-    public int getAlarmCount () {
-        int i = 0;
-        for (Sensor s: originItems) {
-            if (s.alarmed)
-                i++;
-        }
-        return i;
+    public int getAllCount() {
+        return originItems.size();
     }
 
 	public int getMyCount() {
@@ -208,7 +203,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
 	@Override
 	public Sensor getItem(int position) {
-		return localItems.get(position);
+		return originItems.get(position);
 	}
 
 	@Override

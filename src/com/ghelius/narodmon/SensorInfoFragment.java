@@ -441,7 +441,10 @@ public class SensorInfoFragment extends Fragment {
                 } catch (Exception e) {
                     task.lastValue = -999;
                 }
-                DatabaseManager.getInstance().addAlarmTask(task);
+                if (task.job == AlarmSensorTask.NOTHING)
+                    DatabaseManager.getInstance().removeAlarm(task.id);
+                else
+                    DatabaseManager.getInstance().addAlarmTask(task);
                 if (listener!=null)
                     listener.alarmChanged();
 

@@ -246,7 +246,6 @@ public class MainActivity extends ActionBarActivity implements
         Log.d(TAG, ">>>>>>>> onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
         mNarodmonApi.setOnResultReceiveListener(apiListener);
         mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
-        updateMenuSensorCounts();
 
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false))
             doLogin();
@@ -295,6 +294,7 @@ public class MainActivity extends ActionBarActivity implements
         int cnt = DatabaseManager.getInstance().getAlarmTask().size();
         slidingMenu.setMenuAlarmCount(cnt);
         listAdapter.updateAlarms();
+        listAdapter.updateFilter();
     }
 
     //This method is called when the up button is pressed. Just the pop back stack.
@@ -357,9 +357,9 @@ public class MainActivity extends ActionBarActivity implements
 
 
     private void updateMenuSensorCounts() {
-        slidingMenu.setMenuAllCount(listAdapter.getCount());
+        Log.d(TAG,"updateSensorCount: " + listAdapter.getAllCount());
+        slidingMenu.setMenuAllCount(listAdapter.getAllCount());
         slidingMenu.setMenuMyCount(listAdapter.getMyCount());
-        slidingMenu.setMenuAlarmCount(listAdapter.getAlarmCount());
         favoritesChanged();
         alarmChanged();
     }
@@ -703,7 +703,7 @@ public class MainActivity extends ActionBarActivity implements
 
         @Override
         public void onSensorListResult(boolean ok, String res) {
-            Log.d(TAG, "---------------- List updated --------------");
+            Log.d(TAG, "---------------- List updated --------------:" + sensorList.size() +", in adapter: "+ listAdapter.getAllCount());
             setRefreshProgress(false);
             listAdapter.updateFilter();
             updateMenuSensorCounts();
