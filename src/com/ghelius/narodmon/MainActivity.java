@@ -45,6 +45,7 @@ public class MainActivity extends ActionBarActivity implements
     private long lastUpdateTime;
     private final static int gpsUpdateIntervalMs = 20 * 60 * 1000; // time interval for updateFilter coordinates and sensor list
     private NarodmonApi.onResultReceiveListener apiListener;
+    private boolean showRefreshProgress;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -189,8 +190,8 @@ public class MainActivity extends ActionBarActivity implements
             }
         });
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-        trans.add(R.id.content_frame, sensorListFragment);
-        trans.add(R.id.left_menu_view, slidingMenu);
+        trans.replace(R.id.content_frame, sensorListFragment);
+        trans.replace(R.id.left_menu_view, slidingMenu);
         trans.commit();
 
 
@@ -367,6 +368,7 @@ public class MainActivity extends ActionBarActivity implements
         mOptionsMenu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.icon_menu, menu);
+        setRefreshProgress(showRefreshProgress);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -553,6 +555,7 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void setRefreshProgress(boolean refreshing) {
+        showRefreshProgress = refreshing;
         if (mOptionsMenu != null) {
             final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
             if (refreshItem != null) {
