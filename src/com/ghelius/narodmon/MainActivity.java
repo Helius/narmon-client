@@ -150,9 +150,9 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void menuAllClicked() {
                 listAdapter.setGroups(SensorItemAdapter.SensorGroups.All);
-                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                trans.replace(R.id.content_frame, sensorListFragment);
-                trans.commit();
+//                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+//                trans.replace(R.id.content_frame, sensorListFragment);
+//                trans.commit();
                 setTitle("All");
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
@@ -189,8 +189,8 @@ public class MainActivity extends ActionBarActivity implements
             }
         });
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-        trans.replace(R.id.content_frame, sensorListFragment);
-        trans.replace(R.id.left_menu_view, slidingMenu);
+        trans.add(R.id.content_frame, sensorListFragment);
+        trans.add(R.id.left_menu_view, slidingMenu);
         trans.commit();
 
 
@@ -524,7 +524,6 @@ public class MainActivity extends ActionBarActivity implements
 
     private void sensorItemClick(int position) {
         sensorInfoFragment.setId(listAdapter.getItem(position).id);
-        sensorInfoFragment.loadInfo();
         if (findViewById(R.id.content_frame1) != null) {
             if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
                 findViewById(R.id.content_frame1).setVisibility(View.VISIBLE);
@@ -540,6 +539,7 @@ public class MainActivity extends ActionBarActivity implements
             trans.addToBackStack(null);
             trans.commit();
         }
+        sensorInfoFragment.loadInfo();
     }
 
     // called by action (define via xml onClick)
