@@ -77,7 +77,7 @@ public class NarodmonApi {
         loginer.login(login,passwd,uid);
     }
 
-	public void closeAuthorisation () {
+	public void doLogout() {
 		loginer.logout();
 	}
 

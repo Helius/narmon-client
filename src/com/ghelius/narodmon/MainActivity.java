@@ -41,11 +41,9 @@ public class MainActivity extends ActionBarActivity implements
     private SensorInfoFragment sensorInfoFragment;
     private FilterFragment filterFragment;
     private SensorListFragment sensorListFragment;
-    private boolean showProgress;
     private Menu mOptionsMenu;
     private long lastUpdateTime;
     private final static int gpsUpdateIntervalMs = 20 * 60 * 1000; // time interval for updateFilter coordinates and sensor list
-    private AlarmsListFragment alarmsListFragment;
     private NarodmonApi.onResultReceiveListener apiListener;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
@@ -70,124 +68,6 @@ public class MainActivity extends ActionBarActivity implements
     private CharSequence mTitle;
     SlidingMenuFragment slidingMenu;
 
-
-    @Override
-    public void favoritesChanged() {
-        int cnt = DatabaseManager.getInstance().getFavorites().size();
-        slidingMenu.setMenuWatchCount(cnt);
-        listAdapter.updateFavorites();
-    }
-
-    @Override
-    public void alarmChanged() {
-        int cnt = DatabaseManager.getInstance().getAlarmTask().size();
-        slidingMenu.setMenuAlarmCount(cnt);
-        listAdapter.updateAlarms();
-    }
-
-    //This method is called when the up button is pressed. Just the pop back stack.
-    @Override
-    public boolean onSupportNavigateUp() {
-        Log.d(TAG, "onSupportNavigateUp");
-        getSupportFragmentManager().popBackStack();
-        View v = findViewById(R.id.content_frame1);
-        if (v != null)
-            v.setVisibility(View.GONE);
-        return true;
-    }
-
-    @Override
-    public void filterChange() {
-        listAdapter.updateFilter();
-    }
-
-    @Override
-    public UiFlags returnUiFlags() {
-        return uiFlags;
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(TAG, "onSharedPreferenceChanged " + key);
-        if (key.equals(getString(R.string.pref_key_interval))) { // updateFilter interval changed
-            scheduleAlarmWatcher();
-            startUpdateTimer();
-        } else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
-            initLocationUpdater();
-            updateSensorsList(true);
-        }
-    }
-
-    void initLocationUpdater() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        boolean useGps = !prefs.getBoolean(getString(R.string.pref_key_use_geocode), false);
-        Float lat = prefs.getFloat("lat", 0.0f);
-        Float lng = prefs.getFloat("lng", 0.0f);
-        // it's first start, gps data may be not ready or gps not used, so we use prev coordinates always first time
-        if (lat != 0.0f && lng != 0.0f)
-            mNarodmonApi.setLocation(lat, lng);
-        if (useGps) { // if use gps, just updateFilter location periodically, set to api, don't use saved value
-            Log.d(TAG, "init location updater: we use gps");
-            startGpsTimer();
-            updateLocation();
-        } else { // if use address, use this value and set to api, this value updateFilter and save in location result callback
-            Log.d(TAG, "init location updater: we use address");
-            mNarodmonApi.sendLocation(prefs.getString(getString(R.string.pref_key_geoloc), ""));
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, ">>>>>>>> onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
-        mNarodmonApi.setOnResultReceiveListener(apiListener);
-        mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
-        updateMenuSensorCounts();
-
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false))
-            doAuthorisation();
-        sendVersion();
-        mNarodmonApi.getTypeDictionary();
-
-        initLocationUpdater();
-
-        updateSensorsList(false);
-        startUpdateTimer();
-        showProgress = true;
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if (!pref.getBoolean(getString(R.string.pref_key_use_geocode), false)) {
-            startGpsTimer();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        mNarodmonApi.setOnResultReceiveListener(null);
-        Log.i(TAG, ">>>>>>>>> onPause");
-        super.onPause();
-        stopUpdateTimer();
-        stopGpsTimer();
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.i(TAG, ">>>>>>>>>> onDestroy");
-        uiFlags.save(this);
-        stopUpdateTimer();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-        stopGpsTimer();
-        super.onDestroy();
-    }
-
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /**
-     * Called when the activity is first created.
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, ">>>>>>>> onCreate");
@@ -255,7 +135,6 @@ public class MainActivity extends ActionBarActivity implements
             };
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
-        //alarmsListFragment = new AlarmsListFragment();
         sensorInfoFragment = new SensorInfoFragment();
         sensorInfoFragment.setFavoritesChangeListener(this);
         filterFragment = new FilterFragment();
@@ -305,10 +184,6 @@ public class MainActivity extends ActionBarActivity implements
             public void menuAlarmClicked() {
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
-//                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-//                trans.replace(R.id.content_frame, alarmsListFragment);
-//                trans.addToBackStack(null);
-//                trans.commit();
                 listAdapter.setGroups(SensorItemAdapter.SensorGroups.Alarmed);
                 setTitle("Alarms");
             }
@@ -341,12 +216,12 @@ public class MainActivity extends ActionBarActivity implements
         loginDialog.setOnChangeListener(new LoginDialog.LoginEventListener() {
             @Override
             public void login() {
-                doAuthorisation();
+                doLogin();
             }
 
             @Override
             public void logout() {
-                closeAutorisation();
+                mNarodmonApi.doLogout();
             }
 
             @Override
@@ -362,6 +237,120 @@ public class MainActivity extends ActionBarActivity implements
         scheduleAlarmWatcher();
 
         setTitle(mTitle);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, ">>>>>>>> onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
+        mNarodmonApi.setOnResultReceiveListener(apiListener);
+        mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
+        updateMenuSensorCounts();
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false))
+            doLogin();
+        sendVersion();
+        mNarodmonApi.getTypeDictionary();
+
+        initLocationUpdater();
+
+        updateSensorsList(false);
+        startUpdateTimer();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if (!pref.getBoolean(getString(R.string.pref_key_use_geocode), false)) {
+            startGpsTimer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        mNarodmonApi.setOnResultReceiveListener(null);
+        Log.i(TAG, ">>>>>>>>> onPause");
+        super.onPause();
+        stopUpdateTimer();
+        stopGpsTimer();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, ">>>>>>>>>> onDestroy");
+        uiFlags.save(this);
+        stopUpdateTimer();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        stopGpsTimer();
+        super.onDestroy();
+    }
+
+    @Override
+    public void favoritesChanged() {
+        int cnt = DatabaseManager.getInstance().getFavorites().size();
+        slidingMenu.setMenuWatchCount(cnt);
+        listAdapter.updateFavorites();
+    }
+
+    @Override
+    public void alarmChanged() {
+        int cnt = DatabaseManager.getInstance().getAlarmTask().size();
+        slidingMenu.setMenuAlarmCount(cnt);
+        listAdapter.updateAlarms();
+    }
+
+    //This method is called when the up button is pressed. Just the pop back stack.
+    @Override
+    public boolean onSupportNavigateUp() {
+        Log.d(TAG, "onSupportNavigateUp");
+        getSupportFragmentManager().popBackStack();
+        View v = findViewById(R.id.content_frame1);
+        if (v != null)
+            v.setVisibility(View.GONE);
+        return true;
+    }
+
+    @Override
+    public void filterChange() {
+        listAdapter.updateFilter();
+    }
+
+    @Override
+    public UiFlags returnUiFlags() {
+        return uiFlags;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(TAG, "onSharedPreferenceChanged " + key);
+        if (key.equals(getString(R.string.pref_key_interval))) { // updateFilter interval changed
+            scheduleAlarmWatcher();
+            startUpdateTimer();
+        } else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
+            initLocationUpdater();
+            updateSensorsList(true);
+        }
+    }
+
+    void initLocationUpdater() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean useGps = !prefs.getBoolean(getString(R.string.pref_key_use_geocode), false);
+        Float lat = prefs.getFloat("lat", 0.0f);
+        Float lng = prefs.getFloat("lng", 0.0f);
+        // it's first start, gps data may be not ready or gps not used, so we use prev coordinates always first time
+        if (lat != 0.0f && lng != 0.0f)
+            mNarodmonApi.setLocation(lat, lng);
+        if (useGps) { // if use gps, just updateFilter location periodically, set to api, don't use saved value
+            Log.d(TAG, "init location updater: we use gps");
+            startGpsTimer();
+            updateLocation();
+        } else { // if use address, use this value and set to api, this value updateFilter and save in location result callback
+            Log.d(TAG, "init location updater: we use address");
+            mNarodmonApi.sendLocation(prefs.getString(getString(R.string.pref_key_geoloc), ""));
+        }
+    }
+
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
     }
 
 
@@ -495,8 +484,8 @@ public class MainActivity extends ActionBarActivity implements
         mNarodmonApi.sendVersion(getString(R.string.app_version_name));
     }
 
-    private void doAuthorisation() {
-        Log.d(TAG, "doAuthorisation");
+    private void doLogin() {
+        Log.d(TAG, "doLogin");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         String login = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
         String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)), "");
@@ -507,9 +496,6 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
-    private void closeAutorisation() {
-        mNarodmonApi.closeAuthorisation();
-    }
 
     void updateLocation() {
         MyLocation myLocation = new MyLocation();
