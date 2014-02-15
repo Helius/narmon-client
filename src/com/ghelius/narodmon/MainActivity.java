@@ -287,6 +287,7 @@ public class MainActivity extends ActionBarActivity implements
         int cnt = DatabaseManager.getInstance().getFavorites().size();
         slidingMenu.setMenuWatchCount(cnt);
         listAdapter.updateFavorites();
+        listAdapter.updateFilter();
     }
 
     @Override
