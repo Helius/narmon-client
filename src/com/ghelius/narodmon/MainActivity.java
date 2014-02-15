@@ -91,8 +91,11 @@ public class MainActivity extends ActionBarActivity implements
                     if (v != null)
                         v.setVisibility(View.GONE);
                 }
-                if (mDrawerToggle != null)
+                if (mDrawerToggle != null) {
                     mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
+                } else {
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
+                }
                 if (getSupportFragmentManager().findFragmentById(R.id.left_menu_view).isHidden()) {
                     Log.d(TAG,"menu fragment is hidden");
                     findViewById(R.id.left_menu_view).setVisibility(View.GONE);
@@ -104,12 +107,11 @@ public class MainActivity extends ActionBarActivity implements
             }
         });
 
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mTitle = "All";
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             mDrawerMenu = findViewById(R.id.left_menu_view);
             // set a custom shadow that overlays the main content when the drawer opens
             mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
