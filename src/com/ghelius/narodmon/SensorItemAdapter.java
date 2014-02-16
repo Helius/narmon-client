@@ -203,7 +203,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
 	@Override
 	public Sensor getItem(int position) {
-		return originItems.get(position);
+		return localItems.get(position);
 	}
 
 	@Override

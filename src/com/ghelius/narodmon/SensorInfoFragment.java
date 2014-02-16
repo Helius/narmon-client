@@ -106,6 +106,7 @@ public class SensorInfoFragment extends Fragment {
 	}
 
 	public void setId(int id) {
+        Log.d(TAG,"set id: " + id);
 		sensorId = id;
 	}
 

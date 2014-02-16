@@ -82,7 +82,6 @@ public class MainActivity extends ActionBarActivity implements
             public void onBackStackChanged() {
                 //Enable Up button only  if there are entries in the back stack
                 boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
-                Log.d(TAG, "shouldDisplayHomeUp is " + canBack);
                 if (canBack) {
                     mOptionsMenu.clear();
                 } else {
@@ -145,6 +144,7 @@ public class MainActivity extends ActionBarActivity implements
         sensorListFragment.setOnListItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG,"sensor clicked: " + position);
                 sensorItemClick(position);
             }
         });
