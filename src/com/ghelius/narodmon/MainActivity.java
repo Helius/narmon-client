@@ -191,10 +191,19 @@ public class MainActivity extends ActionBarActivity implements
                 setTitle("Alarms");
             }
         });
+
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
         trans.replace(R.id.content_frame, sensorListFragment);
         trans.replace(R.id.left_menu_view, slidingMenu);
         trans.commit();
+
+        //clear all fragment history from backstack
+        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+        for (int i = 0; i < backStackCount; i++) {
+            // Get the back stack fragment id.
+            int backStackId = getSupportFragmentManager().getBackStackEntryAt(i).getId();
+            getSupportFragmentManager().popBackStack(backStackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
 
 
         uiFlags = UiFlags.load(this);
@@ -530,15 +539,20 @@ public class MainActivity extends ActionBarActivity implements
     private void sensorItemClick(int position) {
         sensorInfoFragment.setId(listAdapter.getItem(position).id);
         if (findViewById(R.id.content_frame1) != null) {
+            Log.d(TAG,"frame1 exist");
             if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
+                Log.d(TAG,"frame1 not contain fragment");
                 findViewById(R.id.content_frame1).setVisibility(View.VISIBLE);
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.hide(getSupportFragmentManager().findFragmentById(R.id.left_menu_view));
                 trans.add(R.id.content_frame1, sensorInfoFragment);
                 trans.addToBackStack(null);
                 trans.commit();
+            } else {
+                Log.d(TAG,"frame1 already contain fragment");
             }
         } else {
+            Log.d(TAG,"frame1 doesn't exist");
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.replace(R.id.content_frame, sensorInfoFragment);
             trans.addToBackStack(null);

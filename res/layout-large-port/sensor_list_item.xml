@@ -7,19 +7,20 @@
         android:layout_height="wrap_content" android:baselineAligned="false">
     <LinearLayout
             android:layout_width="0dp"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_height="wrap_content" android:layout_weight="0.5" android:layout_marginRight="10dp">
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:id="@+id/text1"
-                  android:textSize="24sp"
+                  android:textSize="23dip"
                   android:text="text1-----------------"
                   android:ellipsize="end" android:singleLine="true"/>
         <TextView android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
                   android:id="@+id/text2"
-                  android:text="This is text2" android:singleLine="true" android:layout_marginLeft="20dp"/>
+                  android:text="This is text2" android:singleLine="true"/>
     </LinearLayout>
+
     <ImageView
         android:layout_width="25dp"
         android:layout_height="match_parent"
@@ -42,5 +43,5 @@
                android:layout_height="match_parent"
                android:id="@+id/img"
                android:contentDescription="wtf"
-            />
+        android:padding="3dp" />
 </LinearLayout>

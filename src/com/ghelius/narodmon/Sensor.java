@@ -16,6 +16,7 @@ public class Sensor implements Serializable {
     public boolean online;
     public boolean alarmed;
     public boolean alarm_fired;
+    public boolean favorite;
 
     // constructor
     Sensor (int id,
@@ -39,6 +40,7 @@ public class Sensor implements Serializable {
         this.pub = pub;
         this.alarmed = false;
         this.alarm_fired = false;
+        this.favorite = false;
     }
 
 

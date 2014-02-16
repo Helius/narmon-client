@@ -64,6 +64,12 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
     public void updateFavorites () {
 		favorites = DatabaseManager.getInstance().getFavorites();
+        for (Sensor s: originItems) {
+            s.favorite = false;
+            if (favorites.contains(s.id)) {
+                s.favorite = true;
+            }
+        }
     }
 
     public void updateAlarms () {
@@ -217,6 +223,15 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			holder.location = (TextView) v.findViewById(R.id.text2);
 			holder.value = (TextView) v.findViewById(R.id.text3);
 			holder.icon = (ImageView) v.findViewById(R.id.img);
+
+            View alarmIcon = v.findViewById(R.id.alarmIcon);
+            if (alarmIcon != null)
+                holder.alarmIcon = (ImageView)alarmIcon;
+
+            View favoriteIcon = v.findViewById(R.id.favoriteIcon);
+            if (favoriteIcon != null)
+                holder.favoriteIcon = (ImageView)favoriteIcon;
+
 			v.setTag(holder);
 		}
 
@@ -242,6 +257,21 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 
 			holder.icon.setImageDrawable(SensorTypeProvider.getInstance(getContext()).getIcon(sensor.type));
 
+            if (holder.alarmIcon != null) {
+                if (sensor.alarmed) {
+                    holder.alarmIcon.setVisibility(View.VISIBLE);
+                    holder.alarmIcon.setImageResource(R.drawable.alarm_blue_small);
+                } else
+                    holder.alarmIcon.setVisibility(View.GONE);
+            }
+            if (holder.favoriteIcon != null) {
+                if (sensor.favorite) {
+                    holder.favoriteIcon.setVisibility(View.VISIBLE);
+                    holder.favoriteIcon.setImageResource(R.drawable.btn_star_small_on);
+                } else
+                    holder.favoriteIcon.setVisibility(View.GONE);
+            }
+
 		} else {
 			Log.e(TAG, "index out of bound results[]");
 		}
@@ -253,6 +283,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 		TextView location;
 		TextView value;
 		ImageView icon;
+        ImageView alarmIcon;
+        ImageView favoriteIcon;
 	}
 }
 
