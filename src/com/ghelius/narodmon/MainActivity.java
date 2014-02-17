@@ -450,13 +450,6 @@ public class MainActivity extends ActionBarActivity implements
             mDrawerToggle.syncState();
     }
 
-//	@Override
-//	public void onConfigurationChanged(Configuration newConfig) {
-//		super.onConfigurationChanged(newConfig);
-//		// Pass any configuration change to the drawer toggls
-//		mDrawerToggle.onConfigurationChanged(newConfig);
-//	}
-
     private void menuFilterClicked() {
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
         trans.replace(R.id.content_frame, filterFragment);
