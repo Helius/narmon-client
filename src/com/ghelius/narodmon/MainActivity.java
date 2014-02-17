@@ -41,12 +41,11 @@ public class MainActivity extends ActionBarActivity implements
     private SensorInfoFragment sensorInfoFragment;
     private FilterFragment filterFragment;
     private SensorListFragment sensorListFragment;
-    private boolean showProgress;
     private Menu mOptionsMenu;
     private long lastUpdateTime;
     private final static int gpsUpdateIntervalMs = 20 * 60 * 1000; // time interval for updateFilter coordinates and sensor list
-    private AlarmsListFragment alarmsListFragment;
     private NarodmonApi.onResultReceiveListener apiListener;
+    private boolean showRefreshProgress;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -70,12 +69,235 @@ public class MainActivity extends ActionBarActivity implements
     private CharSequence mTitle;
     SlidingMenuFragment slidingMenu;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, ">>>>>>>> onCreate");
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        apiListener = new ApiListener();
+
+        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                //Enable Up button only  if there are entries in the back stack
+                boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
+                if (canBack) {
+                    mOptionsMenu.clear();
+                } else {
+                    supportInvalidateOptionsMenu();
+                    View v = findViewById(R.id.content_frame1);
+                    if (v != null)
+                        v.setVisibility(View.GONE);
+                }
+                if (mDrawerToggle != null) {
+                    mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
+                } else {
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
+                }
+                if (getSupportFragmentManager().findFragmentById(R.id.left_menu_view).isHidden()) {
+                    Log.d(TAG,"menu fragment is hidden");
+                    findViewById(R.id.left_menu_view).setVisibility(View.GONE);
+                } else {
+                    Log.d(TAG,"menu fragment is not hidden");
+                    findViewById(R.id.left_menu_view).setVisibility(View.VISIBLE);
+                }
+
+            }
+        });
+
+
+        mTitle = "All";
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (mDrawerLayout != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mDrawerMenu = findViewById(R.id.left_menu_view);
+            // set a custom shadow that overlays the main content when the drawer opens
+            mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+            // enable ActionBar app icon to behave as action to toggle nav drawer
+
+            // ActionBarDrawerToggle ties together the the proper interactions
+            // between the sliding drawer and the action bar app icon
+            mDrawerToggle = new ActionBarDrawerToggle(
+                    this,                  /* host Activity */
+                    mDrawerLayout,         /* DrawerLayout object */
+                    R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+                    R.string.drawer_open,  /* "open drawer" description for accessibility */
+                    R.string.drawer_close  /* "close drawer" description for accessibility */
+            ) {
+                public void onDrawerClosed(View view) {
+                    getSupportActionBar().setTitle(mTitle);
+//				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                }
+
+                public void onDrawerOpened(View drawerView) {
+                    getSupportActionBar().setTitle(mTitle);
+//				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                }
+            };
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+        }
+        sensorInfoFragment = new SensorInfoFragment();
+        sensorInfoFragment.setFavoritesChangeListener(this);
+        filterFragment = new FilterFragment();
+        sensorListFragment = new SensorListFragment();
+        sensorListFragment.setOnListItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG,"sensor clicked: " + position);
+                sensorItemClick(position);
+            }
+        });
+        slidingMenu = new SlidingMenuFragment();
+        slidingMenu.setOnMenuClickListener(new SlidingMenuFragment.MenuClickListener() {
+            @Override
+            public void menuAllClicked() {
+                listAdapter.setGroups(SensorItemAdapter.SensorGroups.All);
+//                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+//                trans.replace(R.id.content_frame, sensorListFragment);
+//                trans.commit();
+                setTitle("All");
+                if (mDrawerLayout != null)
+                    mDrawerLayout.closeDrawer(mDrawerMenu);
+            }
+
+            @Override
+            public void menuWatchedClicked() {
+                listAdapter.setGroups(SensorItemAdapter.SensorGroups.Watched);
+                setTitle("Favourites");
+                if (listAdapter.getMyCount() == 0) {
+                    //TODO: show message
+                }
+                if (mDrawerLayout != null)
+                    mDrawerLayout.closeDrawer(mDrawerMenu);
+            }
+
+            @Override
+            public void menuMyClicked() {
+                listAdapter.setGroups(SensorItemAdapter.SensorGroups.My);
+                if (listAdapter.getMyCount() == 0) {
+                    //TODO: show message
+                }
+                setTitle("My");
+                if (mDrawerLayout != null)
+                    mDrawerLayout.closeDrawer(mDrawerMenu);
+            }
+
+            @Override
+            public void menuAlarmClicked() {
+                if (mDrawerLayout != null)
+                    mDrawerLayout.closeDrawer(mDrawerMenu);
+                listAdapter.setGroups(SensorItemAdapter.SensorGroups.Alarmed);
+                setTitle("Alarms");
+            }
+        });
+
+        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        trans.replace(R.id.content_frame, sensorListFragment);
+        trans.replace(R.id.left_menu_view, slidingMenu);
+        trans.commit();
+
+        //clear all fragment history from backstack
+        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+        for (int i = 0; i < backStackCount; i++) {
+            // Get the back stack fragment id.
+            int backStackId = getSupportFragmentManager().getBackStackEntryAt(i).getId();
+            getSupportFragmentManager().popBackStack(backStackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
+
+        uiFlags = UiFlags.load(this);
+
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+
+        sensorList = new ArrayList<Sensor>();
+
+        // get android UUID
+        uid = NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        Log.d(TAG, "android ID: " + uid);
+        apiHeader = "{\"uuid\":\"" + uid +
+                "\",\"api_key\":\"" + api_key + "\",";
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("apiHeader",apiHeader).commit();
+
+
+        listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
+        listAdapter.setUiFlags(uiFlags);
+        sensorListFragment.setListAdapter(listAdapter);
+
+        loginDialog = new LoginDialog();
+        loginDialog.setOnChangeListener(new LoginDialog.LoginEventListener() {
+            @Override
+            public void login() {
+                doLogin();
+            }
+
+            @Override
+            public void logout() {
+                mNarodmonApi.doLogout();
+            }
+
+            @Override
+            public LoginStatus loginStatus() {
+                return loginStatus;
+            }
+        });
+
+        mNarodmonApi = new NarodmonApi(getApplicationContext().getString(R.string.api_url), apiHeader);
+
+        Intent intent = new Intent(this, OnBootReceiver.class);
+        sendBroadcast(intent);
+        scheduleAlarmWatcher();
+
+        setTitle(mTitle);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, ">>>>>>>> onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
+        mNarodmonApi.setOnResultReceiveListener(apiListener);
+        mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false))
+            doLogin();
+        sendVersion();
+        mNarodmonApi.getTypeDictionary();
+
+        initLocationUpdater();
+
+        updateSensorsList(false);
+        startUpdateTimer();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if (!pref.getBoolean(getString(R.string.pref_key_use_geocode), false)) {
+            startGpsTimer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        mNarodmonApi.setOnResultReceiveListener(null);
+        Log.i(TAG, ">>>>>>>>> onPause");
+        super.onPause();
+        stopUpdateTimer();
+        stopGpsTimer();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, ">>>>>>>>>> onDestroy");
+        uiFlags.save(this);
+        stopUpdateTimer();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        stopGpsTimer();
+        super.onDestroy();
+    }
 
     @Override
     public void favoritesChanged() {
         int cnt = DatabaseManager.getInstance().getFavorites().size();
         slidingMenu.setMenuWatchCount(cnt);
         listAdapter.updateFavorites();
+        listAdapter.updateFilter();
     }
 
     @Override
@@ -83,6 +305,7 @@ public class MainActivity extends ActionBarActivity implements
         int cnt = DatabaseManager.getInstance().getAlarmTask().size();
         slidingMenu.setMenuAlarmCount(cnt);
         listAdapter.updateAlarms();
+        listAdapter.updateFilter();
     }
 
     //This method is called when the up button is pressed. Just the pop back stack.
@@ -136,48 +359,6 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, ">>>>>>>> onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
-        mNarodmonApi.setOnResultReceiveListener(apiListener);
-        mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
-        updateMenuSensorCounts();
-
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false))
-            doAuthorisation();
-        sendVersion();
-        mNarodmonApi.getTypeDictionary();
-
-        initLocationUpdater();
-
-        updateSensorsList(false);
-        startUpdateTimer();
-        showProgress = true;
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if (!pref.getBoolean(getString(R.string.pref_key_use_geocode), false)) {
-            startGpsTimer();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        mNarodmonApi.setOnResultReceiveListener(null);
-        Log.i(TAG, ">>>>>>>>> onPause");
-        super.onPause();
-        stopUpdateTimer();
-        stopGpsTimer();
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.i(TAG, ">>>>>>>>>> onDestroy");
-        uiFlags.save(this);
-        stopUpdateTimer();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-        stopGpsTimer();
-        super.onDestroy();
-    }
 
 
     @Override
@@ -185,190 +366,11 @@ public class MainActivity extends ActionBarActivity implements
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    /**
-     * Called when the activity is first created.
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, ">>>>>>>> onCreate");
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        apiListener = new ApiListener();
-
-        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                //Enable Up button only  if there are entries in the back stack
-                boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
-                Log.d(TAG, "shouldDisplayHomeUp is " + canBack);
-                if (canBack) {
-                    mOptionsMenu.clear();
-                } else {
-                    supportInvalidateOptionsMenu();
-                    View v = findViewById(R.id.content_frame1);
-                    if (v != null)
-                        v.setVisibility(View.GONE);
-                }
-                if (mDrawerToggle != null)
-                    mDrawerToggle.setDrawerIndicatorEnabled(!canBack);
-                if (getSupportFragmentManager().findFragmentById(R.id.left_menu_view).isHidden()) {
-                    Log.d(TAG,"menu fragment is hidden");
-                    findViewById(R.id.left_menu_view).setVisibility(View.GONE);
-                } else {
-                    Log.d(TAG,"menu fragment is not hidden");
-                    findViewById(R.id.left_menu_view).setVisibility(View.VISIBLE);
-                }
-
-            }
-        });
-
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        mTitle = "All";
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (mDrawerLayout != null) {
-            mDrawerMenu = findViewById(R.id.left_menu_view);
-            // set a custom shadow that overlays the main content when the drawer opens
-            mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-            // enable ActionBar app icon to behave as action to toggle nav drawer
-
-            // ActionBarDrawerToggle ties together the the proper interactions
-            // between the sliding drawer and the action bar app icon
-            mDrawerToggle = new ActionBarDrawerToggle(
-                    this,                  /* host Activity */
-                    mDrawerLayout,         /* DrawerLayout object */
-                    R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
-                    R.string.drawer_open,  /* "open drawer" description for accessibility */
-                    R.string.drawer_close  /* "close drawer" description for accessibility */
-            ) {
-                public void onDrawerClosed(View view) {
-                    getSupportActionBar().setTitle(mTitle);
-//				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-                }
-
-                public void onDrawerOpened(View drawerView) {
-                    getSupportActionBar().setTitle(mTitle);
-//				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-                }
-            };
-            mDrawerLayout.setDrawerListener(mDrawerToggle);
-        }
-        //alarmsListFragment = new AlarmsListFragment();
-        sensorInfoFragment = new SensorInfoFragment();
-        sensorInfoFragment.setFavoritesChangeListener(this);
-        filterFragment = new FilterFragment();
-        sensorListFragment = new SensorListFragment();
-        sensorListFragment.setOnListItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                sensorItemClick(position);
-            }
-        });
-        slidingMenu = new SlidingMenuFragment();
-        slidingMenu.setOnMenuClickListener(new SlidingMenuFragment.MenuClickListener() {
-            @Override
-            public void menuAllClicked() {
-                listAdapter.setGroups(SensorItemAdapter.SensorGroups.All);
-                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                trans.replace(R.id.content_frame, sensorListFragment);
-                trans.commit();
-                setTitle("All");
-                if (mDrawerLayout != null)
-                    mDrawerLayout.closeDrawer(mDrawerMenu);
-            }
-
-            @Override
-            public void menuWatchedClicked() {
-                listAdapter.setGroups(SensorItemAdapter.SensorGroups.Watched);
-                setTitle("Favourites");
-                if (listAdapter.getMyCount() == 0) {
-                    //TODO: show message
-                }
-                if (mDrawerLayout != null)
-                    mDrawerLayout.closeDrawer(mDrawerMenu);
-            }
-
-            @Override
-            public void menuMyClicked() {
-                listAdapter.setGroups(SensorItemAdapter.SensorGroups.My);
-                if (listAdapter.getMyCount() == 0) {
-                    //TODO: show message
-                }
-                setTitle("My");
-                if (mDrawerLayout != null)
-                    mDrawerLayout.closeDrawer(mDrawerMenu);
-            }
-
-            @Override
-            public void menuAlarmClicked() {
-                if (mDrawerLayout != null)
-                    mDrawerLayout.closeDrawer(mDrawerMenu);
-//                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-//                trans.replace(R.id.content_frame, alarmsListFragment);
-//                trans.addToBackStack(null);
-//                trans.commit();
-                listAdapter.setGroups(SensorItemAdapter.SensorGroups.Alarmed);
-                setTitle("Alarms");
-            }
-        });
-        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-        trans.replace(R.id.content_frame, sensorListFragment);
-        trans.replace(R.id.left_menu_view, slidingMenu);
-        trans.commit();
-
-
-        uiFlags = UiFlags.load(this);
-
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-
-        sensorList = new ArrayList<Sensor>();
-
-        // get android UUID
-        uid = NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID));
-        Log.d(TAG, "android ID: " + uid);
-        apiHeader = "{\"uuid\":\"" + uid +
-                "\",\"api_key\":\"" + api_key + "\",";
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("apiHeader",apiHeader).commit();
-
-
-        listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
-        listAdapter.setUiFlags(uiFlags);
-        sensorListFragment.setListAdapter(listAdapter);
-
-        loginDialog = new LoginDialog();
-        loginDialog.setOnChangeListener(new LoginDialog.LoginEventListener() {
-            @Override
-            public void login() {
-                doAuthorisation();
-            }
-
-            @Override
-            public void logout() {
-                closeAutorisation();
-            }
-
-            @Override
-            public LoginStatus loginStatus() {
-                return loginStatus;
-            }
-        });
-
-        mNarodmonApi = new NarodmonApi(getApplicationContext().getString(R.string.api_url), apiHeader);
-
-        Intent intent = new Intent(this, OnBootReceiver.class);
-        sendBroadcast(intent);
-        scheduleAlarmWatcher();
-
-        setTitle(mTitle);
-    }
-
 
     private void updateMenuSensorCounts() {
-        slidingMenu.setMenuAllCount(listAdapter.getCount());
+        Log.d(TAG,"updateSensorCount: " + listAdapter.getAllCount());
+        slidingMenu.setMenuAllCount(listAdapter.getAllCount());
         slidingMenu.setMenuMyCount(listAdapter.getMyCount());
-        slidingMenu.setMenuAlarmCount(listAdapter.getAlarmCount());
         favoritesChanged();
         alarmChanged();
     }
@@ -378,6 +380,7 @@ public class MainActivity extends ActionBarActivity implements
         mOptionsMenu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.icon_menu, menu);
+        setRefreshProgress(showRefreshProgress);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -488,8 +491,8 @@ public class MainActivity extends ActionBarActivity implements
         mNarodmonApi.sendVersion(getString(R.string.app_version_name));
     }
 
-    private void doAuthorisation() {
-        Log.d(TAG, "doAuthorisation");
+    private void doLogin() {
+        Log.d(TAG, "doLogin");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         String login = prefs.getString(String.valueOf(getText(R.string.pref_key_login)), "");
         String passwd = prefs.getString(String.valueOf(getText(R.string.pref_key_passwd)), "");
@@ -500,9 +503,6 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
-    private void closeAutorisation() {
-        mNarodmonApi.closeAuthorisation();
-    }
 
     void updateLocation() {
         MyLocation myLocation = new MyLocation();
@@ -531,22 +531,27 @@ public class MainActivity extends ActionBarActivity implements
 
     private void sensorItemClick(int position) {
         sensorInfoFragment.setId(listAdapter.getItem(position).id);
-        sensorInfoFragment.loadInfo();
         if (findViewById(R.id.content_frame1) != null) {
+            Log.d(TAG,"frame1 exist");
             if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
+                Log.d(TAG,"frame1 not contain fragment");
                 findViewById(R.id.content_frame1).setVisibility(View.VISIBLE);
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.hide(getSupportFragmentManager().findFragmentById(R.id.left_menu_view));
                 trans.add(R.id.content_frame1, sensorInfoFragment);
                 trans.addToBackStack(null);
                 trans.commit();
+            } else {
+                Log.d(TAG,"frame1 already contain fragment");
             }
         } else {
+            Log.d(TAG,"frame1 doesn't exist");
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.replace(R.id.content_frame, sensorInfoFragment);
             trans.addToBackStack(null);
             trans.commit();
         }
+        sensorInfoFragment.loadInfo();
     }
 
     // called by action (define via xml onClick)
@@ -560,6 +565,7 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void setRefreshProgress(boolean refreshing) {
+        showRefreshProgress = refreshing;
         if (mOptionsMenu != null) {
             final MenuItem refreshItem = mOptionsMenu.findItem(R.id.menu_refresh);
             if (refreshItem != null) {
@@ -706,7 +712,7 @@ public class MainActivity extends ActionBarActivity implements
 
         @Override
         public void onSensorListResult(boolean ok, String res) {
-            Log.d(TAG, "---------------- List updated --------------");
+            Log.d(TAG, "---------------- List updated --------------:" + sensorList.size() +", in adapter: "+ listAdapter.getAllCount());
             setRefreshProgress(false);
             listAdapter.updateFilter();
             updateMenuSensorCounts();

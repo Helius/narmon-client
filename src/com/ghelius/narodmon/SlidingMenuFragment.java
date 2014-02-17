@@ -87,6 +87,7 @@ public class SlidingMenuFragment extends Fragment {
     }
 
     public void setMenuAllCount (int count) {
+        Log.d(TAG,"updateSensorCount setMenuAllCount: " + count);
         if (menuItems.size()!=0)
             ((TextView)menuItems.get(0).findViewById(R.id.cnt)).setText(String.valueOf(count));
     }

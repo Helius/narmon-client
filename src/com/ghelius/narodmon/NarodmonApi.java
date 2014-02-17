@@ -77,7 +77,7 @@ public class NarodmonApi {
         loginer.login(login,passwd,uid);
     }
 
-	public void closeAuthorisation () {
+	public void doLogout() {
 		loginer.logout();
 	}
 
@@ -115,6 +115,7 @@ public class NarodmonApi {
             try {
                 fis = context.openFileInput(fileName);
                 ObjectInputStream is = new ObjectInputStream(fis);
+                sensorList.clear();
                 sensorList.addAll((ArrayList<Sensor>) is.readObject());
                 is.close();
                 fis.close();

@@ -2,6 +2,7 @@ package com.ghelius.narodmon;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ public class AlarmsListFragment extends ListFragment {
 
 	private AdapterView.OnItemClickListener listener = null;
     private AlarmListAdapter adapter;
+    private final String TAG = "narodmon-listFragment";
 
 	public void setOnListItemClickListener (AdapterView.OnItemClickListener listener) {
 		this.listener = listener;
@@ -32,6 +34,7 @@ public class AlarmsListFragment extends ListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
+        Log.d(TAG, "sensor click: " + position);
 		if (listener != null)
 			listener.onItemClick(l, v, position, id);
 		super.onListItemClick(l, v, position, id);

@@ -32,20 +32,20 @@ public class DatabaseManager {
         return instance;
     }
 
-    public SQLiteDatabase openDatabase() {
-        Log.d(TAG,"open db");
+    public synchronized SQLiteDatabase openDatabase() {
+//        Log.d(TAG,"open db");
         if(mOpenCounter.incrementAndGet() == 1) {
-            Log.d(TAG,"real open db");
+//            Log.d(TAG,"real open db");
             // Opening new database
             mDatabase = mDatabaseHelper.getWritableDatabase();
         }
         return mDatabase;
     }
 
-    public void closeDatabase() {
-        Log.d(TAG,"close db");
+    public synchronized void closeDatabase() {
+//        Log.d(TAG,"close db");
         if(mOpenCounter.decrementAndGet() == 0) {
-            Log.d(TAG,"real close db");
+//            Log.d(TAG,"real close db");
             // Closing database
             mDatabase.close();
 
