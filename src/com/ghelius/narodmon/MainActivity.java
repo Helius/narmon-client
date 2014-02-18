@@ -106,6 +106,11 @@ public class MainActivity extends ActionBarActivity implements
             }
         });
 
+        if (getSupportFragmentManager().findFragmentByTag("sensorProviderFragment") == null) {
+            SensorProviderFragment sensorProviderFragment = new SensorProviderFragment();
+            getSupportFragmentManager().beginTransaction().add(sensorProviderFragment, "sensorProviderFragment").commit();
+        }
+        sensorList = new ArrayList<Sensor>();
 
         mTitle = "All";
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -209,8 +214,6 @@ public class MainActivity extends ActionBarActivity implements
         uiFlags = UiFlags.load(this);
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-
-        sensorList = new ArrayList<Sensor>();
 
         // get android UUID
         uid = NarodmonApi.md5(Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID));

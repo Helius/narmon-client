@@ -37,7 +37,7 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
 
     private void updateLoginStatusText() {
         if (loginStatus != null) {
-            setFeildsEnable(true);
+            setFieldsEnable(true);
             if (listener.loginStatus() == MainActivity.LoginStatus.LOGIN)
                 loginStatus.setText(getString(R.string.login_dialog_youarelogin));
             else if (listener.loginStatus() == MainActivity.LoginStatus.LOGOUT)
@@ -134,7 +134,7 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
             @Override
             public void onClick(View v) {
                 loginButton.setEnabled(false);
-                setFeildsEnable(false);
+                setFieldsEnable(false);
                 if (listener.loginStatus() == MainActivity.LoginStatus.LOGIN)
                     listener.logout();
                 else
@@ -147,7 +147,7 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
         return v;
     }
 
-    private void setFeildsEnable(boolean enable) {
+    private void setFieldsEnable(boolean enable) {
         if (enable) {
             passwordTextView.setEnabled(true);
             loginTextView.setEnabled(true);
