@@ -49,15 +49,15 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         getFilter().filter("");
         // calc sensor in alarm state
         for (Sensor s: originItems) {
-            if (s.alarmed) {
+            if (s.hasAlarm) {
                 Float v = s.valueToFloat();
                 AlarmSensorTask alarm = DatabaseManager.getInstance().getAlarmById(s.id);
                 Log.d(TAG,"in UpdateFilter: found alarm on sensor");
                 if (alarm != null && v != null && alarm.isAlarmNow(v))
-                    s.alarm_fired = true;
+                    s.alarmed = true;
                 else
-                    s.alarm_fired = false;
-                Log.d(TAG, "alarm_fired: " + s.alarm_fired);
+                    s.alarmed = false;
+                Log.d(TAG, "alarmed: " + s.alarmed);
             }
         }
     }
@@ -77,10 +77,10 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
         int cnt = 0;
         ArrayList<AlarmSensorTask> alarms = DatabaseManager.getInstance().getAlarmTask();
         for (Sensor s : originItems) {
-            s.alarmed = false;
+            s.hasAlarm = false;
             for (AlarmSensorTask a : alarms) {
                 if ((s.id == a.id) && a.job != AlarmSensorTask.NOTHING) {
-                    s.alarmed = true;
+                    s.hasAlarm = true;
                     cnt++;
                 }
             }
@@ -138,7 +138,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			for (Sensor originItem : originItems) {
 				boolean show_my = !(!originItem.my && (groups == SensorGroups.My)); // if wants 'my' and it's not my - return false, else true.
 				boolean show_watched = !(groups == SensorGroups.Watched) || favorites.contains(originItem.id); // if wants 'favorites' and it's not - return false, else true.
-                boolean show_alarmed = !(groups == SensorGroups.Alarmed) || originItem.alarmed; // if wants alarm only, and it's not - return false, else true.
+                boolean show_alarmed = !(groups == SensorGroups.Alarmed) || originItem.hasAlarm; // if wants alarm only, and it's not - return false, else true.
 
 				boolean type_match = true;
 				for (int i = 0; i < uiFlags.hidenTypes.size(); i++) {
@@ -250,7 +250,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             else
                 holder.name.setTextColor(Color.WHITE);
 
-            if (sensor.alarm_fired)
+            if (sensor.alarmed)
                 holder.value.setTextColor(Color.argb(0xFF, 0xFF, 0x00, 0x00));
 			else
                 holder.value.setTextColor(Color.WHITE);
@@ -258,7 +258,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			holder.icon.setImageDrawable(SensorTypeProvider.getInstance(getContext()).getIcon(sensor.type));
 
             if (holder.alarmIcon != null) {
-                if (sensor.alarmed) {
+                if (sensor.hasAlarm) {
                     holder.alarmIcon.setVisibility(View.VISIBLE);
                     holder.alarmIcon.setImageResource(R.drawable.alarm_blue_small);
                 } else

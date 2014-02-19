@@ -14,8 +14,8 @@ public class Sensor implements Serializable {
     public boolean my;
     public boolean pub;
     public boolean online;
+    public boolean hasAlarm;
     public boolean alarmed;
-    public boolean alarm_fired;
     public boolean favorite;
 
     // constructor
@@ -38,8 +38,8 @@ public class Sensor implements Serializable {
         this.my = my;
         this.time = time;
         this.pub = pub;
+        this.hasAlarm = false;
         this.alarmed = false;
-        this.alarm_fired = false;
         this.favorite = false;
     }
 
