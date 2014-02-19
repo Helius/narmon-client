@@ -46,6 +46,7 @@ public class MainActivity extends ActionBarActivity implements
     private final static int gpsUpdateIntervalMs = 20 * 60 * 1000; // time interval for updateFilter coordinates and sensor list
     private NarodmonApi.onResultReceiveListener apiListener;
     private boolean showRefreshProgress;
+    private int oldRadius = 0;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -212,6 +213,7 @@ public class MainActivity extends ActionBarActivity implements
 
 
         uiFlags = UiFlags.load(this);
+        oldRadius = uiFlags.radiusKm;
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
@@ -324,6 +326,8 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void filterChange() {
+        if (oldRadius < uiFlags.radiusKm)
+            updateSensorsList(true);
         listAdapter.updateFilter();
     }
 
