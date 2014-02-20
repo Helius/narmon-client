@@ -47,6 +47,7 @@ public class MainActivity extends ActionBarActivity implements
     private NarodmonApi.onResultReceiveListener apiListener;
     private boolean showRefreshProgress;
     private int oldRadius = 0;
+    private boolean clearOptionsMenu;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -78,7 +79,6 @@ public class MainActivity extends ActionBarActivity implements
         oldRadius = uiFlags.radiusKm;
         Log.d(TAG,"radius: " + uiFlags.radiusKm);
         setContentView(R.layout.activity_main);
-
         apiListener = new ApiListener();
 
 
@@ -88,8 +88,12 @@ public class MainActivity extends ActionBarActivity implements
                 //Enable Up button only  if there are entries in the back stack
                 boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
                 if (canBack) {
-                    mOptionsMenu.clear();
+                    if (mOptionsMenu != null) {
+                        mOptionsMenu.clear();
+                    }
+                    clearOptionsMenu = true;
                 } else {
+                    clearOptionsMenu = false;
                     supportInvalidateOptionsMenu();
                     View v = findViewById(R.id.content_frame1);
                     if (v != null)
@@ -262,6 +266,20 @@ public class MainActivity extends ActionBarActivity implements
     public void onResume() {
         super.onResume();
         Log.d(TAG, ">>>>>>>> onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
+
+        Intent startIntent = getIntent();
+        final int sensorId = startIntent.getIntExtra("sensorId", -1);
+        if (sensorId != -1) {
+            Log.d(TAG,"we launch from widget: " + sensorId);
+            new Handler().postDelayed(new TimerTask() {
+                @Override
+                public void run() {
+                    showSensorInfo(sensorId);
+                }
+            },0);
+        } else {
+            Log.d(TAG,"regular launch");
+        }
         mNarodmonApi.setOnResultReceiveListener(apiListener);
         mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
 
@@ -391,6 +409,9 @@ public class MainActivity extends ActionBarActivity implements
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.icon_menu, menu);
         setRefreshProgress(showRefreshProgress);
+        if (clearOptionsMenu) {
+            mOptionsMenu.clear();
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -539,8 +560,8 @@ public class MainActivity extends ActionBarActivity implements
         });
     }
 
-    private void sensorItemClick(int position) {
-        sensorInfoFragment.setId(listAdapter.getItem(position).id);
+    private void showSensorInfo (int sensorId) {
+        sensorInfoFragment.setId(sensorId);
         if (findViewById(R.id.content_frame1) != null) {
             Log.d(TAG,"frame1 exist");
             if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
@@ -562,6 +583,11 @@ public class MainActivity extends ActionBarActivity implements
             trans.commit();
         }
         sensorInfoFragment.loadInfo();
+
+    }
+
+    private void sensorItemClick(int position) {
+        showSensorInfo(listAdapter.getItem(position).id);
     }
 
     // called by action (define via xml onClick)
