@@ -47,7 +47,7 @@ public class UpdateWidgetService extends Service {
 			launchActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			launchActivity.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 			launchActivity.putExtra("sensorId", w.sensorId);
-			PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), w.widgetId, launchActivity, 0);
+			PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), w.widgetId, launchActivity, PendingIntent.FLAG_UPDATE_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.widget_body, pendingIntent);
 			appWidgetManager.updateAppWidget(w.widgetId, remoteViews);
 		}

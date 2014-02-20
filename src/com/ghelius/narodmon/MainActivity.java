@@ -71,6 +71,13 @@ public class MainActivity extends ActionBarActivity implements
     private CharSequence mTitle;
     SlidingMenuFragment slidingMenu;
 
+    // for catch sensorId from widget click
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, ">>>>>>>> onCreate");
