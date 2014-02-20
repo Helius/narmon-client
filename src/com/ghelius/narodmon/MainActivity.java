@@ -74,9 +74,13 @@ public class MainActivity extends ActionBarActivity implements
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, ">>>>>>>> onCreate");
         super.onCreate(savedInstanceState);
+        uiFlags = UiFlags.load(this);
+        oldRadius = uiFlags.radiusKm;
+        Log.d(TAG,"radius: " + uiFlags.radiusKm);
         setContentView(R.layout.activity_main);
 
         apiListener = new ApiListener();
+
 
         getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
@@ -212,8 +216,6 @@ public class MainActivity extends ActionBarActivity implements
         }
 
 
-        uiFlags = UiFlags.load(this);
-        oldRadius = uiFlags.radiusKm;
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
@@ -333,6 +335,7 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public UiFlags returnUiFlags() {
+        Log.d(TAG,"returnUiFlags radius: " + uiFlags.radiusKm);
         return uiFlags;
     }
 

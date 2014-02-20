@@ -154,6 +154,7 @@ public class FilterFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int distance = (int) Math.pow(2, progress);
                 radiusValue.setText(String.valueOf(distance));
+                Log.d(TAG, "radius: isUser=" + fromUser +", progress=" + progress +", distance is " + distance);
                 if (distance != 0)
                     uiFlags.radiusKm = distance;
                 else
@@ -177,6 +178,7 @@ public class FilterFragment extends Fragment {
     @Override
     public void onResume () {
         super.onResume();
+        uiFlags = mListener.returnUiFlags();
         RadioGroup radioGroup1 = (RadioGroup) getView().findViewById(R.id.radiogroupe_sort);
         if (uiFlags.sortType == UiFlags.SortType.distance)
             radioGroup1.check(R.id.radioButtonSortDistance);
@@ -187,10 +189,10 @@ public class FilterFragment extends Fragment {
         else if (uiFlags.sortType == UiFlags.SortType.type)
             radioGroup1.check(R.id.radioButtonSortType);
 
-
         SeekBar radius = (SeekBar) getView().findViewById(R.id.radius_seekerbar);
         radius.setMax(15);
         radius.setProgress((int) (Math.log(uiFlags.radiusKm) / Math.log(2)));
+        Log.d(TAG,"radius: stored is " + uiFlags.radiusKm + ", but set progress is: " + Math.log(uiFlags.radiusKm) / Math.log(2));
         final TextView radiusValue = (TextView) getView().findViewById(R.id.radius_value);
         radiusValue.setText(String.valueOf(uiFlags.radiusKm));
     }

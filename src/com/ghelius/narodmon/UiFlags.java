@@ -35,6 +35,7 @@ public class UiFlags implements Serializable {
             uiFlags = (UiFlags) is.readObject();
             is.close();
             fis.close();
+            Log.d(TAG,"uiFlags.radiusKm: " + uiFlags.radiusKm);
         } catch (Exception e) {
             e.getMessage();
             // file was not found, class not found, etc, first start?
