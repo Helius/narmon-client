@@ -313,11 +313,11 @@ public class SensorInfoFragment extends Fragment {
 
     public void loadInfo () {
         if (getActivity()==null) {
-            Log.e(TAG,"getActivity return null");
+            Log.e(TAG,"loadInfo: getActivity return null");
             return;
         }
         if (getView()==null) {
-            Log.e(TAG,"getView return null");
+            Log.e(TAG,"loadInfo: getView return null");
             return;
         }
         period = LogPeriod.day;
