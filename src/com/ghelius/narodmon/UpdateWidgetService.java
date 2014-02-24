@@ -7,6 +7,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -20,9 +21,14 @@ public class UpdateWidgetService extends Service {
 		Log.i(TAG, "Called");
 		// Create some random data
 
+        RemoteViews remoteViews;
+        if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(getString(R.string.key_widget_light_theme), false)) {
+            remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout_light);
+        } else {
+            remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
+        }
 
-		RemoteViews remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
 		// updateFilter widgets for with sensor
 		ArrayList<Widget> widgets = DatabaseManager.getInstance().getAllWidgets();
 		for (Widget w: widgets) {

@@ -25,5 +25,12 @@
                 android:title="@string/text_Place"
                 android:summary="@string/text_Russia_novosibirsk"
                 android:dialogTitle="@string/text_Enter_your_place" />
+        <CheckBoxPreference
+            android:title="@string/app_widget_theme_light"
+            android:id="@+id/widget_theme_light"
+            android:key="@string/key_widget_light_theme"
+            android:summary=""
+            android:defaultValue="false"
+            />
     </PreferenceCategory>
 </PreferenceScreen>

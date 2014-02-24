@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:background="@drawable/appwidget_shape_light"
+    android:padding="@dimen/widget_margin"
+    android:id="@+id/widget_body">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name"
+        android:textSize="12sp"
+        android:singleLine="true"
+        android:textColor="#050510"
+        android:layout_marginBottom="3dp"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="--"
+        android:id="@+id/value"
+        android:gravity="center_vertical|center_horizontal"
+        android:singleLine="true"
+        android:textSize="20dp"
+        android:textColor="#050510"
+        />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingRight="3dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/imageView"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/unit"
+            android:singleLine="true"
+            android:textColor="#050510"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:id="@+id/arrowDown"
+            android:gravity="center|right"
+            android:textColor="#0158be"
+            android:textStyle="bold"
+            android:textSize="18dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:id="@+id/arrowUp"
+            android:gravity="center|right"
+            android:textColor="#e10051"
+            android:textStyle="bold"
+            android:textSize="18dp" />
+    </LinearLayout>
+
+</LinearLayout>
