@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.IBinder;
 import android.util.Log;
@@ -43,7 +42,6 @@ public class UpdateWidgetService extends Service {
 				remoteViews.setTextViewText(R.id.arrowUp, "");
 			}
 
-            remoteViews.setImageViewResource(R.id.widget_body, );
 
 //			// When we click the widget, we want to open our main activity.
 //			//TODO!!! we need to open sensor info!!

@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/name"
-        android:textSize="12dp"
+        android:textSize="12sp"
         android:singleLine="true"
         android:layout_marginBottom="3dp"
         android:paddingLeft="3dp"
@@ -27,7 +27,7 @@
         android:id="@+id/value"
         android:gravity="center_vertical|center_horizontal"
         android:singleLine="true"
-        android:textSize="25dp"
+        android:textSize="20dp"
         android:textColor="#88c2e2" />
 
     <LinearLayout
