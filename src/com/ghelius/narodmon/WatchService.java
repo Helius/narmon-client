@@ -174,6 +174,7 @@ public class WatchService extends WakefulIntentService {
         Context context = getApplicationContext();
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent notificationIntent = new Intent(context, MainActivity.class); // по клику на уведомлении откроется HomeActivity
+        notificationIntent.putExtra("sensorId", id);
         NotificationCompat.Builder nb = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.app_icon) //иконка уведомления
                 .setAutoCancel(true) //уведомление закроется по клику на него

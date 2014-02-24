@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:background="@drawable/appwidget_shape"
     android:padding="@dimen/widget_margin"
     android:id="@+id/widget_body">
@@ -18,6 +19,16 @@
         android:layout_marginBottom="3dp"
         android:paddingLeft="3dp"
         android:paddingRight="3dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="--"
+        android:id="@+id/value"
+        android:gravity="center_vertical|center_horizontal"
+        android:singleLine="true"
+        android:textSize="25dp"
+        android:textColor="#88c2e2" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -58,13 +69,4 @@
             android:textSize="18dp" />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="--"
-        android:id="@+id/value"
-        android:gravity="center_vertical|center_horizontal"
-        android:singleLine="true"
-        android:textSize="25dp"
-        android:textColor="#88c2e2" />
 </LinearLayout>
