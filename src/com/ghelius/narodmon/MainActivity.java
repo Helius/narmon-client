@@ -158,9 +158,6 @@ public class MainActivity extends ActionBarActivity implements
             };
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
-        sensorInfoFragment = new SensorInfoFragment();
-        sensorInfoFragment.setFavoritesChangeListener(this);
-        filterFragment = new FilterFragment();
         sensorListFragment = new SensorListFragment();
         sensorListFragment.setOnListItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -261,12 +258,18 @@ public class MainActivity extends ActionBarActivity implements
         });
 
         mNarodmonApi = new NarodmonApi(getApplicationContext().getString(R.string.api_url), apiHeader);
+        mNarodmonApi.setOnResultReceiveListener(apiListener);
+        mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
 
         Intent intent = new Intent(this, OnBootReceiver.class);
         sendBroadcast(intent);
         scheduleAlarmWatcher();
 
         setTitle(mTitle);
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false)) {
+            doLogin();
+        }
     }
 
     @Override
@@ -287,27 +290,29 @@ public class MainActivity extends ActionBarActivity implements
         } else {
             Log.d(TAG,"regular launch");
         }
-        mNarodmonApi.setOnResultReceiveListener(apiListener);
-        mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
 
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false))
-            doLogin();
-        sendVersion();
-        mNarodmonApi.getTypeDictionary();
+        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false)) {
+            updateSensorsList(true);
+        }
 
         initLocationUpdater();
 
-        updateSensorsList(false);
         startUpdateTimer();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if (!pref.getBoolean(getString(R.string.pref_key_use_geocode), false)) {
             startGpsTimer();
         }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendVersion();
+                mNarodmonApi.getTypeDictionary();
+            }
+        }, 5000);
     }
 
     @Override
     public void onPause() {
-        mNarodmonApi.setOnResultReceiveListener(null);
         Log.i(TAG, ">>>>>>>>> onPause");
         super.onPause();
         stopUpdateTimer();
@@ -316,6 +321,7 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void onDestroy() {
+        mNarodmonApi.setOnResultReceiveListener(null);
         Log.i(TAG, ">>>>>>>>>> onDestroy");
         uiFlags.save(this);
         stopUpdateTimer();
@@ -463,6 +469,7 @@ public class MainActivity extends ActionBarActivity implements
                 startActivity(i);
                 break;
             default:
+
         }
 
         if (mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)) {
@@ -493,6 +500,9 @@ public class MainActivity extends ActionBarActivity implements
 
     private void menuFilterClicked() {
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        if (filterFragment == null) { // lazy
+            filterFragment = new FilterFragment();
+        }
         trans.replace(R.id.content_frame, filterFragment);
         trans.addToBackStack(null);
         trans.commit();
@@ -568,6 +578,10 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void showSensorInfo (int sensorId) {
+        if (sensorInfoFragment == null) { // lazy
+            sensorInfoFragment = new SensorInfoFragment();
+            sensorInfoFragment.setFavoritesChangeListener(this);
+        }
         sensorInfoFragment.setId(sensorId);
         if (findViewById(R.id.content_frame1) != null) {
             Log.d(TAG,"frame1 exist");
@@ -590,7 +604,6 @@ public class MainActivity extends ActionBarActivity implements
             trans.commit();
         }
         sensorInfoFragment.loadInfo();
-
     }
 
     private void sensorItemClick(int position) {
