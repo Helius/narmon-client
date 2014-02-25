@@ -547,7 +547,7 @@ public class MainActivity extends ActionBarActivity implements
         myLocation.getLocation(getApplicationContext(), new MyLocation.LocationResult() {
             @Override
             public void gotLocation(Location location) {
-                Log.d(TAG, "got location");
+                Log.d(TAG, "got location: " + location.getLatitude() + ", " + location.getLongitude());
                 if (location == null) return;
                 final double lat = location.getLatitude();
                 final double lon = location.getLongitude();
