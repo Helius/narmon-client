@@ -78,12 +78,13 @@ public class WatchService extends WakefulIntentService {
             in = r.getEntity().getContent();
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
         String responseString = inputStreamToString(in);
         Log.d(TAG,"result: " + responseString);
         handleResult(responseString);
         Log.d(TAG,"------ stop updating ------");
-        return false;
+        return true;
     }
 
 
@@ -158,7 +159,14 @@ public class WatchService extends WakefulIntentService {
 	    }
         if (!ids.isEmpty()) {
             Log.d(TAG, "start watched with " + ids.size() + " sensors");
-            updateData (ids);
+            if (!updateData (ids)) {
+                Log.d(TAG,"problem update data");
+                Intent i = new Intent(getApplicationContext(), UpdateWidgetService.class);
+                i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new Integer[0]);
+                i.putExtra("problem",true);
+                // Update the widgets via the service
+                getApplicationContext().startService(i);
+            }
         } else {
             Log.d(TAG, "no watched id, just exit");
         }

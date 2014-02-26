@@ -48,6 +48,20 @@ android {
             proguardFile 'proguard-rules.txt'
         }
     }
+    signingConfigs {
+        release {
+            storeFile file("my-release-key.keystore")
+            storePassword "android"
+            keyAlias "alias_name"
+            keyPassword "android"
+        }
+    }
+    buildTypes {
+        release {
+            debuggable false
+            signingConfig signingConfigs.release
+        }
+    }
 }
 repositories {
     maven {

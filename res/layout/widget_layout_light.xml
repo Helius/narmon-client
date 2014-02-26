@@ -29,6 +29,7 @@
         android:gravity="center_vertical|center_horizontal"
         android:singleLine="true"
         android:textSize="20dp"
+        android:layout_weight="0.5"
         android:textColor="#050510"
         />
 
@@ -37,11 +38,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingRight="3dp">
+        android:layout_marginBottom="3dp"
+        android:paddingRight="0dp">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:id="@+id/imageView"
             android:scaleType="fitCenter" />
 
@@ -51,6 +53,7 @@
             android:id="@+id/unit"
             android:singleLine="true"
             android:textColor="#050510"
+            android:visibility="gone"
             android:layout_weight="1" />
 
         <TextView
