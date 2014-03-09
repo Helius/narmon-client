@@ -12,11 +12,7 @@
     <string name="menu_text_quit">выход</string>
     <string name="menu_text_preference">Настройки</string>
     <string name="pref_user_settings">Пользователь</string>
-    <string name="pref_key_login">key_login</string>
-    <string name="pref_key_passwd">key_passwd</string>
-    <string name="pref_key_geoloc">key_geoloc</string>
     <string name="local_service_started">Narodmon Alarm</string>
-    <string name="pref_key_interval">key_update_interval</string>
     <string name="text_id">ID:</string>
     <string name="text_password">Пароль</string>
     <string name="text_Enter_password">Введите пароль</string>

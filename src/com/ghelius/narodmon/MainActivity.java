@@ -1,6 +1,7 @@
 package com.ghelius.narodmon;
 
 import android.app.AlarmManager;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -126,7 +127,7 @@ public class MainActivity extends ActionBarActivity implements
             SensorProviderFragment sensorProviderFragment = new SensorProviderFragment();
             getSupportFragmentManager().beginTransaction().add(sensorProviderFragment, "sensorProviderFragment").commit();
         }
-        sensorList = new ArrayList<Sensor>();
+        sensorList = ((MyApplication)this.getApplication()).getSensorList();
 
         mTitle = "All";
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -259,7 +260,14 @@ public class MainActivity extends ActionBarActivity implements
 
         mNarodmonApi = new NarodmonApi(getApplicationContext().getString(R.string.api_url), apiHeader);
         mNarodmonApi.setOnResultReceiveListener(apiListener);
-        mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
+        Integer interval = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.pref_key_interval), "5"));
+        if (System.currentTimeMillis() - ((MyApplication)this.getApplication()).getUpdateTimeStamp() > interval*60000) {
+            mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
+        } else {
+            setRefreshProgress(false);
+            listAdapter.updateFilter();
+            updateMenuSensorCounts();
+        }
 
         Intent intent = new Intent(this, OnBootReceiver.class);
         sendBroadcast(intent);
