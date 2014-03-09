@@ -53,9 +53,9 @@ android {
     signingConfigs {
         release {
             storeFile file("my-release-key.keystore")
-            storePassword "android"
-            keyAlias "alias_name"
-            keyPassword "android"
+            storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            keyAlias System.getenv("ANDROID_KEYSTORE_ALIAS")
+            keyPassword System.getenv("ANDROID_KEY_PASSWORD")
         }
     }
     buildTypes {
@@ -73,8 +73,8 @@ repositories {
 
 dependencies {
     compile 'com.commonsware.cwac:wakeful:1.0.1'
-    compile 'com.android.support:support-v4:19.0.0'
-    compile 'com.android.support:appcompat-v7:19.0.0'
+    compile 'com.android.support:support-v4:19.0.1'
+    compile 'com.android.support:appcompat-v7:19.0.1'
     compile files('libs/achartengine-1.0.0.jar')
     compile files('libs/acra-4.4.0.jar')
 }
