@@ -582,6 +582,7 @@ public class MainActivity extends ActionBarActivity implements
             } else {
                 Log.d(TAG,"frame1 already contain fragment");
             }
+            sensorInfoFragment.loadInfo();
         } else {
             Log.d(TAG,"frame1 doesn't exist");
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
@@ -589,8 +590,6 @@ public class MainActivity extends ActionBarActivity implements
             trans.addToBackStack(null);
             trans.commit();
         }
-        sensorInfoFragment.loadInfo();
-
     }
 
     private void sensorItemClick(int position) {

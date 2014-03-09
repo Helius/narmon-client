@@ -22,13 +22,8 @@ public class AlarmsSetupDialog extends android.support.v4.app.DialogFragment {
         this.sensorTask = sensorTask;
     }
 
-    public void setCurrentValue(String value) {
-	    try {
-        this.currentValue = Float.valueOf(value);
-	    } catch (Exception e) {
-		    Log.e(TAG,"current value error: " + e.getMessage());
-		    this.currentValue = 0f;
-	    }
+    public void setCurrentValue(float value) {
+        this.currentValue = value;
     }
 
 

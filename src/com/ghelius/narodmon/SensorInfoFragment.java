@@ -45,7 +45,8 @@ public class SensorInfoFragment extends Fragment {
 	private LogPeriod period = LogPeriod.day;
 	private SensorLogGetter logGetter;
 	private LogPeriod oldPeriod;
-	private TextView value;
+	private TextView sensorValueUnitText;
+    private float currentValue;
     private int type;
     AlarmSensorTask task = null;
 
@@ -222,9 +223,11 @@ public class SensorInfoFragment extends Fragment {
 
 	private void addSampleData() {
         Log.d(TAG,"addSampleData");
-		if ((period == LogPeriod.day) && (offset == 0) && logData.size()>1) {
-			value.setText(String.valueOf(logData.get(logData.size()-1).value) + " " +
+		if ((period == LogPeriod.day) && (offset == 0) && logData.size()>=1) {
+            currentValue = logData.get(logData.size() - 1).value;
+			sensorValueUnitText.setText(String.valueOf(currentValue) + " " +
                     SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getUnitForType(type));
+            updateTime(logData.get(logData.size()-1).time);
 		}
 		int max_gap = 1000*60;
 		if (period == LogPeriod.day) {
@@ -342,22 +345,12 @@ public class SensorInfoFragment extends Fragment {
         ((TextView) getView().findViewById(R.id.text_distance)).setText(String.valueOf(sensor.distance));
 
         ((TextView) getView().findViewById(R.id.text_type)).setText(SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getNameForType(sensor.type));
-//		((TextView) getView().findViewById(R.id.text_id)).setText(sensor.id);
         ((ImageView) getView().findViewById(R.id.info_sensor_icon)).setImageDrawable(SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getIcon(sensor.type));
-        value = (TextView) getView().findViewById(R.id.text_value);
+        sensorValueUnitText = (TextView) getView().findViewById(R.id.text_value);
+        sensorValueUnitText.setText(String.valueOf(sensor.value) + " " +
+                SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getUnitForType(type));
 
-        TextView time = (TextView) getView().findViewById(R.id.text_time);
-
-        long dv = sensor.time *1000;// its need to be in millisecond
-        Date df = new java.util.Date(dv);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-        sdf.setTimeZone(TimeZone.getDefault());
-        String vv = sdf.format(df);
-        time.setText(vv);
-
-        TextView ago = (TextView) getView().findViewById(R.id.text_ago);
-        ago.setText(getTimeSince(getActivity().getApplicationContext(), sensor.time));
-
+        updateTime(sensor.time);
 
         getActivity().findViewById(R.id.bt_graph_prev).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -441,11 +434,7 @@ public class SensorInfoFragment extends Fragment {
                 } else {
                     ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_blue);
                 }
-                try {
-                    task.lastValue = Float.valueOf(value.getText().toString());
-                } catch (Exception e) {
-                    task.lastValue = -999;
-                }
+                task.lastValue = currentValue;
                 if (task.job == AlarmSensorTask.NOTHING)
                     DatabaseManager.getInstance().removeAlarm(task.id);
                 else
@@ -467,22 +456,14 @@ public class SensorInfoFragment extends Fragment {
         alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.setCurrentValue(String.valueOf(value.getText()));
+                dialog.setCurrentValue(currentValue);
 
                 AlarmSensorTask task = DatabaseManager.getInstance().getAlarmById(s.id);
                 if (task != null) {
                     Log.d(TAG, "Found: SensorTask with job " + task.job);
                 } else {
                     Log.e(TAG, "sensorTask not found, create empty");
-                    Float val;
-                    try {
-                        val = Float.valueOf(String.valueOf(value.getText()));
-                    } catch (Exception e) {
-                        Log.e(TAG,"sensor value not valid");
-                        val = 0f;
-                    }
-
-                    task = new AlarmSensorTask(sensorId, 0, 0f, 0f, val, s.name);
+                    task = new AlarmSensorTask(sensorId, 0, 0f, 0f, currentValue, s.name);
                 }
                 dialog.setSensorTask(task);
                 dialog.show(getActivity().getSupportFragmentManager(), "alarmDialog");
@@ -493,6 +474,19 @@ public class SensorInfoFragment extends Fragment {
         startTimer();
     }
 
+    private void updateTime (long timeStamp) {
+
+        TextView time = (TextView) getView().findViewById(R.id.text_time);
+        long dv = timeStamp *1000;// its need to be in millisecond
+        Date df = new java.util.Date(dv);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        sdf.setTimeZone(TimeZone.getDefault());
+        String vv = sdf.format(df);
+        time.setText(vv);
+
+        TextView ago = (TextView) getView().findViewById(R.id.text_ago);
+        ago.setText(getTimeSince(getActivity().getApplicationContext(), timeStamp));
+    }
 
 
 	@Override

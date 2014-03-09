@@ -304,10 +304,6 @@
                     android:text="\u003e"
                     android:id="@+id/bt_graph_next" />
 
-                <TextView
-                    android:text="xl"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
