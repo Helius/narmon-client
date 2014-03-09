@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:background="@drawable/appwidget_shape"
+    android:background="@drawable/appwidget_shape_light"
     android:padding="@dimen/widget_margin"
     android:id="@+id/widget_body">
 
@@ -16,6 +16,7 @@
         android:id="@+id/name"
         android:textSize="12sp"
         android:singleLine="true"
+        android:textColor="#050510"
         android:layout_marginBottom="3dp"
         android:paddingLeft="3dp"
         android:paddingRight="3dp" />
@@ -29,7 +30,8 @@
         android:singleLine="true"
         android:textSize="20dp"
         android:layout_weight="0.5"
-        android:textColor="#88c2e2" />
+        android:textColor="#050510"
+        />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -50,6 +52,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/unit"
             android:singleLine="true"
+            android:textColor="#050510"
             android:visibility="gone"
             android:layout_weight="1" />
 
@@ -58,7 +61,7 @@
             android:layout_height="fill_parent"
             android:id="@+id/arrowDown"
             android:gravity="center|right"
-            android:textColor="#0178be"
+            android:textColor="#0158be"
             android:textStyle="bold"
             android:textSize="18dp" />
 

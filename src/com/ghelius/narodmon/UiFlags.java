@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class UiFlags implements Serializable {
-    final static private String TAG = "narodmon-filter";
+    final static private String TAG = "narodmon-uiFlags";
     final static private String fileName = "filter";
 
 	// class fields to save
@@ -35,7 +35,6 @@ public class UiFlags implements Serializable {
             uiFlags = (UiFlags) is.readObject();
             is.close();
             fis.close();
-            Log.d(TAG,"uiFlags.radiusKm: " + uiFlags.radiusKm);
         } catch (Exception e) {
             e.getMessage();
             // file was not found, class not found, etc, first start?
@@ -46,6 +45,7 @@ public class UiFlags implements Serializable {
     }
 
     public void save (Context context) {
+        Log.d(TAG,"save uiFlags");
         try {
             FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             ObjectOutputStream os;

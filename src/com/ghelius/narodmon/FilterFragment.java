@@ -19,7 +19,7 @@ import android.widget.TextView;
 public class FilterFragment extends Fragment {
     final private static String TAG="narodmon-filterFragment";
     private OnFilterChangeListener mListener;
-    private UiFlags uiFlags;
+    private UiFlags uiFlags = null;
 
     public interface OnFilterChangeListener {
         void filterChange();
@@ -34,17 +34,17 @@ public class FilterFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnFilterChangeListener");
         }
-        uiFlags = mListener.returnUiFlags();
     }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.filter_dialog, null);
+        if (uiFlags == null)
+            uiFlags = mListener.returnUiFlags();
         final CheckedListItemAdapter typeAdapter = new CheckedListItemAdapter(getActivity().getApplicationContext(), SensorTypeProvider.getInstance(getActivity().getApplicationContext()).getTypesList());
         typeAdapter.setItemChangeListener( new CheckedListItemAdapter.ItemChangeInterface() {
             @Override
             public boolean isItemChecked(int position) {
-                Log.d(TAG, "isItemChecked: " + position + ", in " + uiFlags.hidenTypes);
                 for (int i = 0; i < uiFlags.hidenTypes.size(); i++) {
                     if (typeAdapter.getItem(position).code == uiFlags.hidenTypes.get(i)) {
                         return false;
@@ -95,7 +95,7 @@ public class FilterFragment extends Fragment {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked)
                     return;
-                Log.d(TAG, "check distance");
+                Log.d(TAG, "check sort");
                 uiFlags.sortType = UiFlags.SortType.distance;
                 ((RadioButton) view.findViewById(R.id.radioButtonSortName)).setChecked(false);
                 ((RadioButton) view.findViewById(R.id.radioButtonSortType)).setChecked(false);
@@ -154,7 +154,6 @@ public class FilterFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int distance = (int) Math.pow(2, progress);
                 radiusValue.setText(String.valueOf(distance));
-                Log.d(TAG, "radius: isUser=" + fromUser +", progress=" + progress +", distance is " + distance);
                 if (distance != 0)
                     uiFlags.radiusKm = distance;
                 else
@@ -178,7 +177,15 @@ public class FilterFragment extends Fragment {
     @Override
     public void onResume () {
         super.onResume();
+        Log.d(TAG,"onResume");
         uiFlags = mListener.returnUiFlags();
+
+        SeekBar radius = (SeekBar) getView().findViewById(R.id.radius_seekerbar);
+        radius.setProgress((int) (Math.log(uiFlags.radiusKm) / Math.log(2)));
+        radius.setMax(15);
+        final TextView radiusValue = (TextView) getView().findViewById(R.id.radius_value);
+        radiusValue.setText(String.valueOf(uiFlags.radiusKm));
+
         RadioGroup radioGroup1 = (RadioGroup) getView().findViewById(R.id.radiogroupe_sort);
         if (uiFlags.sortType == UiFlags.SortType.distance)
             radioGroup1.check(R.id.radioButtonSortDistance);
@@ -189,11 +196,5 @@ public class FilterFragment extends Fragment {
         else if (uiFlags.sortType == UiFlags.SortType.type)
             radioGroup1.check(R.id.radioButtonSortType);
 
-        SeekBar radius = (SeekBar) getView().findViewById(R.id.radius_seekerbar);
-        radius.setMax(15);
-        radius.setProgress((int) (Math.log(uiFlags.radiusKm) / Math.log(2)));
-        Log.d(TAG,"radius: stored is " + uiFlags.radiusKm + ", but set progress is: " + Math.log(uiFlags.radiusKm) / Math.log(2));
-        final TextView radiusValue = (TextView) getView().findViewById(R.id.radius_value);
-        radiusValue.setText(String.valueOf(uiFlags.radiusKm));
     }
 }

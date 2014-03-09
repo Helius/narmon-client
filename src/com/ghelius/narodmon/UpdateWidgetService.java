@@ -7,6 +7,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -18,16 +19,25 @@ public class UpdateWidgetService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		Log.i(TAG, "Called");
-		// Create some random data
 
+        RemoteViews remoteViews;
+        if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(getString(R.string.key_widget_light_theme), false)) {
+            remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout_light);
+        } else {
+            remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
+        }
+        boolean problem = intent.getBooleanExtra("problem", false);
+        Log.d(TAG,"problem is " + problem);
 
-		RemoteViews remoteViews = new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget_layout);
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
 		// updateFilter widgets for with sensor
 		ArrayList<Widget> widgets = DatabaseManager.getInstance().getAllWidgets();
 		for (Widget w: widgets) {
 			Log.d(TAG,"updateFilter: " + w.screenName + ", curr: " + w.curValue + ", last: " + w.lastValue);
-			remoteViews.setTextViewText(R.id.value, String.valueOf(w.curValue));
+            if (!problem)
+                remoteViews.setTextViewText(R.id.value, String.valueOf(w.curValue));
+            else
+                remoteViews.setTextViewText(R.id.value, "--");
 			remoteViews.setTextViewText(R.id.name, w.screenName);
 			remoteViews.setImageViewBitmap(R.id.imageView, ((BitmapDrawable) SensorTypeProvider.getInstance(getApplicationContext()).getIcon(w.type)).getBitmap());
 			remoteViews.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(getApplicationContext()).getUnitForType(w.type));
@@ -41,6 +51,8 @@ public class UpdateWidgetService extends Service {
 				remoteViews.setTextViewText(R.id.arrowDown, "");
 				remoteViews.setTextViewText(R.id.arrowUp, "");
 			}
+
+
 //			// When we click the widget, we want to open our main activity.
 //			//TODO!!! we need to open sensor info!!
 			Intent launchActivity = new Intent(getApplicationContext(), MainActivity.class);

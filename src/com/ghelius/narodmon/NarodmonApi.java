@@ -142,6 +142,8 @@ public class NarodmonApi {
             Log.d(TAG,"listUpdater: result received, call listener");
             if (listener != null)
                 listener.onSensorListResult(true, "");
+            else
+                Log.e(TAG,"listUpdater, listener is null!");
         }
         @Override
         public void onNoResult() {
@@ -149,6 +151,8 @@ public class NarodmonApi {
             Log.e(TAG, "listUpdater: Server not responds");
             if (listener != null)
                 listener.onSensorListResult(false, "");
+            else
+                Log.e(TAG,"listUpdater, listener is null!");
         }
 
         @Override
@@ -235,6 +239,8 @@ public class NarodmonApi {
             Log.d(TAG,"valueUpdate: result receive");
             if (listener != null)
                 listener.onSensorListResult(true, "");
+            else
+                Log.e(TAG,"valueUpdate: listener is null!");
         }
         @Override
         public void onNoResult() {
@@ -242,6 +248,8 @@ public class NarodmonApi {
             Log.e(TAG, "valueUpdater: Server not responds");
             if (listener != null)
                 listener.onSensorListResult(false, "");
+            else
+                Log.e(TAG,"valueUpdate: listener is null!");
         }
 
         @Override
@@ -311,19 +319,24 @@ public class NarodmonApi {
 		            if (listener != null) {
 		                listener.onAuthorisationResult(true, login);
 			            return;
-		            }
+		            } else
+                       Log.e(TAG,"Login result, listener is null!");
 	            }
             } catch (JSONException e) {
                 Log.e(TAG, "Authorisation: wrong json, " + e.getMessage());
             }
             if (listener != null) {
                 listener.onAuthorisationResult(false, result);
-            }
+            } else
+                Log.e(TAG,"Login result, listener is null!");
         }
         @Override
         public void onNoResult() {
             Log.e(TAG,"Authorisation: Server not responds");
-            listener.onAuthorisationResult(false, "");
+            if (listener!=null)
+                listener.onAuthorisationResult(false, "");
+            else
+                Log.e(TAG,"Login result, listener is null!");
         }
     }
 
