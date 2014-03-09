@@ -263,7 +263,9 @@ public class MainActivity extends ActionBarActivity implements
         Integer interval = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.pref_key_interval), "5"));
         if (System.currentTimeMillis() - ((MyApplication)this.getApplication()).getUpdateTimeStamp() > interval*60000) {
             mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
+            Log.d(TAG,"load... saved list");
         } else {
+            Log.d(TAG,"load...n restored list, time stamp gone");
             setRefreshProgress(false);
             listAdapter.updateFilter();
             updateMenuSensorCounts();
@@ -533,6 +535,7 @@ public class MainActivity extends ActionBarActivity implements
         setRefreshProgress(true);
         mNarodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
         lastUpdateTime = System.currentTimeMillis();
+        ((MyApplication)getApplication()).setUpdateTimeStamp(System.currentTimeMillis());
     }
 
     public void updateSensorsValue() {
