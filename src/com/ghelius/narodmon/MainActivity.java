@@ -171,9 +171,6 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void menuAllClicked() {
                 listAdapter.setGroups(SensorItemAdapter.SensorGroups.All);
-//                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-//                trans.replace(R.id.content_frame, sensorListFragment);
-//                trans.commit();
                 setTitle("All");
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
@@ -206,6 +203,9 @@ public class MainActivity extends ActionBarActivity implements
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
                 listAdapter.setGroups(SensorItemAdapter.SensorGroups.Alarmed);
+                if (listAdapter.getMyCount() == 0) {
+                    //TODO: show message
+                }
                 setTitle("Alarms");
             }
         });
@@ -604,7 +604,7 @@ public class MainActivity extends ActionBarActivity implements
             trans.addToBackStack(null);
             trans.commit();
         }
-        sensorInfoFragment.loadInfo();
+//        sensorInfoFragment.loadInfo();
     }
 
     private void sensorItemClick(int position) {

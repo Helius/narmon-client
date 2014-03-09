@@ -3,6 +3,8 @@ package com.ghelius.narodmon;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +19,8 @@ public class SlidingMenuFragment extends Fragment {
     private final static String TAG="narodmon-menuFragment";
     private ArrayList<View> menuItems = new ArrayList<View>();
     private MenuClickListener listener;
+    private Integer lastSelectedItemPosition;
+    final int menuBackgroundColor = Color.argb(0xff, 0x01, 0x34, 0x6E);
 
 
     interface MenuClickListener {
@@ -34,7 +38,6 @@ public class SlidingMenuFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.sliding_menu_fragment, null);
 
-        final int menuBackgroundColor = Color.argb(0xff, 0x01, 0x34, 0x6E);
         // collect menu item views
 		menuItems.add(v.findViewById(R.id.menu_item0));
 		menuItems.add(v.findViewById(R.id.menu_item1));
@@ -49,36 +52,59 @@ public class SlidingMenuFragment extends Fragment {
 			view.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+                    lastSelectedItemPosition = (Integer)v.getTag();
 					clearMenuSelection();
-					Log.d(TAG, "click!" + v.getTag());
-					switch ((Integer)v.getTag()) {
-						case 0: // all
-							listener.menuAllClicked();
-							break;
-						case 1: // watched
-							listener.menuWatchedClicked();
-							break;
-						case 2: // my
-							listener.menuMyClicked();
-							break;
-						case 3: // alarm
-							listener.menuAlarmClicked();
-							break;
-//						case 4: // graph
-//							menuGraphClicked();
-//							setTitle("Graphs");
-//							break;
-						default:
-							Log.d(TAG, "unknown tag");
-							break;
-					}
+					Log.d(TAG, "click! " + lastSelectedItemPosition);
 					v.setBackgroundColor(menuBackgroundColor);
+                    callListenerMethod(lastSelectedItemPosition);
 				}
 			});
 		}
         return v;
     }
 
+    private void callListenerMethod (Integer position) {
+        switch (position) {
+            case 0: // all
+                listener.menuAllClicked();
+                break;
+            case 1: // watched
+                listener.menuWatchedClicked();
+                break;
+            case 2: // my
+                listener.menuMyClicked();
+                break;
+            case 3: // alarm
+                listener.menuAlarmClicked();
+                break;
+//						case 4: // graph
+//							menuGraphClicked();
+//							setTitle("Graphs");
+//							break;
+            default:
+                Log.d(TAG, "unknown tag");
+                break;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        lastSelectedItemPosition = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getInt("lastMenuItem",0);
+        clearMenuSelection();
+        for (View v : menuItems) {
+            if (v.getTag() == lastSelectedItemPosition) {
+                v.setBackgroundColor(menuBackgroundColor);
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).edit().
+                putInt("lastMenuItem",lastSelectedItemPosition).commit();
+    }
 
     private void clearMenuSelection () {
         for (View item: menuItems ) {
