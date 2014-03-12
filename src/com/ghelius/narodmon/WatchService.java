@@ -23,15 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class WatchService extends WakefulIntentService {
     private final static String TAG = "narodmon-service";
+    private static final boolean DEBUG = false;
+
     private int NOTIFICATION = R.string.local_service_started;
     private ArrayList<Integer> ids;
-
-    private int lastNotifyId = 0;
 
     public WatchService() {
         super("Narodmon watcher");
@@ -39,7 +38,7 @@ public class WatchService extends WakefulIntentService {
     }
 
     private void updateNotify (String message, String name, int id) {
-        Log.d(TAG, "!!!!!! Alarm exist: update Notify !!!!!");
+        if(DEBUG) Log.d(TAG, "!!!!!! Alarm exist: update Notify !!!!!");
         createInfoNotification(message, name, id);
 //        showNotification(name, value + " " + job + " " + limit);
     }
@@ -59,7 +58,7 @@ public class WatchService extends WakefulIntentService {
         return s;
     }
     private boolean updateData (ArrayList<Integer> ids) {
-        Log.d(TAG,"start updating");
+        if(DEBUG) Log.d(TAG,"start updating");
         StringBuilder buf = new StringBuilder();
         for (int i = 0; i < ids.size(); ++i) {
             if (i != 0) {
@@ -81,9 +80,9 @@ public class WatchService extends WakefulIntentService {
             return false;
         }
         String responseString = inputStreamToString(in);
-        Log.d(TAG,"result: " + responseString);
+        if(DEBUG) Log.d(TAG,"result: " + responseString);
         handleResult(responseString);
-        Log.d(TAG,"------ stop updating ------");
+        if(DEBUG) Log.d(TAG,"------ stop updating ------");
         return true;
     }
 
@@ -98,7 +97,7 @@ public class WatchService extends WakefulIntentService {
                     int id = Integer.valueOf(sensArray.getJSONObject(i).getString("id"));
                     String value = sensArray.getJSONObject(i).getString("value");
                     String time = sensArray.getJSONObject(i).getString("time");
-                    Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
+                    if(DEBUG) Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
 
                     // check limits for watched item
                     AlarmSensorTask task = DatabaseManager.getInstance().getAlarmById(id);
@@ -117,11 +116,11 @@ public class WatchService extends WakefulIntentService {
                     }
 
 //	                    updateFilter widgets value
-                    //Log.d(TAG,"\nwidget for:" + id);
+                    //if(DEBUG) Log.d(TAG,"\nwidget for:" + id);
                     ArrayList<Widget> widgets = DatabaseManager.getInstance().getWidgetsBySensorId(id);
                     for (Widget w: widgets) {
                         widgetsFound = true;
-                        Log.d(TAG,"sensor is widget, updateFilter value: " + w.screenName + ", w.last=" + w.lastValue + ", w.cur=" + w.curValue + ", will set cur=" + value);
+                        if(DEBUG) Log.d(TAG,"sensor is widget, updateFilter value: " + w.screenName + ", w.last=" + w.lastValue + ", w.cur=" + w.curValue + ", will set cur=" + value);
                         w.lastValue = w.curValue;
                         w.curValue = Float.valueOf(value);
                         DatabaseManager.getInstance().updateValueByWidgetId(w);
@@ -143,12 +142,12 @@ public class WatchService extends WakefulIntentService {
     @Override
     protected void doWakefulWork(Intent intent) {
         //createInfoNotification("Temperature -35 C", "б-р Молодежи, 4");
-        Log.d(TAG,"#thread: " + Thread.currentThread().getName());
+        if(DEBUG) Log.d(TAG,"#thread: " + Thread.currentThread().getName());
 
-        Log.d(TAG,"nmWatcher start working...");
+        if(DEBUG) Log.d(TAG,"nmWatcher start working...");
 	    ArrayList<Widget> widgetsList = DatabaseManager.getInstance().getAllWidgets();
         ArrayList<AlarmSensorTask> alarmList = DatabaseManager.getInstance().getAlarmTask();
-	    Log.d(TAG,"widget amount: "+ widgetsList.size());
+	    if(DEBUG) Log.d(TAG,"widget amount: "+ widgetsList.size());
         ids.clear();
         for (int i = 0; i < alarmList.size(); i++) {
             if (alarmList.get(i).job != AlarmSensorTask.NOTHING)
@@ -158,9 +157,9 @@ public class WatchService extends WakefulIntentService {
 		    ids.add(widgetsList.get(i).sensorId);
 	    }
         if (!ids.isEmpty()) {
-            Log.d(TAG, "start watched with " + ids.size() + " sensors");
+            if(DEBUG) Log.d(TAG, "start watched with " + ids.size() + " sensors");
             if (!updateData (ids)) {
-                Log.d(TAG,"problem update data");
+                if(DEBUG) Log.d(TAG,"problem update data");
                 Intent i = new Intent(getApplicationContext(), UpdateWidgetService.class);
                 i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new Integer[0]);
                 i.putExtra("problem",true);
@@ -168,9 +167,9 @@ public class WatchService extends WakefulIntentService {
                 getApplicationContext().startService(i);
             }
         } else {
-            Log.d(TAG, "no watched id, just exit");
+            if(DEBUG) Log.d(TAG, "no watched id, just exit");
         }
-        Log.d(TAG,"nmWatcher stop working...");
+        if(DEBUG) Log.d(TAG,"nmWatcher stop working...");
     }
 
 

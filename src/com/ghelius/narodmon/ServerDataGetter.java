@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 
 class ServerDataGetter extends AsyncTask<String, String, String> {
     private final static String TAG = "narodmon-getter";
+    private final static Boolean DEBUG = false;
     boolean asyncJobFail = false;
     private AsyncJobCallbackInterface asyncCallback;
 
@@ -59,7 +60,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         try {
             HttpPost httpPost = new HttpPost(uri);
             httpPost.setEntity(new StringEntity(json));
-//	        Log.d(TAG,json);
+//	        if(DEBUG) Log.d(TAG,json);
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
             return new DefaultHttpClient().execute(httpPost);
@@ -76,11 +77,11 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... uri) {
-        Log.d(TAG,"doInBackground");
+        if(DEBUG) Log.d(TAG,"doInBackground");
         String responseString = null;
         asyncJobFail = true;
         try {
-//            Log.d(TAG, uri[0] + ":" + uri[1]);
+//            if(DEBUG) Log.d(TAG, uri[0] + ":" + uri[1]);
             HttpResponse r = makeRequest(uri[0],uri[1]);
             if (r == null) {
                 Log.e(TAG,"HttpResponse is null");
@@ -89,9 +90,9 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
             InputStream in = r.getEntity().getContent();
             responseString = inputStreamToString(in);
             if (asyncCallback!=null && !isCancelled()) {
-                Log.d(TAG,"call asyncJob");
+                if(DEBUG) Log.d(TAG,"call asyncJob");
                 if (asyncCallback.asyncJobWithResult(responseString)) {
-                    Log.d(TAG,"asyncJob return ok");
+                    if(DEBUG) Log.d(TAG,"asyncJob return ok");
                     asyncJobFail = false;
                 }
             } else if (asyncCallback == null)
@@ -111,8 +112,8 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        Log.d(TAG,"onPostExecute");
-        //Log.d(TAG,"result: " + result);
+        if(DEBUG) Log.d(TAG,"onPostExecute");
+        //if(DEBUG) Log.d(TAG,"result: " + result);
         if (isCancelled()) {
             Log.w(TAG,"task was cancelled");
             return;
@@ -121,7 +122,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
             Log.e(TAG,"asyncJob report about fail, so finished with NoResult");
             listener.onNoResult();
         } else {
-            Log.d(TAG,"call listener onResultReceived");
+            if(DEBUG) Log.d(TAG,"call listener onResultReceived");
             listener.onResultReceived(result);
         }
     }

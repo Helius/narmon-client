@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class NarodmonApi {
+    private static final String TAG = "narodmon-api";
+    private static final boolean DEBUG = false;
 
     private String apiUrl;
     private onResultReceiveListener listener;
@@ -24,13 +26,12 @@ public class NarodmonApi {
     private Loginer loginer;
     private SensorTypeDictionaryGetter typeDictionaryGetter;
     private VersionSender versionSender;
-    private static final String TAG = "narodmon-api";
     private final ValueUpdater valueUpdater;
     private final String fileName = "sensorList.obj";
     private String apiHeader;
 
 	public void setLocation(Float lat, Float lng) {
-		Log.d(TAG,"set new location to Api " + lat +" " + lng);
+		if(DEBUG) Log.d(TAG,"set new location to Api " + lat +" " + lng);
 		listUpdater.setLocation (lat, lng);
 	}
 
@@ -110,7 +111,7 @@ public class NarodmonApi {
 	    void restoreList (Context context, ArrayList<Sensor> sensorList) {
             this.context = context;
             this.sensorList = sensorList;
-            Log.d(TAG,"------restore list start-------");
+            if(DEBUG) Log.d(TAG,"------restore list start-------");
             FileInputStream fis;
             try {
                 fis = context.openFileInput(fileName);
@@ -120,7 +121,7 @@ public class NarodmonApi {
                 is.close();
                 fis.close();
                 for (Sensor aSensorList : sensorList) aSensorList.value = "--";
-                Log.d(TAG,"------restored list end------- " + sensorList.size());
+                if(DEBUG) Log.d(TAG,"------restored list end------- " + sensorList.size());
                 if (listener != null)
                     listener.onSensorListResult(true,"");
             } catch (Exception e) {
@@ -139,7 +140,7 @@ public class NarodmonApi {
         }
         @Override
         public void onResultReceived(String result) {
-            Log.d(TAG,"listUpdater: result received, call listener");
+            if(DEBUG) Log.d(TAG,"listUpdater: result received, call listener");
             if (listener != null)
                 listener.onSensorListResult(true, "");
             else
@@ -157,10 +158,10 @@ public class NarodmonApi {
 
         @Override
         public boolean asyncJobWithResult(String result) {
-            Log.d(TAG,"do asyncJob");
+            if(DEBUG) Log.d(TAG,"do asyncJob");
             try {
                 makeSensorListFromJson(result);
-                Log.d(TAG,"asyncJob done with " + sensorList.size() + " sensor");
+                if(DEBUG) Log.d(TAG,"asyncJob done with " + sensorList.size() + " sensor");
             } catch (JSONException e) {
                 Log.e(TAG,e.getMessage());
                 return false;
@@ -177,7 +178,7 @@ public class NarodmonApi {
                     String location = devicesArray.getJSONObject(i).getString("location");
                     float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
                     boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
-                    //Log.d(TAG, + i + ": " + location);
+                    //if(DEBUG) Log.d(TAG, + i + ": " + location);
                     JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
                     for (int j = 0; j < sensorsArray.length(); j++) {
                         String values = sensorsArray.getJSONObject(j).getString("value");
@@ -236,7 +237,7 @@ public class NarodmonApi {
         }
         @Override
         public void onResultReceived(String result) {
-            Log.d(TAG,"valueUpdate: result receive");
+            if(DEBUG) Log.d(TAG,"valueUpdate: result receive");
             if (listener != null)
                 listener.onSensorListResult(true, "");
             else
@@ -254,11 +255,11 @@ public class NarodmonApi {
 
         @Override
         public boolean asyncJobWithResult(String result) {
-            Log.d(TAG,"do asyncJob");
+            if(DEBUG) Log.d(TAG,"do asyncJob");
             try {
                 parseValue(result);
-                Log.d(TAG,"asyncJob done with " + sensorList.size() + " sensor");
-                Log.d(TAG,"valueUpdater: make sensor list done");
+                if(DEBUG) Log.d(TAG,"asyncJob done with " + sensorList.size() + " sensor");
+                if(DEBUG) Log.d(TAG,"valueUpdater: make sensor list done");
             } catch (JSONException e) {
                 Log.e(TAG,e.getMessage());
                 return false;
@@ -274,7 +275,7 @@ public class NarodmonApi {
                     String id = sensArray.getJSONObject(i).getString("id");
                     String value = sensArray.getJSONObject(i).getString("value");
                     String time = sensArray.getJSONObject(i).getString("time");
-                    //Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
+                    //if(DEBUG) Log.d(TAG,"for " + id + " val: " + value + ", time " + time);
                     updateSensorValue (Integer.valueOf(id), value, Long.valueOf(time));
                 }
             }
@@ -298,7 +299,7 @@ public class NarodmonApi {
         void login (String login, String passwd, String uid) {
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
-            Log.d(TAG, "password: " + passwd + " md5: " + md5(passwd));
+            if(DEBUG) Log.d(TAG, "password: " + passwd + " md5: " + md5(passwd));
 //            getter.execute(apiUrl, makeRequestHeader("login") + ",\"login\":\""+ login + "\",\"hash\":\""+md5(uid+md5(passwd)) +"\"}");
 	        getter.execute(apiUrl, makeRequestHeader("login") + ",\"login\":\"" + login + "\",\"hash\":\"" + md5(uid + md5(passwd)) + "\",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
         }
@@ -310,11 +311,11 @@ public class NarodmonApi {
         @Override
         public void onResultReceived(String result) {
             //{"error":"auth error"} or {"login":"mylogin"}
-            Log.d(TAG,"Login result: " + result);
+            if(DEBUG) Log.d(TAG,"Login result: " + result);
             try {
                 JSONObject jObject = new JSONObject(result);
                 String login = jObject.getString("login");
-                Log.d(TAG,"Login result: " + login);
+                if(DEBUG) Log.d(TAG,"Login result: " + login);
 	            if (login != null) {
 		            if (listener != null) {
 		                listener.onAuthorisationResult(true, login);
@@ -359,13 +360,13 @@ public class NarodmonApi {
         @Override
         public void onResultReceived(String result) {
             JSONObject jsonObject;
-	        Log.d(TAG,result);
+	        if(DEBUG) Log.d(TAG,result);
             try {
                 jsonObject = new JSONObject(result);
                 String addr = jsonObject.getString("addr");
 	            Float lat = (float)jsonObject.getDouble("lat");
 	            Float lng = (float)jsonObject.getDouble("lng");
-                Log.d(TAG, "location result, addr: " + addr);
+                if(DEBUG) Log.d(TAG, "location result, addr: " + addr);
                 if (listener!=null) {
                     listener.onLocationResult(true,addr,lat,lng);
                 }
@@ -390,14 +391,14 @@ public class NarodmonApi {
     private class SensorTypeDictionaryGetter implements ServerDataGetter.OnResultListener {
         ServerDataGetter getter;
         void getDictionary () {
-	        Log.d(TAG,"getDictionary");
+	        if(DEBUG) Log.d(TAG,"getDictionary");
             getter = new ServerDataGetter();
             getter.setOnListChangeListener(this);
             getter.execute(apiUrl, makeRequestHeader("sensorType") +",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
-            Log.d(TAG, "Dictionary get result: " + result);
+            if(DEBUG) Log.d(TAG, "Dictionary get result: " + result);
             if (listener!=null)
                 listener.onSensorTypeResult(true,result);
         }
@@ -420,7 +421,7 @@ public class NarodmonApi {
         }
         @Override
         public void onResultReceived(String result) {
-            Log.d(TAG, "Version result: " + result);
+            if(DEBUG) Log.d(TAG, "Version result: " + result);
             if (listener!=null)
                 listener.onSendVersionResult(true,result);
         }
@@ -434,7 +435,7 @@ public class NarodmonApi {
 
 
     public static String md5(final String s) {
-        Log.d(TAG,"string to md5: ["+s+"]");
+        if(DEBUG) Log.d(TAG,"string to md5: ["+s+"]");
         if (s == null)
             return "";
         try {

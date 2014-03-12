@@ -13,7 +13,9 @@ public class MyApplication extends Application {
     final static private String TAG = "narodmon-app";
     private ArrayList<Sensor> sensorList;
     long updateTimeStamp = 0;
-	@Override
+    private MyLocation myLocation = null;
+
+    @Override
 	public void onCreate() {
 		super.onCreate();
 		// The following line triggers the initialization of ACRA
@@ -24,7 +26,6 @@ public class MyApplication extends Application {
             e.printStackTrace();
         }
         DatabaseManager.initializeInstance(new DatabaseHelper(getApplicationContext()));
-        updateTimeStamp = System.currentTimeMillis();
         sensorList = new ArrayList<Sensor>();
 	}
 
@@ -32,12 +33,27 @@ public class MyApplication extends Application {
         return sensorList;
     }
 
-    public long getUpdateTimeStamp () {
-        return updateTimeStamp;
-    }
 
     public void setUpdateTimeStamp (long timeStamp) {
         Log.d(TAG, "load... setUpdateTimeStamp " + timeStamp);
         this.updateTimeStamp = timeStamp;
+    }
+
+    public boolean isListOld() {
+        Log.d(TAG,"load... isListOld, diff is: " + (System.currentTimeMillis() - updateTimeStamp)/1000 + " sec");
+        if (System.currentTimeMillis() - updateTimeStamp > 5 * 60 * 1000) {
+            Log.d(TAG,"load.. old");
+            return true;
+        }
+        Log.d(TAG,"load.. not so old");
+        return false;
+    }
+
+    public MyLocation getMyLocation() {
+        return myLocation;
+    }
+
+    public void setMyLocation(MyLocation myLocation) {
+        this.myLocation = myLocation;
     }
 }

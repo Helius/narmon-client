@@ -1,7 +1,6 @@
 package com.ghelius.narodmon;
 
 import android.app.AlarmManager;
-import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -43,12 +42,13 @@ public class MainActivity extends ActionBarActivity implements
     private FilterFragment filterFragment;
     private SensorListFragment sensorListFragment;
     private Menu mOptionsMenu;
-    private long lastUpdateTime;
+//    private long lastUpdateTime;
     private final static int gpsUpdateIntervalMs = 20 * 60 * 1000; // time interval for updateFilter coordinates and sensor list
     private NarodmonApi.onResultReceiveListener apiListener;
     private boolean showRefreshProgress;
     private int oldRadius = 0;
     private boolean clearOptionsMenu;
+    private MyLocation.LocationResult myUpdateLocationListener;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -83,6 +83,7 @@ public class MainActivity extends ActionBarActivity implements
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, ">>>>>>>> onCreate");
         super.onCreate(savedInstanceState);
+        myUpdateLocationListener = new UpdateLocationListener();
         uiFlags = UiFlags.load(this);
         oldRadius = uiFlags.radiusKm;
         Log.d(TAG,"radius: " + uiFlags.radiusKm);
@@ -260,14 +261,15 @@ public class MainActivity extends ActionBarActivity implements
 
         mNarodmonApi = new NarodmonApi(getApplicationContext().getString(R.string.api_url), apiHeader);
         mNarodmonApi.setOnResultReceiveListener(apiListener);
-        Integer interval = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.pref_key_interval), "5"));
-        if (System.currentTimeMillis() - ((MyApplication)this.getApplication()).getUpdateTimeStamp() > interval*60000) {
+
+        if (((MyApplication)this.getApplication()).isListOld()) {
             mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
-            Log.d(TAG,"load... saved list");
-        } else {
-            Log.d(TAG,"load...n restored list, time stamp gone");
-            setRefreshProgress(false);
             listAdapter.updateFilter();
+            updateMenuSensorCounts();
+            Log.d(TAG,"load.. load new list");
+            updateSensorsList(true);
+        } else {
+            Log.d(TAG, "load.. use existing list");
             updateMenuSensorCounts();
         }
 
@@ -285,7 +287,7 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, ">>>>>>>> onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
+//        Log.d(TAG, ">>>>>>>> onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
 
         Intent startIntent = getIntent();
         final int sensorId = startIntent.getIntExtra("sensorId", -1);
@@ -301,10 +303,10 @@ public class MainActivity extends ActionBarActivity implements
             Log.d(TAG,"regular launch");
         }
 
-        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false)) {
-            updateSensorsList(true);
-        }
-
+//        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false)) {
+//            updateSensorsList(true);
+//        }
+        updateSensorsValue();
         initLocationUpdater();
 
         startUpdateTimer();
@@ -337,6 +339,7 @@ public class MainActivity extends ActionBarActivity implements
         stopUpdateTimer();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         stopGpsTimer();
+        myUpdateLocationListener = null;
         super.onDestroy();
     }
 
@@ -369,8 +372,10 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void filterChange() {
-        if (oldRadius < uiFlags.radiusKm)
+        if (oldRadius < uiFlags.radiusKm) {
+            Log.d(TAG,"filterChange new list load..");
             updateSensorsList(true);
+        }
         listAdapter.updateFilter();
     }
 
@@ -465,7 +470,7 @@ public class MainActivity extends ActionBarActivity implements
                 startActivity(new Intent(MainActivity.this, PreferActivity.class));
                 break;
             case R.id.menu_refresh:
-                Log.d(TAG, "refresh sensor list");
+                Log.d(TAG, "refresh sensor list, load..");
                 updateSensorsList(true);
                 break;
             case R.id.menu_login:
@@ -521,21 +526,21 @@ public class MainActivity extends ActionBarActivity implements
 
 
     public void updateSensorsList(boolean force) {
-        if (force) {
-            lastUpdateTime = 0;
-            Log.d(TAG, "force updateFilter sensor list");
-        }
+//        if (force) {
+//            lastUpdateTime = 0;
+//            Log.d(TAG, "force updateFilter sensor list");
+//        }
+//
+//        if (System.currentTimeMillis() - lastUpdateTime < gpsUpdateIntervalMs) {
+//            Log.d(TAG, "list was not updated, timeout not gone");
+//            return;
+//        }
 
-        if (System.currentTimeMillis() - lastUpdateTime < gpsUpdateIntervalMs) {
-            Log.d(TAG, "list was not updated, timeout not gone");
-            return;
-        }
-
-        Log.d(TAG, "start list updating...");
+        Log.d(TAG, "start full list load...");
         setRefreshProgress(true);
         mNarodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
-        lastUpdateTime = System.currentTimeMillis();
         ((MyApplication)getApplication()).setUpdateTimeStamp(System.currentTimeMillis());
+        //lastUpdateTime = System.currentTimeMillis();
     }
 
     public void updateSensorsValue() {
@@ -564,28 +569,13 @@ public class MainActivity extends ActionBarActivity implements
 
 
     void updateLocation() {
-        MyLocation myLocation = new MyLocation();
-        myLocation.getLocation(getApplicationContext(), new MyLocation.LocationResult() {
-            @Override
-            public void gotLocation(Location location) {
-                Log.d(TAG, "got location: " + location.getLatitude() + ", " + location.getLongitude());
-                if (location == null) return;
-                final double lat = location.getLatitude();
-                final double lon = location.getLongitude();
-                // use API to send location
-                Log.d(TAG, "location was updated and set into api : " + lat + " " + lon);
-                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                pref.edit().putFloat("lat", (float) lat).putFloat("lng", (float) lon).commit();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(TAG, "location: update sensor list!");
-                        mNarodmonApi.setLocation((float) lat, (float) lon);
-                        updateSensorsList(true);
-                    }
-                });
-            }
-        });
+        // try to avoid multiply listener calls, but it doesn't work...
+        MyLocation myLocation = ((MyApplication)getApplication()).getMyLocation();
+        if (myLocation == null) {
+            myLocation = new MyLocation();
+            ((MyApplication)getApplication()).setMyLocation(myLocation);
+        }
+        myLocation.getLocation(getApplicationContext(), myUpdateLocationListener);//new MyLocation.LocationResult() {
     }
 
     private void showSensorInfo (int sensorId) {
@@ -752,6 +742,7 @@ public class MainActivity extends ActionBarActivity implements
                 pref.edit().putFloat("lat", lat).putFloat("lng", lng).commit();
                 mNarodmonApi.setLocation(lat, lng);
             }
+            Log.d(TAG,"onLocationResult new list load..");
             updateSensorsList(true);
         }
 
@@ -771,6 +762,7 @@ public class MainActivity extends ActionBarActivity implements
                 loginStatus = LoginStatus.ERROR;
                 loginDialog.updateLoginStatus();
             }
+            Log.d(TAG,"onAuthorisationResult new list load..");
             updateSensorsList(true);
         }
 
@@ -796,6 +788,28 @@ public class MainActivity extends ActionBarActivity implements
             if (!ok) return;
             SensorTypeProvider.getInstance(getApplicationContext()).setTypesFromString(res);
             listAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private class UpdateLocationListener extends MyLocation.LocationResult {
+        @Override
+        public void gotLocation(Location location) {
+            Log.d(TAG, "got location: " + location.getLatitude() + ", " + location.getLongitude());
+            if (location == null) return;
+            final double lat = location.getLatitude();
+            final double lon = location.getLongitude();
+            // use API to send location
+            Log.d(TAG, "location was updated and set into api : " + lat + " " + lon);
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            pref.edit().putFloat("lat", (float) lat).putFloat("lng", (float) lon).commit();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "location: update sensor list, load..!");
+                    mNarodmonApi.setLocation((float) lat, (float) lon);
+                    updateSensorsList(true);
+                }
+            });
         }
     }
 }
