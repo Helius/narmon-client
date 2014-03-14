@@ -17,7 +17,7 @@ import java.util.Locale;
 
 public class NarodmonApi {
     private static final String TAG = "narodmon-api";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private String apiUrl;
     private onResultReceiveListener listener;
@@ -136,7 +136,7 @@ public class NarodmonApi {
             getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.setAsyncJobCallback(this);
-            getter.execute(apiUrl, makeRequestHeader("sensorNear") + ",\"radius\":"+ String.valueOf(radius) + ",\"lat\":" + String.valueOf(lat) + ",\"lng\":" + String.valueOf(lng) +",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
+            getter.execute(apiUrl, makeRequestHeader("sensorNear") + ",\"limit\":"+ String.valueOf(radius) + ",\"lat\":" + String.valueOf(lat) + ",\"lng\":" + String.valueOf(lng) +",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -174,6 +174,7 @@ public class NarodmonApi {
                 sensorList.clear();
                 JSONObject jObject = new JSONObject(result);
                 JSONArray devicesArray = jObject.getJSONArray("devices");
+                Log.d(TAG,"receive " + devicesArray.length() + " devices");
                 for (int i = 0; i < devicesArray.length(); i++) {
                     String location = devicesArray.getJSONObject(i).getString("location");
                     float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
@@ -190,17 +191,18 @@ public class NarodmonApi {
                         sensorList.add(new Sensor(id, type, location, name, values, distance, my, pub, times));
                     }
                 }
-                if (!sensorList.isEmpty() && context!=null) {
-                    FileOutputStream fos;
-                    try {
-                        fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-                        ObjectOutputStream os = null;
-                        os = new ObjectOutputStream(fos);
-                        os.writeObject(sensorList);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Can't serialise sensor list: " + e.getMessage());
-                    }
-                }
+                Log.d(TAG,"receive " + sensorList.size() + " sensors");
+//                if (!sensorList.isEmpty() && context!=null) {
+//                    FileOutputStream fos;
+//                    try {
+//                        fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+//                        ObjectOutputStream os = null;
+//                        os = new ObjectOutputStream(fos);
+//                        os.writeObject(sensorList);
+//                    } catch (Exception e) {
+//                        Log.e(TAG, "Can't serialise sensor list: " + e.getMessage());
+//                    }
+//                }
             }
         }
 

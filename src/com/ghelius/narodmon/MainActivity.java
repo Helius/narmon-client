@@ -25,7 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -49,6 +49,7 @@ public class MainActivity extends ActionBarActivity implements
     private int oldRadius = 0;
     private boolean clearOptionsMenu;
     private MyLocation.LocationResult myUpdateLocationListener;
+    private int deviceRequestLimit = 15;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -86,7 +87,7 @@ public class MainActivity extends ActionBarActivity implements
         myUpdateLocationListener = new UpdateLocationListener();
         uiFlags = UiFlags.load(this);
         oldRadius = uiFlags.radiusKm;
-        Log.d(TAG,"radius: " + uiFlags.radiusKm);
+        Log.d(TAG, "radius: " + uiFlags.radiusKm);
         setContentView(R.layout.activity_main);
         apiListener = new ApiListener();
 
@@ -161,13 +162,21 @@ public class MainActivity extends ActionBarActivity implements
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
         sensorListFragment = new SensorListFragment();
-        sensorListFragment.setOnListItemClickListener(new AdapterView.OnItemClickListener() {
+        sensorListFragment.setOnListItemClickListener(new SensorListFragment.OnSensorListClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(ListView l, View v, int position, long id) {
                 Log.d(TAG,"sensor clicked: " + position);
                 sensorItemClick(position);
             }
+
+            @Override
+            public void onFooterClick() {
+                Log.d(TAG,"more...");
+                deviceRequestLimit += 10;
+                getSensorsList(deviceRequestLimit);
+            }
         });
+
         slidingMenu = new SlidingMenuFragment();
         slidingMenu.setOnMenuClickListener(new SlidingMenuFragment.MenuClickListener() {
             @Override
@@ -239,7 +248,7 @@ public class MainActivity extends ActionBarActivity implements
 
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
         listAdapter.setUiFlags(uiFlags);
-        sensorListFragment.setListAdapter(listAdapter);
+        sensorListFragment.setAdapter(listAdapter);
 
         loginDialog = new LoginDialog();
         loginDialog.setOnChangeListener(new LoginDialog.LoginEventListener() {
@@ -263,11 +272,11 @@ public class MainActivity extends ActionBarActivity implements
         mNarodmonApi.setOnResultReceiveListener(apiListener);
 
         if (((MyApplication)this.getApplication()).isListOld()) {
-            mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
-            listAdapter.updateFilter();
-            updateMenuSensorCounts();
-            Log.d(TAG,"load.. load new list");
-            updateSensorsList(true);
+//            mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
+//            listAdapter.updateFilter();
+//            updateMenuSensorCounts();
+            Log.d(TAG, "load.. load new list");
+            getSensorsList(deviceRequestLimit);
         } else {
             Log.d(TAG, "load.. use existing list");
             updateMenuSensorCounts();
@@ -304,7 +313,7 @@ public class MainActivity extends ActionBarActivity implements
         }
 
 //        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false)) {
-//            updateSensorsList(true);
+//            getSensorsList(true);
 //        }
         updateSensorsValue();
         initLocationUpdater();
@@ -374,7 +383,7 @@ public class MainActivity extends ActionBarActivity implements
     public void filterChange() {
         if (oldRadius < uiFlags.radiusKm) {
             Log.d(TAG,"filterChange new list load..");
-            updateSensorsList(true);
+            getSensorsList(deviceRequestLimit);
         }
         listAdapter.updateFilter();
     }
@@ -393,7 +402,7 @@ public class MainActivity extends ActionBarActivity implements
             startUpdateTimer();
         } else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
             initLocationUpdater();
-            updateSensorsList(true);
+            getSensorsList(deviceRequestLimit);
         }
     }
 
@@ -471,7 +480,7 @@ public class MainActivity extends ActionBarActivity implements
                 break;
             case R.id.menu_refresh:
                 Log.d(TAG, "refresh sensor list, load..");
-                updateSensorsList(true);
+                getSensorsList(deviceRequestLimit);
                 break;
             case R.id.menu_login:
                 Log.d(TAG, "show login dialog");
@@ -525,7 +534,7 @@ public class MainActivity extends ActionBarActivity implements
     }
 
 
-    public void updateSensorsList(boolean force) {
+    public void getSensorsList(int number) {
 //        if (force) {
 //            lastUpdateTime = 0;
 //            Log.d(TAG, "force updateFilter sensor list");
@@ -538,7 +547,7 @@ public class MainActivity extends ActionBarActivity implements
 
         Log.d(TAG, "start full list load...");
         setRefreshProgress(true);
-        mNarodmonApi.getSensorList(sensorList, uiFlags.radiusKm);
+        mNarodmonApi.getSensorList(sensorList, number);
         ((MyApplication)getApplication()).setUpdateTimeStamp(System.currentTimeMillis());
         //lastUpdateTime = System.currentTimeMillis();
     }
@@ -716,7 +725,8 @@ public class MainActivity extends ActionBarActivity implements
                 (60000 * Integer.valueOf(PreferenceManager.
                         getDefaultSharedPreferences(this).
                         getString(getString(R.string.pref_key_interval), "5"))),
-                pi);
+                pi
+        );
     }
 
 
@@ -743,7 +753,7 @@ public class MainActivity extends ActionBarActivity implements
                 mNarodmonApi.setLocation(lat, lng);
             }
             Log.d(TAG,"onLocationResult new list load..");
-            updateSensorsList(true);
+            getSensorsList(deviceRequestLimit);
         }
 
         @Override
@@ -763,7 +773,7 @@ public class MainActivity extends ActionBarActivity implements
                 loginDialog.updateLoginStatus();
             }
             Log.d(TAG,"onAuthorisationResult new list load..");
-            updateSensorsList(true);
+            getSensorsList(deviceRequestLimit);
         }
 
         @Override
@@ -807,7 +817,7 @@ public class MainActivity extends ActionBarActivity implements
                 public void run() {
                     Log.d(TAG, "location: update sensor list, load..!");
                     mNarodmonApi.setLocation((float) lat, (float) lon);
-                    updateSensorsList(true);
+                    getSensorsList(deviceRequestLimit);
                 }
             });
         }

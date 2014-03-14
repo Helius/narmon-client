@@ -120,5 +120,6 @@
     <string name="api_url">http://narodmon.ru/client.php</string>
     <string name="key_widget_light_theme">key_widget_light_theme</string>
     <string name="app_widget_theme_light">Light app widget theme</string>
+    <string name="more_button_text">More..</string>
 
 </resources>
