@@ -96,5 +96,9 @@
     <string name="text_notify_alarm">Оповещение</string>
     <string name="alarm_name">Имя</string>
     <string name="app_widget_theme_light">Светлый виджет</string>
-    <string name="more_button_text">More..</string>
+    <string name="more_button_text">Ещё...</string>
+    <string name="menu_watched_text">Избранные</string>
+    <string name="menu_all_text">Все</string>
+    <string name="menu_my_text">Мои</string>
+    <string name="menu_alarm_text">Наблюдение</string>
 </resources>

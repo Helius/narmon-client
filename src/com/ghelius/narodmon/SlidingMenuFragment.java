@@ -92,9 +92,11 @@ public class SlidingMenuFragment extends Fragment {
         super.onResume();
         lastSelectedItemPosition = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getInt("lastMenuItem",0);
         clearMenuSelection();
+        int i = 0;
         for (View v : menuItems) {
             if (v.getTag() == lastSelectedItemPosition) {
                 v.setBackgroundColor(menuBackgroundColor);
+                callListenerMethod(i);
             }
         }
     }

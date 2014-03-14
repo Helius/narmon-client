@@ -38,6 +38,7 @@ public class MainActivity extends ActionBarActivity implements
         SensorInfoFragment.SensorConfigChangeListener,
         FilterFragment.OnFilterChangeListener {
 
+    private static final int MAX_DEVICES_LIMIT = 20;
     private SensorInfoFragment sensorInfoFragment;
     private FilterFragment filterFragment;
     private SensorListFragment sensorListFragment;
@@ -49,7 +50,10 @@ public class MainActivity extends ActionBarActivity implements
     private int oldRadius = 0;
     private boolean clearOptionsMenu;
     private MyLocation.LocationResult myUpdateLocationListener;
-    private int deviceRequestLimit = 15;
+    private int deviceRequestLimit = MAX_DEVICES_LIMIT;
+    private boolean allMenuSelected;
+    private ArrayList<Integer> oldHidenTypes = new ArrayList<Integer>();
+    private boolean dontUpdateMore = false;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -131,7 +135,7 @@ public class MainActivity extends ActionBarActivity implements
         }
         sensorList = ((MyApplication)this.getApplication()).getSensorList();
 
-        mTitle = "All";
+//        mTitle = getString(R.string.app_name);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -171,9 +175,11 @@ public class MainActivity extends ActionBarActivity implements
 
             @Override
             public void onFooterClick() {
-                Log.d(TAG,"more...");
-                deviceRequestLimit += 10;
-                getSensorsList(deviceRequestLimit);
+                Log.d(TAG,"more");
+                if (!showRefreshProgress && allMenuSelected && !dontUpdateMore) {
+                    deviceRequestLimit += 10;
+                    getSensorsList(deviceRequestLimit);
+                }
             }
         });
 
@@ -185,6 +191,7 @@ public class MainActivity extends ActionBarActivity implements
                 setTitle("All");
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
+                allMenuSelected = true;
             }
 
             @Override
@@ -196,6 +203,7 @@ public class MainActivity extends ActionBarActivity implements
                 }
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
+                allMenuSelected = false;
             }
 
             @Override
@@ -207,6 +215,7 @@ public class MainActivity extends ActionBarActivity implements
                 setTitle("My");
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
+                allMenuSelected = false;
             }
 
             @Override
@@ -218,6 +227,7 @@ public class MainActivity extends ActionBarActivity implements
                     //TODO: show message
                 }
                 setTitle("Alarms");
+                allMenuSelected = false;
             }
         });
 
@@ -248,7 +258,7 @@ public class MainActivity extends ActionBarActivity implements
 
         listAdapter = new SensorItemAdapter(getApplicationContext(), sensorList);
         listAdapter.setUiFlags(uiFlags);
-        sensorListFragment.setAdapter(listAdapter);
+        sensorListFragment.setListAdapter(listAdapter);
 
         loginDialog = new LoginDialog();
         loginDialog.setOnChangeListener(new LoginDialog.LoginEventListener() {
@@ -272,9 +282,9 @@ public class MainActivity extends ActionBarActivity implements
         mNarodmonApi.setOnResultReceiveListener(apiListener);
 
         if (((MyApplication)this.getApplication()).isListOld()) {
-//            mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
-//            listAdapter.updateFilter();
-//            updateMenuSensorCounts();
+            mNarodmonApi.restoreSensorList(getApplicationContext(), sensorList);
+            listAdapter.updateFilter();
+            updateMenuSensorCounts();
             Log.d(TAG, "load.. load new list");
             getSensorsList(deviceRequestLimit);
         } else {
@@ -381,11 +391,17 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void filterChange() {
-        if (oldRadius < uiFlags.radiusKm) {
-            Log.d(TAG,"filterChange new list load..");
-            getSensorsList(deviceRequestLimit);
+//        if (oldRadius < uiFlags.radiusKm) {
+//            Log.d(TAG,"filterChange new list load..");
+//            getSensorsList(deviceRequestLimit);
+//        }
+        if (uiFlags.hidenTypes != oldHidenTypes) {
+            listAdapter.updateFilter();
+            deviceRequestLimit = MAX_DEVICES_LIMIT;
         }
-        listAdapter.updateFilter();
+        oldHidenTypes.clear();
+        oldHidenTypes.addAll(uiFlags.hidenTypes);
+        dontUpdateMore = false;
     }
 
     @Override
@@ -523,14 +539,7 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void menuFilterClicked() {
-        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-        if (filterFragment == null) { // lazy
-            filterFragment = new FilterFragment();
-        }
-        trans.replace(R.id.content_frame, filterFragment);
-        trans.addToBackStack(null);
-        trans.commit();
-        mOptionsMenu.clear();
+        showFilter();
     }
 
 
@@ -547,7 +556,18 @@ public class MainActivity extends ActionBarActivity implements
 
         Log.d(TAG, "start full list load...");
         setRefreshProgress(true);
-        mNarodmonApi.getSensorList(sensorList, number);
+        ArrayList<Integer> types = new ArrayList<Integer>();
+
+        if (uiFlags.hidenTypes.size()!=0) {
+            ArrayList<SensorType> sensorTypes = SensorTypeProvider.getInstance(getApplicationContext()).getTypesList();
+
+            for (SensorType sType : sensorTypes) {
+                if (!uiFlags.hidenTypes.contains(sType.code)) {
+                    types.add(sType.code);
+                }
+            }
+        }
+        mNarodmonApi.getSensorList(sensorList, number, types);
         ((MyApplication)getApplication()).setUpdateTimeStamp(System.currentTimeMillis());
         //lastUpdateTime = System.currentTimeMillis();
     }
@@ -611,6 +631,40 @@ public class MainActivity extends ActionBarActivity implements
             Log.d(TAG,"frame1 doesn't exist");
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.replace(R.id.content_frame, sensorInfoFragment);
+            trans.addToBackStack(null);
+            trans.commit();
+        }
+//        sensorInfoFragment.loadInfo();
+    }
+
+    private void showFilter () {
+//        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        if (filterFragment == null) { // lazy
+            filterFragment = new FilterFragment();
+        }
+//        trans.replace(R.id.content_frame, filterFragment);
+//        trans.addToBackStack(null);
+//        trans.commit();
+        mOptionsMenu.clear();
+
+        if (findViewById(R.id.content_frame1) != null) {
+            Log.d(TAG,"frame1 exist");
+            if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
+                Log.d(TAG,"frame1 not contain fragment");
+                findViewById(R.id.content_frame1).setVisibility(View.VISIBLE);
+                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                trans.hide(getSupportFragmentManager().findFragmentById(R.id.left_menu_view));
+                trans.add(R.id.content_frame1, filterFragment);
+                trans.addToBackStack(null);
+                trans.commit();
+            } else {
+                Log.d(TAG,"frame1 already contain fragment");
+            }
+//            sensorInfoFragment.loadInfo();
+        } else {
+            Log.d(TAG,"frame1 doesn't exist");
+            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+            trans.replace(R.id.content_frame, filterFragment);
             trans.addToBackStack(null);
             trans.commit();
         }
@@ -784,11 +838,12 @@ public class MainActivity extends ActionBarActivity implements
         public void onSensorListResult(boolean ok, String res) {
             Log.d(TAG, "---------------- List updated --------------:" + sensorList.size() +", in adapter: "+ listAdapter.getAllCount());
             setRefreshProgress(false);
-            listAdapter.updateFilter();
-            updateMenuSensorCounts();
             if (!ok) {
                 Toast.makeText(getApplicationContext(),"Server not respond, try later",Toast.LENGTH_SHORT).show();
+                dontUpdateMore = true;
             }
+            listAdapter.updateFilter();
+            updateMenuSensorCounts();
         }
 
         @Override

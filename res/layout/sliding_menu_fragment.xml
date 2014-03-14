@@ -14,7 +14,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="All"
+                android:text="@string/menu_all_text"
                 android:id="@+id/allTextView"
                 android:textSize="24dp"
                 android:layout_weight="1"
@@ -37,7 +37,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Watched"
+                android:text="@string/menu_watched_text"
                 android:id="@+id/watchedTextView"
                 android:textSize="24dp"
                 android:layout_weight="1"
@@ -60,7 +60,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="My"
+                android:text="@string/menu_my_text"
                 android:id="@+id/myTextView"
                 android:layout_weight="1"
                 android:textSize="24dp"
@@ -83,7 +83,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Alarms"
+                android:text="@string/menu_alarm_text"
                 android:id="@+id/myTextView"
                 android:layout_weight="1"
                 android:textSize="24dp"

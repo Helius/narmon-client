@@ -32,7 +32,7 @@
         android:layout_height="match_parent" >
     </LinearLayout>
     <ScrollView android:id="@+id/left_menu_view"
-            android:layout_width="150dp"
+            android:layout_width="200dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@android:color/black"

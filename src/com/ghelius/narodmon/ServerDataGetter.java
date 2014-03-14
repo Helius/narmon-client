@@ -15,7 +15,7 @@ import java.net.MalformedURLException;
 
 class ServerDataGetter extends AsyncTask<String, String, String> {
     private final static String TAG = "narodmon-getter";
-    private final static Boolean DEBUG = false;
+    private final static Boolean DEBUG = true;
     boolean asyncJobFail = false;
     private AsyncJobCallbackInterface asyncCallback;
 

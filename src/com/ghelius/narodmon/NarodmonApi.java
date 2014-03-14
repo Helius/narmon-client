@@ -59,8 +59,9 @@ public class NarodmonApi {
         this.listener = listener;
     }
 
-    public void getSensorList (ArrayList<Sensor> list, int radius) {
-        listUpdater.updateList(list, radius);
+    public void getSensorList (ArrayList<Sensor> list, int number, ArrayList<Integer> types) {
+        Log.d(TAG,"sensor filter is: " + types);
+        listUpdater.updateList(list, number, types);
     }
 
     public void sendLocation (String addr) {
@@ -129,14 +130,23 @@ public class NarodmonApi {
             }
         }
 
-        void updateList (ArrayList<Sensor> sensorList, int radius) {
+        void updateList (ArrayList<Sensor> sensorList, int radius, ArrayList<Integer> t) {
             if (getter != null)
                 getter.cancel(true);
             this.sensorList = sensorList;
             getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.setAsyncJobCallback(this);
-            getter.execute(apiUrl, makeRequestHeader("sensorNear") + ",\"limit\":"+ String.valueOf(radius) + ",\"lat\":" + String.valueOf(lat) + ",\"lng\":" + String.valueOf(lng) +",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
+            String types = "";
+            if (t != null && t.size() > 0) {
+                types = ",\"types\":[";
+                for (int i = 0; i < t.size(); i++) {
+                    types += String.valueOf(t.get(i)) + (i == t.size()-1 ? "":",");
+                }
+                types += "]";
+            }
+//            String types = ",\"types\":"+ "[0,1]";
+            getter.execute(apiUrl, makeRequestHeader("sensorNear") + ",\"limit\":"+ String.valueOf(radius) + types + ",\"lat\":" + String.valueOf(lat) + ",\"lng\":" + String.valueOf(lng) +",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -171,10 +181,10 @@ public class NarodmonApi {
 
         private void makeSensorListFromJson (String result) throws JSONException {
             if (result != null) {
-                sensorList.clear();
                 JSONObject jObject = new JSONObject(result);
                 JSONArray devicesArray = jObject.getJSONArray("devices");
                 Log.d(TAG,"receive " + devicesArray.length() + " devices");
+                sensorList.clear();
                 for (int i = 0; i < devicesArray.length(); i++) {
                     String location = devicesArray.getJSONObject(i).getString("location");
                     float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
@@ -192,17 +202,17 @@ public class NarodmonApi {
                     }
                 }
                 Log.d(TAG,"receive " + sensorList.size() + " sensors");
-//                if (!sensorList.isEmpty() && context!=null) {
-//                    FileOutputStream fos;
-//                    try {
-//                        fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-//                        ObjectOutputStream os = null;
-//                        os = new ObjectOutputStream(fos);
-//                        os.writeObject(sensorList);
-//                    } catch (Exception e) {
-//                        Log.e(TAG, "Can't serialise sensor list: " + e.getMessage());
-//                    }
-//                }
+                if (!sensorList.isEmpty() && context!=null) {
+                    FileOutputStream fos;
+                    try {
+                        fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+                        ObjectOutputStream os = null;
+                        os = new ObjectOutputStream(fos);
+                        os.writeObject(sensorList);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Can't serialise sensor list: " + e.getMessage());
+                    }
+                }
             }
         }
 

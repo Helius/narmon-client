@@ -121,5 +121,9 @@
     <string name="key_widget_light_theme">key_widget_light_theme</string>
     <string name="app_widget_theme_light">Light app widget theme</string>
     <string name="more_button_text">More..</string>
+    <string name="menu_watched_text">Watched</string>
+    <string name="menu_my_text">My</string>
+    <string name="menu_alarm_text">Alarms</string>
+    <string name="menu_all_text">All</string>
 
 </resources>
