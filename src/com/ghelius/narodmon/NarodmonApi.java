@@ -184,7 +184,7 @@ public class NarodmonApi {
                 JSONObject jObject = new JSONObject(result);
                 JSONArray devicesArray = jObject.getJSONArray("devices");
                 Log.d(TAG,"receive " + devicesArray.length() + " devices");
-                sensorList.clear();
+//                sensorList.clear();
                 for (int i = 0; i < devicesArray.length(); i++) {
                     String location = devicesArray.getJSONObject(i).getString("location");
                     float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
@@ -198,7 +198,17 @@ public class NarodmonApi {
                         int id        = sensorsArray.getJSONObject(j).getInt("id");
                         boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
                         long times    = sensorsArray.getJSONObject(j).getLong("time");
-                        sensorList.add(new Sensor(id, type, location, name, values, distance, my, pub, times));
+                        Sensor s = new Sensor(id, type, location, name, values, distance, my, pub, times);
+                        boolean exist = false;
+                        for (int ind = 0; ind < sensorList.size(); ind++) {
+                            if (sensorList.get(ind).id == s.id) {
+                                sensorList.set(ind,s);
+                                exist = true;
+                                break;
+                            }
+                        }
+                        if (!exist)
+                            sensorList.add(s);
                     }
                 }
                 Log.d(TAG,"receive " + sensorList.size() + " sensors");
