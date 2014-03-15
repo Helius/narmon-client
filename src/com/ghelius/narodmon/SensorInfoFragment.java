@@ -39,6 +39,7 @@ public class SensorInfoFragment extends Fragment {
 
 	private final String TAG = "narodmon-info";
 	private int sensorId = -1;
+    private Sensor sensor = null;
 	private ArrayList<Point> logData = new ArrayList<Point>();
 	private Timer updateTimer;
 	private int offset = 0;
@@ -62,8 +63,12 @@ public class SensorInfoFragment extends Fragment {
 
 	private SensorConfigChangeListener listener = null;
 
+    public void setSensor(Sensor tmpS) {
+        sensor = tmpS;
+    }
 
-	interface SensorConfigChangeListener {
+
+    interface SensorConfigChangeListener {
 		void favoritesChanged();
 		void alarmChanged();
 	}
@@ -190,12 +195,12 @@ public class SensorInfoFragment extends Fragment {
 		mRenderer.setGridColor(0xFF505050);
 
 		mRenderer.setXTitle(getString(R.string.text_today));
-		mRenderer.setYLabels(10);
+		mRenderer.setYLabels(18);
 		mRenderer.setPointSize(2f);
 		mRenderer.setAxisTitleTextSize(20);
 		mRenderer.setChartTitleTextSize(20);
-		mRenderer.setLabelsTextSize(12);
-		mRenderer.setLegendTextSize(12);
+		mRenderer.setLabelsTextSize(18);
+		mRenderer.setLegendTextSize(18);
 		mRenderer.setYLabelsPadding(-20);
 		mRenderer.setXLabelsAlign(Paint.Align.CENTER);
 		mRenderer.setXLabels(12);
@@ -208,7 +213,7 @@ public class SensorInfoFragment extends Fragment {
 		mCurrentRenderer.setColor(0xFF00FF00);
 		mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
 		mCurrentRenderer.setFillPoints(true);
-		mCurrentRenderer.setChartValuesTextSize(15);
+		mCurrentRenderer.setChartValuesTextSize(18);
 
         mCurrentRendereHiLevel.setColor(0xFFFF4040);
         mCurrentRendereHiLevel.setFillPoints(true);
@@ -325,18 +330,22 @@ public class SensorInfoFragment extends Fragment {
         }
         period = LogPeriod.day;
         offset = 0;
-
-        Sensor sensor = null;
+//        if (sensor == null)
+//        Sensor sensor = null;
         Log.d(TAG, "id is " + sensorId);
-        ArrayList<Sensor> sList = getSavedList();
-        for (Sensor s : sList) {
-            if (s.id == sensorId) {
-                sensor = s;
+        if (sensor == null) {
+            ArrayList<Sensor> sList = getSavedList();
+            for (Sensor s : sList) {
+                if (s.id == sensorId) {
+                    sensor = s;
+                }
             }
         }
         if (sensor == null) {
-            Log.e(TAG,"sensor" + sensorId + "not found");
+            Log.e(TAG, "sensor" + sensorId + "not found");
             return; // TODO: hide fragment or report 'sensor not found'
+        } else {
+            sensorId = sensor.id;
         }
 
         type = sensor.type;

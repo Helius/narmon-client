@@ -175,7 +175,7 @@ public class MainActivity extends ActionBarActivity implements
 
             @Override
             public void onFooterClick() {
-                Log.d(TAG,"more");
+                Log.d(TAG,"more: !showRefreshProgress=" + !showRefreshProgress + ", allMenuSelected=" + allMenuSelected + ", !dontUpdateMore=" + !dontUpdateMore);
                 if (!showRefreshProgress && allMenuSelected && !dontUpdateMore) {
                     deviceRequestLimit += 10;
                     getSensorsList(deviceRequestLimit);
@@ -391,17 +391,18 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void filterChange() {
-//        if (oldRadius < uiFlags.radiusKm) {
-//            Log.d(TAG,"filterChange new list load..");
-//            getSensorsList(deviceRequestLimit);
-//        }
-        if (uiFlags.hidenTypes != oldHidenTypes) {
+        Log.d(TAG,"more: filterChange " + uiFlags.hidenTypes + " vs " + oldHidenTypes);
+        if (oldHidenTypes.size() != uiFlags.hidenTypes.size()) {
+            Log.d(TAG,"more: hiddenTypes changed");
             listAdapter.updateFilter();
             deviceRequestLimit = MAX_DEVICES_LIMIT;
+            oldHidenTypes.clear();
+            oldHidenTypes.addAll(uiFlags.hidenTypes);
+            dontUpdateMore = false;
+            getSensorsList(deviceRequestLimit);
+        } else {
+            Log.d(TAG,"more: hidden the same");
         }
-        oldHidenTypes.clear();
-        oldHidenTypes.addAll(uiFlags.hidenTypes);
-        dontUpdateMore = false;
     }
 
     @Override
@@ -612,7 +613,18 @@ public class MainActivity extends ActionBarActivity implements
             sensorInfoFragment = new SensorInfoFragment();
             sensorInfoFragment.setFavoritesChangeListener(this);
         }
-        sensorInfoFragment.setId(sensorId);
+        Sensor tmpS = null;
+        for (Sensor s : sensorList) {
+            if (s.id == sensorId) {
+                tmpS = s;
+                break;
+            }
+        }
+        if (tmpS == null) {
+            sensorInfoFragment.setId(sensorId);
+        } else {
+            sensorInfoFragment.setSensor(tmpS);
+        }
         if (findViewById(R.id.content_frame1) != null) {
             Log.d(TAG,"frame1 exist");
             if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
@@ -638,14 +650,11 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void showFilter () {
-//        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
         if (filterFragment == null) { // lazy
             filterFragment = new FilterFragment();
         }
-//        trans.replace(R.id.content_frame, filterFragment);
-//        trans.addToBackStack(null);
-//        trans.commit();
-        mOptionsMenu.clear();
+//        mOptionsMenu.clear();
+        mOptionsMenu.removeItem(1);
 
         if (findViewById(R.id.content_frame1) != null) {
             Log.d(TAG,"frame1 exist");
@@ -660,7 +669,6 @@ public class MainActivity extends ActionBarActivity implements
             } else {
                 Log.d(TAG,"frame1 already contain fragment");
             }
-//            sensorInfoFragment.loadInfo();
         } else {
             Log.d(TAG,"frame1 doesn't exist");
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
@@ -668,7 +676,6 @@ public class MainActivity extends ActionBarActivity implements
             trans.addToBackStack(null);
             trans.commit();
         }
-//        sensorInfoFragment.loadInfo();
     }
 
     private void sensorItemClick(int position) {
@@ -839,7 +846,7 @@ public class MainActivity extends ActionBarActivity implements
             Log.d(TAG, "---------------- List updated --------------:" + sensorList.size() +", in adapter: "+ listAdapter.getAllCount());
             setRefreshProgress(false);
             if (!ok) {
-                Toast.makeText(getApplicationContext(),"Server not respond, try later",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"result: " + res,Toast.LENGTH_SHORT).show();
                 dontUpdateMore = true;
             }
             listAdapter.updateFilter();
