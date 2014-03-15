@@ -221,7 +221,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			ViewHolder holder = new ViewHolder();
 			holder.name = (TextView) v.findViewById(R.id.text1);
 			holder.location = (TextView) v.findViewById(R.id.text2);
-			holder.value = (TextView) v.findViewById(R.id.text3);
+			holder.value = (TextView) v.findViewById(R.id.value);
+            holder.valueDecimal = (TextView) v.findViewById(R.id.value_decimal);
 			holder.icon = (ImageView) v.findViewById(R.id.img);
 
             View alarmIcon = v.findViewById(R.id.alarmIcon);
@@ -240,10 +241,17 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 			Sensor sensor = localItems.get(position);
 			holder.name.setText(sensor.name);
 			holder.location.setText(sensor.location);
-			if (hideValue)
-				holder.value.setText("");
-			else
-				holder.value.setText(sensor.value);
+            if (hideValue) {
+                holder.value.setText("");
+                holder.valueDecimal.setText("");
+            } else {
+                String[] arr = sensor.value.split("\\.");
+                holder.value.setText(arr[0]);
+                if (arr.length > 1)
+                    holder.valueDecimal.setText("."+arr[1]);
+                else
+                    holder.valueDecimal.setText("");
+            }
 
 			if (sensor.my)
 				holder.name.setTextColor(Color.argb(0xFF, 0x33, 0xb5, 0xe5));
@@ -262,14 +270,14 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
                     holder.alarmIcon.setVisibility(View.VISIBLE);
                     holder.alarmIcon.setImageResource(R.drawable.alarm_blue_small);
                 } else
-                    holder.alarmIcon.setVisibility(View.GONE);
+                    holder.alarmIcon.setVisibility(View.INVISIBLE);
             }
             if (holder.favoriteIcon != null) {
                 if (sensor.favorite) {
                     holder.favoriteIcon.setVisibility(View.VISIBLE);
                     holder.favoriteIcon.setImageResource(R.drawable.btn_star_small_on);
                 } else
-                    holder.favoriteIcon.setVisibility(View.GONE);
+                    holder.favoriteIcon.setVisibility(View.INVISIBLE);
             }
 
 		} else {
@@ -282,6 +290,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
 		TextView name;
 		TextView location;
 		TextView value;
+        TextView valueDecimal;
 		ImageView icon;
         ImageView alarmIcon;
         ImageView favoriteIcon;

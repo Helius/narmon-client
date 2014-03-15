@@ -188,7 +188,7 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void menuAllClicked() {
                 listAdapter.setGroups(SensorItemAdapter.SensorGroups.All);
-                setTitle("All");
+                setTitle(getString(R.string.menu_all_text));
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
                 allMenuSelected = true;
@@ -197,7 +197,7 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void menuWatchedClicked() {
                 listAdapter.setGroups(SensorItemAdapter.SensorGroups.Watched);
-                setTitle("Favourites");
+                setTitle(getString(R.string.menu_watched_text));
                 if (listAdapter.getMyCount() == 0) {
                     //TODO: show message
                 }
@@ -212,7 +212,7 @@ public class MainActivity extends ActionBarActivity implements
                 if (listAdapter.getMyCount() == 0) {
                     //TODO: show message
                 }
-                setTitle("My");
+                setTitle(getString(R.string.menu_my_text));
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
                 allMenuSelected = false;
@@ -226,7 +226,7 @@ public class MainActivity extends ActionBarActivity implements
                 if (listAdapter.getMyCount() == 0) {
                     //TODO: show message
                 }
-                setTitle("Alarms");
+                setTitle(getString(R.string.menu_alarm_text));
                 allMenuSelected = false;
             }
         });
@@ -866,8 +866,8 @@ public class MainActivity extends ActionBarActivity implements
     private class UpdateLocationListener extends MyLocation.LocationResult {
         @Override
         public void gotLocation(Location location) {
-            Log.d(TAG, "got location: " + location.getLatitude() + ", " + location.getLongitude());
             if (location == null) return;
+            Log.d(TAG, "got location: " + location.getLatitude() + ", " + location.getLongitude());
             final double lat = location.getLatitude();
             final double lon = location.getLongitude();
             // use API to send location
