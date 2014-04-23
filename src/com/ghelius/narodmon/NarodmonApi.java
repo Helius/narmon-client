@@ -27,6 +27,7 @@ public class NarodmonApi {
     private SensorTypeDictionaryGetter typeDictionaryGetter;
     private VersionSender versionSender;
     private final ValueUpdater valueUpdater;
+    private InitRequest mInitRequest;
     private final String fileName = "sensorList.obj";
     private String apiHeader;
 
@@ -42,6 +43,7 @@ public class NarodmonApi {
         void onSendVersionResult (boolean ok, String res);
         void onSensorListResult (boolean ok, String res);
         void onSensorTypeResult (boolean ok, String res);
+        void onInitResult (boolean ok, String res);
     }
 
     NarodmonApi (String apiUrl, String apiHeader) {
@@ -51,12 +53,17 @@ public class NarodmonApi {
         versionSender  = new VersionSender();
         valueUpdater   = new ValueUpdater();
         typeDictionaryGetter = new SensorTypeDictionaryGetter();
+        mInitRequest = new InitRequest();
         this.apiHeader = apiHeader;
         this.apiUrl = apiUrl;
     }
 
     public void setOnResultReceiveListener (onResultReceiveListener listener) {
         this.listener = listener;
+    }
+
+    public void initRequest(String ver) {
+        mInitRequest.doRequest(ver);
     }
 
     public void getSensorList (ArrayList<Sensor> list, int number, ArrayList<Integer> types) {
@@ -97,6 +104,36 @@ public class NarodmonApi {
 
     public String makeRequestHeader(String cmd) {
         return apiHeader + "\"cmd\":\""+cmd+"\"";
+    }
+
+    /*
+    * Class for init all in one request
+    * */
+    private class InitRequest implements ServerDataGetter.OnResultListener {
+        ServerDataGetter getter;
+        void doRequest (String version) {
+            if(DEBUG) Log.d(TAG,"init request");
+            getter = new ServerDataGetter();
+            getter.setOnListChangeListener(this);
+            String request = makeRequestHeader("sensorInit") +
+                    ",\"version\":\"" + version +
+                    "\",\"lang\":\"" + Locale.getDefault().getLanguage() +
+                    "\"}";
+            Log.d(TAG, request);
+            getter.execute(apiUrl, request);
+        }
+        @Override
+        public void onResultReceived(String result) {
+            if(DEBUG) Log.d(TAG, "Init request result: " + result);
+            if (listener!=null)
+                listener.onInitResult(true, result);
+        }
+        @Override
+        public void onNoResult() {
+            Log.e(TAG,"No init request result");
+            if (listener!=null)
+                listener.onInitResult(false, "");
+        }
     }
 
     /*
@@ -211,14 +248,13 @@ public class NarodmonApi {
                             sensorList.add(s);
                     }
                 }
+                // save sensor list to file
                 Log.d(TAG,"receive " + sensorList.size() + " sensors");
                 if (!sensorList.isEmpty() && context!=null) {
                     FileOutputStream fos;
                     try {
                         fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-                        ObjectOutputStream os = null;
-                        os = new ObjectOutputStream(fos);
-                        os.writeObject(sensorList);
+                        new ObjectOutputStream(fos).writeObject(sensorList);
                     } catch (Exception e) {
                         Log.e(TAG, "Can't serialise sensor list: " + e.getMessage());
                     }
