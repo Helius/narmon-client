@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.ListView;
 
 public class SensorListFragment extends ListFragment {
@@ -16,10 +15,13 @@ public class SensorListFragment extends ListFragment {
     private final static String TAG = "narodmon-listfragment";
 //    Button more;
     private SensorItemAdapter listAdapter;
+    private int iprev;
+    private int i2prev;
+    private int i3prev;
 
     interface OnSensorListClickListener {
        void onItemClick (ListView l, View v, int position, long id);
-       void onFooterClick ();
+       void scrollOverDown();
     }
 
     public void setOnListItemClickListener (OnSensorListClickListener listener) {
@@ -35,7 +37,7 @@ public class SensorListFragment extends ListFragment {
 //            @Override
 //            public void onClick(View view) {
 //                if (listener != null)
-//                    listener.onFooterClick();
+//                    listener.scrollOverDown();
 //            }
 //        });
 		return v;
@@ -55,8 +57,13 @@ public class SensorListFragment extends ListFragment {
             @Override
             public void onScroll(AbsListView absListView, int i, int i2, int i3) {
                 if (i3 > 0 && i+i2 == i3 && listener != null) {
-                    Log.d(TAG,"more: event");
-                    listener.onFooterClick();
+                    Log.d(TAG,"more: event " + i + i2 + i3);
+                    if (i3 != i3prev && i2 != i2prev && i != iprev) {
+                        listener.scrollOverDown();
+                        i3prev = i3;
+                        i2prev = i2;
+                        iprev = i;
+                    }
                 }
             }
         });

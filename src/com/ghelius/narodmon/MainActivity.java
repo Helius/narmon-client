@@ -174,10 +174,13 @@ public class MainActivity extends ActionBarActivity implements
             }
 
             @Override
-            public void onFooterClick() {
-                Log.d(TAG,"more: !showRefreshProgress=" + !showRefreshProgress + ", allMenuSelected=" + allMenuSelected + ", !dontUpdateMore=" + !dontUpdateMore);
+            public void scrollOverDown() {
+                Log.d(TAG,"more: !showRefreshProgress=" + !showRefreshProgress +
+                        ", allMenuSelected=" + allMenuSelected +
+                        ", !dontUpdateMore=" + !dontUpdateMore);
                 if (!showRefreshProgress && allMenuSelected && !dontUpdateMore) {
                     deviceRequestLimit += 10;
+                    Log.d(TAG, "more &&&&&&&&& get list");
                     getSensorsList(deviceRequestLimit);
                 }
             }
@@ -317,7 +320,7 @@ public class MainActivity extends ActionBarActivity implements
                 public void run() {
                     showSensorInfo(sensorId);
                 }
-            },0);
+            }, 0);
         } else {
             Log.d(TAG,"regular launch");
         }
@@ -545,15 +548,6 @@ public class MainActivity extends ActionBarActivity implements
 
 
     public void getSensorsList(int number) {
-//        if (force) {
-//            lastUpdateTime = 0;
-//            Log.d(TAG, "force updateFilter sensor list");
-//        }
-//
-//        if (System.currentTimeMillis() - lastUpdateTime < gpsUpdateIntervalMs) {
-//            Log.d(TAG, "list was not updated, timeout not gone");
-//            return;
-//        }
 
         Log.d(TAG, "start full list load...");
         setRefreshProgress(true);
@@ -570,7 +564,6 @@ public class MainActivity extends ActionBarActivity implements
         }
         mNarodmonApi.getSensorList(sensorList, number, types);
         ((MyApplication)getApplication()).setUpdateTimeStamp(System.currentTimeMillis());
-        //lastUpdateTime = System.currentTimeMillis();
     }
 
     public void updateSensorsValue() {
@@ -657,7 +650,7 @@ public class MainActivity extends ActionBarActivity implements
         mOptionsMenu.removeItem(1);
 
         if (findViewById(R.id.content_frame1) != null) {
-            Log.d(TAG,"frame1 exist");
+            Log.d(TAG, "frame1 exist");
             if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
                 Log.d(TAG,"frame1 not contain fragment");
                 findViewById(R.id.content_frame1).setVisibility(View.VISIBLE);
@@ -843,7 +836,7 @@ public class MainActivity extends ActionBarActivity implements
 
         @Override
         public void onSensorListResult(boolean ok, String res) {
-            Log.d(TAG, "---------------- List updated --------------:" + sensorList.size() +", in adapter: "+ listAdapter.getAllCount());
+            Log.d(TAG, "more ---------------- List updated --------------:" + sensorList.size() +", in adapter: "+ listAdapter.getAllCount());
             setRefreshProgress(false);
             if (!ok) {
                 Toast.makeText(getApplicationContext(),"result: " + res,Toast.LENGTH_SHORT).show();
@@ -860,6 +853,11 @@ public class MainActivity extends ActionBarActivity implements
             if (!ok) return;
             SensorTypeProvider.getInstance(getApplicationContext()).setTypesFromString(res);
             listAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onInitResult(boolean ok, String res) {
+
         }
     }
 
