@@ -17,9 +17,11 @@ public class Sensor implements Serializable {
     public boolean hasAlarm;
     public boolean alarmed;
     public boolean favorite;
+    public Integer deviceId;
 
     // constructor
     Sensor (int id,
+            int deviceId,
             int type,
             String location,
             String name,
@@ -30,6 +32,7 @@ public class Sensor implements Serializable {
             Long time)
     {
         this.id = id;
+        this.deviceId = deviceId;
         this.type = type;
         this.location = location;
         this.name = name;

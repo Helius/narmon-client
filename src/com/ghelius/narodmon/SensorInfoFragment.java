@@ -406,7 +406,7 @@ public class SensorInfoFragment extends Fragment {
         final ImageButton monitor = (ImageButton) getActivity().findViewById(R.id.addMonitoring);
 
 
-        ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavorites();
+        ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavoritesId();
         if (favorites.contains(sensorId)) { // we are favorite!
             monitor.setImageResource(R.drawable.btn_star_big_on);
         } else {
@@ -416,14 +416,15 @@ public class SensorInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG,"monitoring onClick");
-                ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavorites();
+                ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavoritesId();
                 if (favorites.contains(sensorId)) { // we are favorite!
                     // remove us
                     DatabaseManager.getInstance().removeFavorites(sensorId);
                     monitor.setImageResource(R.drawable.btn_star_big_off);
                 } else {
                     // add us
-                    DatabaseManager.getInstance().addFavorites(sensorId);
+                    //TODO: wtf, sensorId instead sensor.id?
+                    DatabaseManager.getInstance().addFavorites(sensorId, sensor.deviceId);
                     monitor.setImageResource(R.drawable.btn_star_big_on);
                 }
                 if (listener != null)

@@ -367,7 +367,7 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void favoritesChanged() {
-        int cnt = DatabaseManager.getInstance().getFavorites().size();
+        int cnt = DatabaseManager.getInstance().getFavoritesId().size();
         slidingMenu.setMenuWatchCount(cnt);
         listAdapter.updateFavorites();
         listAdapter.updateFilter();

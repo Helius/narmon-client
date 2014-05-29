@@ -225,6 +225,7 @@ public class NarodmonApi {
                 for (int i = 0; i < devicesArray.length(); i++) {
                     String location = devicesArray.getJSONObject(i).getString("location");
                     float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
+                    int deviceId = devicesArray.getJSONObject(i).getInt("id");
                     boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
                     //if(DEBUG) Log.d(TAG, + i + ": " + location);
                     JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
@@ -235,7 +236,7 @@ public class NarodmonApi {
                         int id        = sensorsArray.getJSONObject(j).getInt("id");
                         boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
                         long times    = sensorsArray.getJSONObject(j).getLong("time");
-                        Sensor s = new Sensor(id, type, location, name, values, distance, my, pub, times);
+                        Sensor s = new Sensor(id, deviceId, type, location, name, values, distance, my, pub, times);
 //                        boolean exist = false;
 //                        for (int ind = 0; ind < sensorList.size(); ind++) {
 //                            if (sensorList.get(ind).id == s.id) {

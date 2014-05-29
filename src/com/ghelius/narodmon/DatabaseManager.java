@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -170,7 +171,7 @@ public class DatabaseManager {
 
     /**--------- FAVORITES ---------*/
 
-    public ArrayList<Integer> getFavorites () {
+    public ArrayList<Integer> getFavoritesId() {
         ArrayList<Integer> favorList = new ArrayList<Integer>();
         // Select All Query
         String selectQuery = "SELECT * FROM " + DatabaseHelper.TABLE_FAVORITES;
@@ -192,24 +193,47 @@ public class DatabaseManager {
         return favorList;
     }
 
-    void addFavorites (Integer id) {
-        Log.d(TAG, "add favorites: " + id);
+    public ArrayList<Pair<Integer,Integer>> getFavorites() {
+        ArrayList<Pair<Integer,Integer>> favorList = new ArrayList<Pair<Integer,Integer>>();
+        // Select All Query
+        String selectQuery = "SELECT * FROM " + DatabaseHelper.TABLE_FAVORITES;
+
+
+        SQLiteDatabase db = getInstance().openDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor != null && cursor.getCount()!= 0 && cursor.moveToFirst()) {
+            do {
+                // fill list with row
+                favorList.add(new Pair<Integer,Integer>(cursor.getInt(0),cursor.getInt(1)));
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null)
+            cursor.close();
+        getInstance().closeDatabase();
+        return favorList;
+    }
+
+    void addFavorites (Integer sensorId, Integer deviceId) {
+        Log.d(TAG, "add favorites: " + sensorId);
 
         SQLiteDatabase db = getInstance().openDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.KEY_FAVORITES_ID, id);
+        values.put(DatabaseHelper.KEY_FAVORITES_SID, sensorId);
+        values.put(DatabaseHelper.KEY_FAVORITES_DID, deviceId);
 
         // Inserting Row
         db.insertWithOnConflict(DatabaseHelper.TABLE_FAVORITES, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         getInstance().closeDatabase();
     }
 
-    void removeFavorites (Integer id) {
-        Log.d(TAG, "del favorites: " + id);
+    void removeFavorites (Integer sensorId) {
+        Log.d(TAG, "del favorites: " + sensorId);
 
         SQLiteDatabase db = getInstance().openDatabase();
-        db.delete(DatabaseHelper.TABLE_FAVORITES, DatabaseHelper.KEY_FAVORITES_ID + " = ?", new String[]{String.valueOf(id)});
+        db.delete(DatabaseHelper.TABLE_FAVORITES, DatabaseHelper.KEY_FAVORITES_SID + " = ?", new String[]{String.valueOf(sensorId)});
         getInstance().closeDatabase();
     }
 
@@ -269,6 +293,7 @@ public class DatabaseManager {
 
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.KEY_ALARM_SID, task.id);
+//        values.put(DatabaseHelper.KEY_ALARM_DID, task.id);
         values.put(DatabaseHelper.KEY_ALARM_JOB, task.job);
         values.put(DatabaseHelper.KEY_ALARM_HI, String.valueOf(task.hi));
         values.put(DatabaseHelper.KEY_ALARM_LO, String.valueOf(task.lo));

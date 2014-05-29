@@ -63,7 +63,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     }
 
     public void updateFavorites () {
-		favorites = DatabaseManager.getInstance().getFavorites();
+		favorites = DatabaseManager.getInstance().getFavoritesId();
         for (Sensor s: originItems) {
             s.favorite = false;
             if (favorites.contains(s.id)) {

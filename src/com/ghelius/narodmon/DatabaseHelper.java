@@ -29,20 +29,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		/* Types Table name */
 	public static final String TABLE_TYPES = "types";
-	// Types Table Columns names
 	public static final String KEY_TYPES_CODE = "code";
 	public static final String KEY_TYPES_NAME = "name";
 	public static final String KEY_TYPES_UNIT = "unit";
 
 		/* Favorites Table name */
 	public static final String TABLE_FAVORITES = "favorites";
-	// Types Table Columns names
-	public static final String KEY_FAVORITES_ID = "id";
+	public static final String KEY_FAVORITES_SID = "id";
+    public static final String KEY_FAVORITES_DID = "device_id";
 
 	/* Alarm tasks Table name */
 	public static final String TABLE_ALARMS = "alarms";
-	// Types Table Columns names
 	public static final String KEY_ALARM_SID = "id";
+    public static final String KEY_ALARM_DID = "device_id";
 	public static final String KEY_ALARM_JOB = "job";
 	public static final String KEY_ALARM_HI = "hi";
 	public static final String KEY_ALARM_LO = "lo";
@@ -51,7 +50,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		/* Sensors Table name */
 	public static final String TABLE_SENSORS = "sensors";
-	// Sensors Table Columns names
 	public static final String KEY_SENSOR_CODE = "code";
 	public static final String KEY_SENSOR_NAME = "name";
 	public static final String KEY_SENSOR_TYPE = "type";
@@ -87,11 +85,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ")";
 		db.execSQL(CREATE_TABLE);
 		CREATE_TABLE = "CREATE TABLE " + TABLE_FAVORITES + "("
-				+ KEY_FAVORITES_ID + " INTEGER PRIMARY KEY"
+				+ KEY_FAVORITES_SID + " INTEGER PRIMARY KEY,"
+                + KEY_FAVORITES_DID + " INTEGER"
 				+ ")";
 		db.execSQL(CREATE_TABLE);
 		CREATE_TABLE = "CREATE TABLE " + TABLE_ALARMS + "("
 				+ KEY_ALARM_SID + " INTEGER PRIMARY KEY,"
+                + KEY_ALARM_DID + " INTEGER,"
 				+ KEY_ALARM_JOB + " INTEGER,"
 				+ KEY_ALARM_HI + " TEXT,"
 				+ KEY_ALARM_LO + " TEXT,"
