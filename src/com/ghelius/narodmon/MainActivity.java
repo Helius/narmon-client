@@ -397,7 +397,6 @@ public class MainActivity extends ActionBarActivity implements
         Log.d(TAG,"more: filterChange " + uiFlags.hidenTypes + " vs " + oldHidenTypes);
         if (oldHidenTypes.size() != uiFlags.hidenTypes.size()) {
             Log.d(TAG,"more: hiddenTypes changed");
-            listAdapter.updateFilter();
             deviceRequestLimit = MAX_DEVICES_LIMIT;
             oldHidenTypes.clear();
             oldHidenTypes.addAll(uiFlags.hidenTypes);
@@ -406,6 +405,7 @@ public class MainActivity extends ActionBarActivity implements
         } else {
             Log.d(TAG,"more: hidden the same");
         }
+        listAdapter.updateFilter();
     }
 
     @Override
