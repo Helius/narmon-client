@@ -81,7 +81,7 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         String responseString = null;
         asyncJobFail = true;
         try {
-//            if(DEBUG) Log.d(TAG, uri[0] + ":" + uri[1]);
+            if(DEBUG) Log.d(TAG, uri[0] + ":" + uri[1]);
             HttpResponse r = makeRequest(uri[0],uri[1]);
             if (r == null) {
                 Log.e(TAG,"HttpResponse is null");

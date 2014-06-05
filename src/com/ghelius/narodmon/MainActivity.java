@@ -59,7 +59,7 @@ public class MainActivity extends ActionBarActivity implements
     private boolean allMenuSelected;
     private ArrayList<Integer> oldHidenTypes = new ArrayList<Integer>();
     private boolean dontUpdateMore = false;
-    private ArrayList<Integer> additionalSensors;
+    private ArrayList<Integer> additionalSensors = new ArrayList<Integer>();
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -576,17 +576,22 @@ public class MainActivity extends ActionBarActivity implements
     public void updateSavedSensors() {
         additionalSensors.clear();
         for (AlarmSensorTask a : (DatabaseManager.getInstance().getAlarmTask())) {
-            if (additionalSensors.contains(a.deviceId)) {
+            if (!additionalSensors.contains(a.deviceId)) {
                 additionalSensors.add(a.deviceId);
             }
         }
         for (Pair<Integer,Integer> i : DatabaseManager.getInstance().getFavorites()) {
-            if (additionalSensors.contains(a.deviceId)) {
-                additionalSensors.add(a.deviceId);
+            if (!additionalSensors.contains(i.second)) {
+                additionalSensors.add(i.second);
             }
         }
         Log.d(TAG, "devices for request: " + additionalSensors);
-
+        if (!additionalSensors.isEmpty()) {
+            Integer s = additionalSensors.get(0);
+            mNarodmonApi.getSensorsByDevice(s);
+            additionalSensors.remove(s);
+            Log.d(TAG, "devices sensor obtain: list not empty, get " + s);
+        }
     }
 
     public void updateSensorsValue() {
@@ -885,24 +890,35 @@ public class MainActivity extends ActionBarActivity implements
 
         @Override
         public void onDeviceSensorList(boolean ok, ArrayList<Sensor> list) {
-            Log.d(TAG, "receive devices list: " + list);
-            for (Sensor newSensor : list) {
-                boolean unique = true;
-                for (Sensor s : sensorList) {
-                    if (s.id == newSensor.id) {
-                        unique = false;
-                        s.distance = newSensor.distance;
-                        s.location = newSensor.location;
-                        s.name = newSensor.name;
-                        s.my = newSensor.my;
-                        s.type = newSensor.type;
-                        s.time = newSensor.time;
-                        s.value = newSensor.value;
-                        break;
+            if (list != null) {
+                Log.d(TAG, "receive devices list: " + list);
+                for (Sensor newSensor : list) {
+                    boolean unique = true;
+                    for (Sensor s : sensorList) {
+                        if (s.id == newSensor.id) {
+                            unique = false;
+                            s.distance = newSensor.distance;
+                            s.location = newSensor.location;
+                            s.name = newSensor.name;
+                            s.my = newSensor.my;
+                            s.type = newSensor.type;
+                            s.time = newSensor.time;
+                            s.value = newSensor.value;
+                            break;
+                        }
                     }
+                    if (unique)
+                        sensorList.add(newSensor);
                 }
-                if (unique)
-                    sensorList.add(newSensor);
+            } else {
+                Log.e(TAG,"devices list return empty list!");
+            }
+            Log.d(TAG, "devices for request: " + additionalSensors);
+            if (!additionalSensors.isEmpty()) {
+                Integer s = additionalSensors.get(0);
+                mNarodmonApi.getSensorsByDevice(s);
+                additionalSensors.remove(s);
+                Log.d(TAG, "devices sensor obtain: list not empty, get " + s);
             }
         }
     }

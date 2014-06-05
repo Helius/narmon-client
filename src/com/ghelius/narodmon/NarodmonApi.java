@@ -105,6 +105,10 @@ public class NarodmonApi {
         typeDictionaryGetter.getDictionary();
     }
 
+    public void getSensorsByDevice(int deviceId) {
+        mDeviceSensorGetter.getList(deviceId);
+    }
+
     public String makeRequestHeader(String cmd) {
         return apiHeader + "\"cmd\":\""+cmd+"\"";
     }
@@ -152,9 +156,9 @@ public class NarodmonApi {
             getter = new ServerDataGetter ();
             getter.setOnListChangeListener(this);
             getter.setAsyncJobCallback(this);
-            getter.execute(apiUrl, makeRequestHeader("sensorDev") + ",\"id\":" + String.valueOf(deviceID) + "\"}");
+            getter.execute(apiUrl, makeRequestHeader("sensorDev") + ",\"id\":\"" + String.valueOf(deviceID) + "\"}");
             if (DEBUG)
-                Log.d(TAG,"sensorByDeviceID: " + makeRequestHeader("sensorDev") + ",\"id\":" + String.valueOf(deviceID) + "\"}");
+                Log.d(TAG,"sensorByDeviceID: " + makeRequestHeader("sensorDev") + ",\"id\":\"" + String.valueOf(deviceID) + "\"}");
         }
         @Override
         public void onResultReceived(String result) {
@@ -162,6 +166,7 @@ public class NarodmonApi {
                 try {
                     listener.onDeviceSensorList(true, makeSensorListFromJson(result));
                 } catch (JSONException e) {
+                    Log.e(TAG,"json parse exception: " + e.getMessage());
                     listener.onDeviceSensorList(false, null);
                 }
             }
@@ -179,18 +184,20 @@ public class NarodmonApi {
         }
 
         private ArrayList<Sensor> makeSensorListFromJson (String result) throws JSONException {
+            Log.d(TAG,"make devices list from received json: " + result);
             ArrayList<Sensor> sensorList = new ArrayList<Sensor>();
             if (result != null) {
                 JSONObject jObject = new JSONObject(result);
-                JSONArray devicesArray = jObject.getJSONArray("devices");
-                Log.d(TAG,"receive " + devicesArray.length() + " devices");
-                for (int i = 0; i < devicesArray.length(); i++) {
-                    String location = devicesArray.getJSONObject(i).getString("location");
-                    float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
-                    int deviceId = devicesArray.getJSONObject(i).getInt("id");
-                    boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
-                    //if(DEBUG) Log.d(TAG, + i + ": " + location);
-                    JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
+//                JSONArray devicesArray = jObject.getJSONArray("devices");
+////                Log.d(TAG,"receive " + devicesArray.length() + " devices");
+////                for (int i = 0; i < devicesArray.length(); i++) {
+                    String location = "";//jObject.getString("location");
+                    float distance = 0.0f;//Float.parseFloat(jObject.getString("distance"));
+                    int deviceId = 123;
+                    //boolean my      = (jObject.getInt("my") != 0);
+                    boolean my = false;
+////                    //if(DEBUG) Log.d(TAG, + i + ": " + location);
+                    JSONArray sensorsArray = jObject.getJSONArray("sensors");
                     for (int j = 0; j < sensorsArray.length(); j++) {
                         String values = sensorsArray.getJSONObject(j).getString("value");
                         String name   = sensorsArray.getJSONObject(j).getString("name");
@@ -201,14 +208,16 @@ public class NarodmonApi {
                         Sensor s = new Sensor(id, deviceId, type, location, name, values, distance, my, pub, times);
                         sensorList.add(s);
                     }
-                }
+//                }
+            } else {
+                Log.e(TAG,"devices received result is null");
             }
             return  sensorList;
         }
 
         @Override
         public boolean asyncJobWithResult(String result) {
-            return false;
+            return true;
         }
     }
 
