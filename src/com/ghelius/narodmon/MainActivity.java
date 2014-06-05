@@ -21,6 +21,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,7 +29,11 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,6 +59,7 @@ public class MainActivity extends ActionBarActivity implements
     private boolean allMenuSelected;
     private ArrayList<Integer> oldHidenTypes = new ArrayList<Integer>();
     private boolean dontUpdateMore = false;
+    private ArrayList<Integer> additionalSensors;
     //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
@@ -396,7 +402,7 @@ public class MainActivity extends ActionBarActivity implements
     public void filterChange() {
         Log.d(TAG,"more: filterChange " + uiFlags.hidenTypes + " vs " + oldHidenTypes);
         if (oldHidenTypes.size() != uiFlags.hidenTypes.size()) {
-            Log.d(TAG,"more: hiddenTypes changed");
+            Log.d(TAG, "more: hiddenTypes changed");
             deviceRequestLimit = MAX_DEVICES_LIMIT;
             oldHidenTypes.clear();
             oldHidenTypes.addAll(uiFlags.hidenTypes);
@@ -564,6 +570,23 @@ public class MainActivity extends ActionBarActivity implements
         }
         mNarodmonApi.getSensorList(sensorList, number, types);
         ((MyApplication)getApplication()).setUpdateTimeStamp(System.currentTimeMillis());
+        updateSavedSensors();
+    }
+
+    public void updateSavedSensors() {
+        additionalSensors.clear();
+        for (AlarmSensorTask a : (DatabaseManager.getInstance().getAlarmTask())) {
+            if (additionalSensors.contains(a.deviceId)) {
+                additionalSensors.add(a.deviceId);
+            }
+        }
+        for (Pair<Integer,Integer> i : DatabaseManager.getInstance().getFavorites()) {
+            if (additionalSensors.contains(a.deviceId)) {
+                additionalSensors.add(a.deviceId);
+            }
+        }
+        Log.d(TAG, "devices for request: " + additionalSensors);
+
     }
 
     public void updateSensorsValue() {
@@ -858,6 +881,29 @@ public class MainActivity extends ActionBarActivity implements
         @Override
         public void onInitResult(boolean ok, String res) {
 
+        }
+
+        @Override
+        public void onDeviceSensorList(boolean ok, ArrayList<Sensor> list) {
+            Log.d(TAG, "receive devices list: " + list);
+            for (Sensor newSensor : list) {
+                boolean unique = true;
+                for (Sensor s : sensorList) {
+                    if (s.id == newSensor.id) {
+                        unique = false;
+                        s.distance = newSensor.distance;
+                        s.location = newSensor.location;
+                        s.name = newSensor.name;
+                        s.my = newSensor.my;
+                        s.type = newSensor.type;
+                        s.time = newSensor.time;
+                        s.value = newSensor.value;
+                        break;
+                    }
+                }
+                if (unique)
+                    sensorList.add(newSensor);
+            }
         }
     }
 

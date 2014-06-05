@@ -231,7 +231,6 @@ public class DatabaseManager {
 
     void removeFavorites (Integer sensorId) {
         Log.d(TAG, "del favorites: " + sensorId);
-
         SQLiteDatabase db = getInstance().openDatabase();
         db.delete(DatabaseHelper.TABLE_FAVORITES, DatabaseHelper.KEY_FAVORITES_SID + " = ?", new String[]{String.valueOf(sensorId)});
         getInstance().closeDatabase();
@@ -251,11 +250,11 @@ public class DatabaseManager {
         if (cursor != null && cursor.getCount()!= 0 && cursor.moveToFirst()) {
             do {
                 // fill list with row
-                Float hi    = Float.valueOf(cursor.getString(2));
-                Float lo    = Float.valueOf(cursor.getString(3));
-                Float value = Float.valueOf(cursor.getString(4));
+                Float hi    = Float.valueOf(cursor.getString(3));
+                Float lo    = Float.valueOf(cursor.getString(4));
+                Float value = Float.valueOf(cursor.getString(5));
                 String name = cursor.getString(5);
-                tasks.add(new AlarmSensorTask(cursor.getInt(0),cursor.getInt(1),hi,lo,value, name));
+                tasks.add(new AlarmSensorTask(cursor.getInt(0),cursor.getInt(1),cursor.getInt(2),hi,lo,value, name));
             } while (cursor.moveToNext());
         }
         if (cursor != null)
@@ -277,7 +276,7 @@ public class DatabaseManager {
             Float lo = Float.valueOf(cursor.getString(3));
             Float value = Float.valueOf(cursor.getString(4));
             String name = cursor.getString(5);
-            task = new AlarmSensorTask(cursor.getInt(0), cursor.getInt(1), hi, lo, value, name);
+            task = new AlarmSensorTask(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), hi, lo, value, name);
         }
         if (cursor!=null)
             cursor.close();
@@ -293,7 +292,7 @@ public class DatabaseManager {
 
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.KEY_ALARM_SID, task.id);
-//        values.put(DatabaseHelper.KEY_ALARM_DID, task.id);
+        values.put(DatabaseHelper.KEY_ALARM_DID, task.deviceId);
         values.put(DatabaseHelper.KEY_ALARM_JOB, task.job);
         values.put(DatabaseHelper.KEY_ALARM_HI, String.valueOf(task.hi));
         values.put(DatabaseHelper.KEY_ALARM_LO, String.valueOf(task.lo));

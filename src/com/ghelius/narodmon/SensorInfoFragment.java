@@ -445,6 +445,7 @@ public class SensorInfoFragment extends Fragment {
                     ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_blue);
                 }
                 task.lastValue = currentValue;
+                //task.deviceId = sensor.deviceId;
                 if (task.job == AlarmSensorTask.NOTHING)
                     DatabaseManager.getInstance().removeAlarm(task.id);
                 else
@@ -473,7 +474,8 @@ public class SensorInfoFragment extends Fragment {
                     Log.d(TAG, "Found: SensorTask with job " + task.job);
                 } else {
                     Log.e(TAG, "sensorTask not found, create empty");
-                    task = new AlarmSensorTask(sensorId, 0, 0f, 0f, currentValue, s.name);
+                    task = new AlarmSensorTask(sensorId, s.deviceId, 0, 0f, 0f, currentValue, s.name);
+//                    DatabaseManager.getInstance().addAlarmTask(task);
                 }
                 dialog.setSensorTask(task);
                 dialog.show(getActivity().getSupportFragmentManager(), "alarmDialog");

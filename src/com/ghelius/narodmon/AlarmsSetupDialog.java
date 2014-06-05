@@ -67,6 +67,7 @@ public class AlarmsSetupDialog extends android.support.v4.app.DialogFragment {
 	            if (listener != null)
 		            listener.onAlarmChange (new AlarmSensorTask(
 				            sensorTask.id,
+                            sensorTask.deviceId,
 				            ((Spinner)getView().findViewById(R.id.AlarmSpinner)).getSelectedItemPosition(),
 				            hi,
 				            lo,

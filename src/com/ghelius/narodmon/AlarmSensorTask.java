@@ -10,15 +10,17 @@ public class AlarmSensorTask {
 	final public static int WITHIN_OF = 4;
     final private static String TAG = "narodmon-alarm";
 
-    AlarmSensorTask(Integer id, Integer job, Float hi, Float lo, Float value, String name) {
+    AlarmSensorTask(Integer id, Integer deviceId, Integer job, Float hi, Float lo, Float value, String name) {
         this.name = name;
 		this.id  = id;
+        this.deviceId = deviceId;
 		this.job = job;
 		this.hi  = hi;
 		this.lo  = lo;
 		this.lastValue = value;
 	}
 
+    int deviceId;
 	int id;
 	float hi;
 	float lo;

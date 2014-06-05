@@ -26,6 +26,7 @@ public class NarodmonApi {
     private Loginer loginer;
     private SensorTypeDictionaryGetter typeDictionaryGetter;
     private VersionSender versionSender;
+    private final SensorsByDeviceID mDeviceSensorGetter;
     private final ValueUpdater valueUpdater;
     private InitRequest mInitRequest;
     private final String fileName = "sensorList.obj";
@@ -44,6 +45,7 @@ public class NarodmonApi {
         void onSensorListResult (boolean ok, String res);
         void onSensorTypeResult (boolean ok, String res);
         void onInitResult (boolean ok, String res);
+        void onDeviceSensorList(boolean ok, ArrayList<Sensor> list);
     }
 
     NarodmonApi (String apiUrl, String apiHeader) {
@@ -54,6 +56,7 @@ public class NarodmonApi {
         valueUpdater   = new ValueUpdater();
         typeDictionaryGetter = new SensorTypeDictionaryGetter();
         mInitRequest = new InitRequest();
+        mDeviceSensorGetter = new SensorsByDeviceID();
         this.apiHeader = apiHeader;
         this.apiUrl = apiUrl;
     }
@@ -133,6 +136,79 @@ public class NarodmonApi {
             Log.e(TAG,"No init request result");
             if (listener!=null)
                 listener.onInitResult(false, "");
+        }
+    }
+
+    /*
+    * Class for get sensor list by device ID, parse it and return through listener
+    * */
+    private class SensorsByDeviceID implements ServerDataGetter.OnResultListener, ServerDataGetter.AsyncJobCallbackInterface {
+        ServerDataGetter getter;
+        Context context;
+
+        void getList (int deviceID) {
+            if (getter != null)
+                getter.cancel(true);
+            getter = new ServerDataGetter ();
+            getter.setOnListChangeListener(this);
+            getter.setAsyncJobCallback(this);
+            getter.execute(apiUrl, makeRequestHeader("sensorDev") + ",\"id\":" + String.valueOf(deviceID) + "\"}");
+            if (DEBUG)
+                Log.d(TAG,"sensorByDeviceID: " + makeRequestHeader("sensorDev") + ",\"id\":" + String.valueOf(deviceID) + "\"}");
+        }
+        @Override
+        public void onResultReceived(String result) {
+            if (listener != null) {
+                try {
+                    listener.onDeviceSensorList(true, makeSensorListFromJson(result));
+                } catch (JSONException e) {
+                    listener.onDeviceSensorList(false, null);
+                }
+            }
+            else
+                Log.e(TAG,"deviceGetter, listener is null!");
+        }
+        @Override
+        public void onNoResult() {
+            getter = null;
+            Log.e(TAG, "deviceGetter: Server not responds");
+            if (listener != null)
+                listener.onDeviceSensorList(false, null);
+            else
+                Log.e(TAG,"deviceGetter, listener is null!");
+        }
+
+        private ArrayList<Sensor> makeSensorListFromJson (String result) throws JSONException {
+            ArrayList<Sensor> sensorList = new ArrayList<Sensor>();
+            if (result != null) {
+                JSONObject jObject = new JSONObject(result);
+                JSONArray devicesArray = jObject.getJSONArray("devices");
+                Log.d(TAG,"receive " + devicesArray.length() + " devices");
+                for (int i = 0; i < devicesArray.length(); i++) {
+                    String location = devicesArray.getJSONObject(i).getString("location");
+                    float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
+                    int deviceId = devicesArray.getJSONObject(i).getInt("id");
+                    boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
+                    //if(DEBUG) Log.d(TAG, + i + ": " + location);
+                    JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
+                    for (int j = 0; j < sensorsArray.length(); j++) {
+                        String values = sensorsArray.getJSONObject(j).getString("value");
+                        String name   = sensorsArray.getJSONObject(j).getString("name");
+                        int type      = sensorsArray.getJSONObject(j).getInt("type");
+                        int id        = sensorsArray.getJSONObject(j).getInt("id");
+                        boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
+                        long times    = sensorsArray.getJSONObject(j).getLong("time");
+                        Sensor s = new Sensor(id, deviceId, type, location, name, values, distance, my, pub, times);
+                        sensorList.add(s);
+                    }
+                }
+            }
+            return  sensorList;
+        }
+
+        @Override
+        public boolean asyncJobWithResult(String result) {
+            return false;
         }
     }
 
