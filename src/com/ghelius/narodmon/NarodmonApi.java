@@ -194,7 +194,6 @@ public class NarodmonApi {
                     String location = "";//jObject.getString("location");
                     float distance = 0.0f;//Float.parseFloat(jObject.getString("distance"));
                     int deviceId = 123;
-                    //boolean my      = (jObject.getInt("my") != 0);
                     boolean my = false;
 ////                    //if(DEBUG) Log.d(TAG, + i + ": " + location);
                     JSONArray sensorsArray = jObject.getJSONArray("sensors");
