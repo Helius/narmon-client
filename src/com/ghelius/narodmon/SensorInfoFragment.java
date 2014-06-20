@@ -347,6 +347,7 @@ public class SensorInfoFragment extends Fragment {
         } else {
             sensorId = sensor.id;
         }
+        Log.d(TAG,"sensor id: " + sensor.id + ", devices id: " + sensor.deviceId);
 
         type = sensor.type;
         ((TextView) getView().findViewById(R.id.text_name)).setText(sensor.name);
@@ -471,10 +472,10 @@ public class SensorInfoFragment extends Fragment {
 
                 AlarmSensorTask task = DatabaseManager.getInstance().getAlarmById(s.id);
                 if (task != null) {
-                    Log.d(TAG, "Found: SensorTask with job " + task.job);
+                    Log.d(TAG, "Found: SensorTask " + task);
                 } else {
-                    Log.e(TAG, "sensorTask not found, create empty");
                     task = new AlarmSensorTask(sensorId, s.deviceId, 0, 0f, 0f, currentValue, s.name);
+                    Log.e(TAG, "sensorTask not found, create empty:" + task.toString());
 //                    DatabaseManager.getInstance().addAlarmTask(task);
                 }
                 dialog.setSensorTask(task);

@@ -29,11 +29,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -186,7 +182,7 @@ public class MainActivity extends ActionBarActivity implements
                         ", !dontUpdateMore=" + !dontUpdateMore);
                 if (!showRefreshProgress && allMenuSelected && !dontUpdateMore) {
                     deviceRequestLimit += 10;
-                    Log.d(TAG, "more &&&&&&&&& get list");
+                    Log.d(TAG, "more get list");
                     getSensorsList(deviceRequestLimit);
                 }
             }
@@ -381,7 +377,7 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void alarmChanged() {
-        int cnt = DatabaseManager.getInstance().getAlarmTask().size();
+        int cnt = DatabaseManager.getInstance().getAlarmTasks().size();
         slidingMenu.setMenuAlarmCount(cnt);
         listAdapter.updateAlarms();
         listAdapter.updateFilter();
@@ -575,12 +571,14 @@ public class MainActivity extends ActionBarActivity implements
 
     public void updateSavedSensors() {
         additionalSensors.clear();
-        for (AlarmSensorTask a : (DatabaseManager.getInstance().getAlarmTask())) {
+        for (AlarmSensorTask a : (DatabaseManager.getInstance().getAlarmTasks())) {
+            Log.d(TAG, "devices alarm: ["+ a.id +"]["+a.deviceId+"]");
             if (!additionalSensors.contains(a.deviceId)) {
                 additionalSensors.add(a.deviceId);
             }
         }
         for (Pair<Integer,Integer> i : DatabaseManager.getInstance().getFavorites()) {
+            Log.d(TAG, "devices favorites: ["+ i.first +"]["+i.second+"]");
             if (!additionalSensors.contains(i.second)) {
                 additionalSensors.add(i.second);
             }
@@ -868,7 +866,7 @@ public class MainActivity extends ActionBarActivity implements
             setRefreshProgress(false);
             if (!ok) {
                 Toast.makeText(getApplicationContext(),"result: " + res,Toast.LENGTH_SHORT).show();
-                dontUpdateMore = true;
+                //dontUpdateMore = true;
             }
             listAdapter.updateFilter();
             updateMenuSensorCounts();

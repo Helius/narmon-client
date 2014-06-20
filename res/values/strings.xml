@@ -117,7 +117,7 @@
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
     <string name="text_notify_alarm">Alarm</string>
     <string name="alarm_name">Name</string>
-    <string name="api_url">http://narodmon.ru/client.php</string>
+    <string name="api_url">http://narodmon.ru/api.php</string>
     <string name="key_widget_light_theme">key_widget_light_theme</string>
     <string name="app_widget_theme_light">Light app widget theme</string>
     <string name="more_button_text">More..</string>

@@ -146,7 +146,7 @@ public class WatchService extends WakefulIntentService {
 
         if(DEBUG) Log.d(TAG,"nmWatcher start working...");
 	    ArrayList<Widget> widgetsList = DatabaseManager.getInstance().getAllWidgets();
-        ArrayList<AlarmSensorTask> alarmList = DatabaseManager.getInstance().getAlarmTask();
+        ArrayList<AlarmSensorTask> alarmList = DatabaseManager.getInstance().getAlarmTasks();
 	    if(DEBUG) Log.d(TAG,"widget amount: "+ widgetsList.size());
         ids.clear();
         for (int i = 0; i < alarmList.size(); i++) {

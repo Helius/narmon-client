@@ -36,7 +36,7 @@ public class Sensor implements Serializable {
         this.type = type;
         this.location = location;
         this.name = name;
-        this.value = value;
+        this.value = value.replace("+","");
         this.distance = distance;
         this.my = my;
         this.time = time;

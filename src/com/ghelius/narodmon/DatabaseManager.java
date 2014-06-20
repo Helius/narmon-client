@@ -216,7 +216,7 @@ public class DatabaseManager {
     }
 
     void addFavorites (Integer sensorId, Integer deviceId) {
-        Log.d(TAG, "add favorites: " + sensorId);
+        Log.d(TAG, "add favorites: id: " + sensorId + ", device id: " + deviceId);
 
         SQLiteDatabase db = getInstance().openDatabase();
 
@@ -238,7 +238,7 @@ public class DatabaseManager {
 
 
     /**--------- ALARM TASKS ---------*/
-    ArrayList<AlarmSensorTask> getAlarmTask () {
+    ArrayList<AlarmSensorTask> getAlarmTasks() {
         ArrayList<AlarmSensorTask> tasks = new ArrayList<AlarmSensorTask>();
         // Select All Query
         String selectQuery = "SELECT * FROM " + DatabaseHelper.TABLE_ALARMS;
@@ -253,7 +253,8 @@ public class DatabaseManager {
                 Float hi    = Float.valueOf(cursor.getString(3));
                 Float lo    = Float.valueOf(cursor.getString(4));
                 Float value = Float.valueOf(cursor.getString(5));
-                String name = cursor.getString(5);
+                String name = cursor.getString(6);
+                Log.d(TAG,"devices alarms obtain: " + cursor.getInt(0) + ":" + cursor.getInt(1));
                 tasks.add(new AlarmSensorTask(cursor.getInt(0),cursor.getInt(1),cursor.getInt(2),hi,lo,value, name));
             } while (cursor.moveToNext());
         }
@@ -266,16 +267,16 @@ public class DatabaseManager {
     AlarmSensorTask getAlarmById(Integer id) {
 
         SQLiteDatabase db = getInstance().openDatabase();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_ALARMS, new String[] {DatabaseHelper.KEY_ALARM_SID,DatabaseHelper.KEY_ALARM_JOB,DatabaseHelper.KEY_ALARM_HI,DatabaseHelper.KEY_ALARM_LO,DatabaseHelper.KEY_ALARM_OLDVALUE,DatabaseHelper.KEY_ALARM_NAME}, DatabaseHelper.KEY_ALARM_SID + " =?",  new String[] {String.valueOf(id)}, null, null,null,null);
+        Cursor cursor = db.query(DatabaseHelper.TABLE_ALARMS, new String[] {DatabaseHelper.KEY_ALARM_SID, DatabaseHelper.KEY_ALARM_DID, DatabaseHelper.KEY_ALARM_JOB,DatabaseHelper.KEY_ALARM_HI,DatabaseHelper.KEY_ALARM_LO,DatabaseHelper.KEY_ALARM_OLDVALUE,DatabaseHelper.KEY_ALARM_NAME}, DatabaseHelper.KEY_ALARM_SID + " =?",  new String[] {String.valueOf(id)}, null, null,null,null);
         AlarmSensorTask task = null;
         // looping through all rows and adding to list
         if (cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()) {
 
             // fill list with row
-            Float hi = Float.valueOf(cursor.getString(2));
-            Float lo = Float.valueOf(cursor.getString(3));
-            Float value = Float.valueOf(cursor.getString(4));
-            String name = cursor.getString(5);
+            Float hi = Float.valueOf(cursor.getString(3));
+            Float lo = Float.valueOf(cursor.getString(4));
+            Float value = Float.valueOf(cursor.getString(5));
+            String name = cursor.getString(6);
             task = new AlarmSensorTask(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), hi, lo, value, name);
         }
         if (cursor!=null)

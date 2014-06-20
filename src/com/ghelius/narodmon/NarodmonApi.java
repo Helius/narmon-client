@@ -157,7 +157,7 @@ public class NarodmonApi {
             getter.setOnListChangeListener(this);
             getter.setAsyncJobCallback(this);
             getter.execute(apiUrl, makeRequestHeader("sensorDev") + ",\"id\":\"" + String.valueOf(deviceID) + "\"}");
-            if (DEBUG)
+//            if (DEBUG)
                 Log.d(TAG,"sensorByDeviceID: " + makeRequestHeader("sensorDev") + ",\"id\":\"" + String.valueOf(deviceID) + "\"}");
         }
         @Override
@@ -188,15 +188,10 @@ public class NarodmonApi {
             ArrayList<Sensor> sensorList = new ArrayList<Sensor>();
             if (result != null) {
                 JSONObject jObject = new JSONObject(result);
-//                JSONArray devicesArray = jObject.getJSONArray("devices");
-////                Log.d(TAG,"receive " + devicesArray.length() + " devices");
-////                for (int i = 0; i < devicesArray.length(); i++) {
-                    String location = "";//jObject.getString("location");
-                    float distance = 0.0f;//Float.parseFloat(jObject.getString("distance"));
+                    String location = jObject.getString("location");
+                    float distance = Float.parseFloat(jObject.getString("distance"));
                     int deviceId = 123;
-                    //boolean my      = (jObject.getInt("my") != 0);
                     boolean my = false;
-////                    //if(DEBUG) Log.d(TAG, + i + ": " + location);
                     JSONArray sensorsArray = jObject.getJSONArray("sensors");
                     for (int j = 0; j < sensorsArray.length(); j++) {
                         String values = sensorsArray.getJSONObject(j).getString("value");

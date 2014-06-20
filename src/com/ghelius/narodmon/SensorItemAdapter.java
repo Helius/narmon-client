@@ -75,7 +75,7 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
     public void updateAlarms () {
         Log.d(TAG,"> start update alarms");
         int cnt = 0;
-        ArrayList<AlarmSensorTask> alarms = DatabaseManager.getInstance().getAlarmTask();
+        ArrayList<AlarmSensorTask> alarms = DatabaseManager.getInstance().getAlarmTasks();
         for (Sensor s : originItems) {
             s.hasAlarm = false;
             for (AlarmSensorTask a : alarms) {

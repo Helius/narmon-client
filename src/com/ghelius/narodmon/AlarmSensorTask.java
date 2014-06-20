@@ -31,7 +31,13 @@ public class AlarmSensorTask {
 
     @Override
     public String toString() {
-       return "Alarm [id: " + id + ", job: " + job + ", hi:" + hi + ", lo:" + lo + ", lastValue: " + lastValue + ", timestamp:" + timestamp + "]";
+       return "Alarm [Id:deviceId " + id +":" + deviceId +
+               ", job: " + job +
+               ", hi:"   + hi +
+               ", lo:"   + lo +
+               ", lastValue: " + lastValue +
+               ", timestamp:"  + timestamp +
+               ", name"        + name + "]";
     }
 
     public boolean checkAlarm(Float value) {

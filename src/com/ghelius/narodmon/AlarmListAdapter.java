@@ -18,13 +18,13 @@ public class AlarmListAdapter extends ArrayAdapter<AlarmSensorTask> {
     public AlarmListAdapter(Context context, int resource) {
         super(context, resource);
 
-        tasks = DatabaseManager.getInstance().getAlarmTask();
+        tasks = DatabaseManager.getInstance().getAlarmTasks();
     }
 
 
     public void update () {
         tasks.clear();
-        tasks.addAll(DatabaseManager.getInstance().getAlarmTask());
+        tasks.addAll(DatabaseManager.getInstance().getAlarmTasks());
     }
 
     @Override
