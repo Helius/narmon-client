@@ -64,6 +64,8 @@ public class SlidingMenuFragment extends Fragment {
     }
 
     private void callListenerMethod (Integer position) {
+        Log.d(TAG,"callListenerMethod " + position);
+        lastSelectedItemPosition = position;
         switch (position) {
             case 0: // all
                 listener.menuAllClicked();
@@ -91,12 +93,12 @@ public class SlidingMenuFragment extends Fragment {
     public void onResume() {
         super.onResume();
         lastSelectedItemPosition = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).getInt("lastMenuItem",0);
+        Log.d(TAG,"onResume, last selection is " + lastSelectedItemPosition);
         clearMenuSelection();
-        int i = 0;
         for (View v : menuItems) {
             if (v.getTag() == lastSelectedItemPosition) {
                 v.setBackgroundColor(menuBackgroundColor);
-                callListenerMethod(i);
+                callListenerMethod(lastSelectedItemPosition);
             }
         }
     }
@@ -104,6 +106,7 @@ public class SlidingMenuFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG,"onPause: save selection " + lastSelectedItemPosition);
         PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).edit().
                 putInt("lastMenuItem",lastSelectedItemPosition).commit();
     }
