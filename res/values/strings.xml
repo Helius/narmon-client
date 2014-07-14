@@ -125,5 +125,7 @@
     <string name="menu_my_text">My</string>
     <string name="menu_alarm_text">Alarms</string>
     <string name="menu_all_text">All</string>
+    <string name="empty_alarm_list">No alarm was added yet, you can add it on sensor screen.</string>
+    <string name="empty_sensor_list">There are no sensor, check filters, check connection, try later.</string>
 
 </resources>

@@ -3,11 +3,14 @@ package com.ghelius.narodmon;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class SensorListFragment extends ListFragment {
 
@@ -18,6 +21,12 @@ public class SensorListFragment extends ListFragment {
     private int iprev;
     private int i2prev;
     private int i3prev;
+    private TextView emptyTextView;
+
+    public void setEmptyMessage(String emptyMessage) {
+        emptyTextView.setText(emptyMessage);
+    }
+//    private TextView msgTextView;
 
     interface OnSensorListClickListener {
        void onItemClick (ListView l, View v, int position, long id);
@@ -28,10 +37,36 @@ public class SensorListFragment extends ListFragment {
 		this.listener = listener;
 	}
 
+    private TextView noItems(String text) {
+        TextView emptyView = new TextView(getActivity());
+        //Make sure you import android.widget.LinearLayout.LayoutParams;
+        emptyView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT));
+        //Instead of passing resource id here I passed resolved color
+        //That is, getResources().getColor((R.color.gray_dark))
+//        emptyView.setTextColor(getResources().getColor(R.color.));
+        emptyView.setText(text);
+        emptyView.setTextSize(14);
+        emptyView.setVisibility(View.GONE);
+        emptyView.setGravity(Gravity.CENTER_VERTICAL
+                | Gravity.CENTER_HORIZONTAL);
+
+        //Add the view to the list view. This might be what you are missing
+        ((ViewGroup) getListView().getParent()).addView(emptyView);
+
+        return emptyView;
+    }
 	@Override
 	public View onCreateView (LayoutInflater inflater, ViewGroup group, Bundle savedInstanceState) {
-        return super.onCreateView(inflater, group, savedInstanceState);
+        View v = super.onCreateView(inflater, group, savedInstanceState);
+        return v;
 	}
+    @Override
+    public void onStart() {
+        super.onStart();
+        emptyTextView = noItems("");
+        getListView().setEmptyView(emptyTextView);
+    }
 
     @Override
     public void onActivityCreated (Bundle savedInstance) {

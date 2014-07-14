@@ -86,7 +86,7 @@
     <string name="text_yars_ago">г. назад</string>
     <string name="text_select_clear">ничего</string>
     <string name="text_select_all">все</string>
-    <string name="empty_watched_msg">Датчики для наблюдения не выбраны. Для добавления датчика, нажмите звездочку на экране информации.
+    <string name="empty_watched_msg">Для добавления датчика в "избранные", нажмите "звездочку" на экране информации.
     </string>
     <string name="empty_my_list">У вас нет датчиков. Подключите датчики к http://narodmon.ru и авторизируйтесь в приложении.
     </string>
@@ -101,4 +101,6 @@
     <string name="menu_all_text">Все</string>
     <string name="menu_my_text">Мои</string>
     <string name="menu_alarm_text">Наблюдение</string>
+    <string name="empty_alarm_list">У вас нет "наблюдений". Для добавления в "наблюдение", нажмите "колокольчик" на экране датчика.</string>
+    <string name="empty_sensor_list">Нет датчиков, проверьте фильтр, проверьте соединение с интернетом, попробуйте позже.</string>
 </resources>

@@ -197,15 +197,17 @@ public class MainActivity extends ActionBarActivity implements
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
                 allMenuSelected = true;
+                sensorListFragment.setEmptyMessage(getString(R.string.empty_sensor_list));
             }
 
             @Override
             public void menuWatchedClicked() {
                 listAdapter.setGroups(SensorItemAdapter.SensorGroups.Watched);
                 setTitle(getString(R.string.menu_watched_text));
-                if (listAdapter.getMyCount() == 0) {
-                    //TODO: show message
-                }
+//                if (DatabaseManager.getInstance().getFavoritesId().size() == 0) {
+//                    Log.d(TAG,"watched is empty, show message");
+//                }
+                sensorListFragment.setEmptyMessage(getString(R.string.empty_watched_msg));
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
                 allMenuSelected = false;
@@ -214,9 +216,9 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void menuMyClicked() {
                 listAdapter.setGroups(SensorItemAdapter.SensorGroups.My);
-                if (listAdapter.getMyCount() == 0) {
-                    //TODO: show message
-                }
+                //if (listAdapter.getMyCount() == 0) {
+                    sensorListFragment.setEmptyMessage(getString(R.string.empty_my_list));
+                //}
                 setTitle(getString(R.string.menu_my_text));
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
@@ -228,9 +230,9 @@ public class MainActivity extends ActionBarActivity implements
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
                 listAdapter.setGroups(SensorItemAdapter.SensorGroups.Alarmed);
-                if (listAdapter.getMyCount() == 0) {
-                    //TODO: show message
-                }
+//                if (listAdapter.getMyCount() == 0) {
+                    sensorListFragment.setEmptyMessage(getString(R.string.empty_alarm_list));
+//                }
                 setTitle(getString(R.string.menu_alarm_text));
                 allMenuSelected = false;
             }
