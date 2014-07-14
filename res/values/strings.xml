@@ -102,9 +102,9 @@
     <string name="text_yars_ago">years ago</string>
     <string name="text_select_clear">none</string>
     <string name="text_select_all">all</string>
-    <string name="empty_watched_msg">There is no watched sensors. To add sensor, press \'star\' in sensor info screen.
+    <string name="empty_watched_msg">There are no watched sensors. To add sensor, press \'star\' in sensor info screen.
     </string>
-    <string name="empty_my_list">There is no Your sensors. Connect your sensor to http://narodmon.ru and do login.
+    <string name="empty_my_list">There are no Your sensors. Connect your sensor to http://narodmon.ru and login.
     </string>
     <string name="select_sensor_text">Select sensor</string>
     <string name="enter_widget_name_text">Enter widget name:</string>
