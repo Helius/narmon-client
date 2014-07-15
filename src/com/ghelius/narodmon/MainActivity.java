@@ -919,6 +919,8 @@ public class MainActivity extends ActionBarActivity implements
                 mNarodmonApi.getSensorsByDevice(s);
                 additionalSensors.remove(s);
                 Log.d(TAG, "devices sensor obtain: list not empty, get " + s);
+            } else {
+                mNarodmonApi.saveList(sensorList, getApplicationContext());
             }
         }
     }

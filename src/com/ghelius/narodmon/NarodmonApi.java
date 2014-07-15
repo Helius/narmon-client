@@ -37,8 +37,22 @@ public class NarodmonApi {
 		listUpdater.setLocation (lat, lng);
 	}
 
+    public void saveList(ArrayList<Sensor> sensorList, Context context) {
+        // save sensor list to file
+        Log.d(TAG,"receive " + sensorList.size() + " sensors");
+        if (!sensorList.isEmpty() && context!=null) {
+            FileOutputStream fos;
+            try {
+                fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+                new ObjectOutputStream(fos).writeObject(sensorList);
+            } catch (Exception e) {
+                Log.e(TAG, "Can't serialise sensor list: " + e.getMessage());
+            }
+        }
+    }
 
-	interface onResultReceiveListener {
+
+    interface onResultReceiveListener {
         void onLocationResult (boolean ok, String addr, Float lat, Float lng);
         void onAuthorisationResult (boolean ok, String res);
         void onSendVersionResult (boolean ok, String res);
@@ -330,16 +344,7 @@ public class NarodmonApi {
                     }
                 }
                 // save sensor list to file
-                Log.d(TAG,"receive " + sensorList.size() + " sensors");
-                if (!sensorList.isEmpty() && context!=null) {
-                    FileOutputStream fos;
-                    try {
-                        fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-                        new ObjectOutputStream(fos).writeObject(sensorList);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Can't serialise sensor list: " + e.getMessage());
-                    }
-                }
+                saveList(sensorList, context);
             }
         }
 
