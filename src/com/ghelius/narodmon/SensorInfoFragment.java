@@ -561,8 +561,10 @@ public class SensorInfoFragment extends Fragment {
 		@Override
 		public void onNoResult() {
 			Log.e(TAG, "getLog: no data");
-            Toast.makeText(getActivity().getApplicationContext(), "Server not responds, try later", Toast.LENGTH_SHORT).show();
-            getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+            if (getActivity() != null) {
+                Toast.makeText(getActivity().getApplicationContext(), "Server not responds, try later", Toast.LENGTH_SHORT).show();
+                getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+            }
         }
 	}
 
