@@ -25,6 +25,13 @@
                 android:title="@string/text_Place"
                 android:summary="@string/text_Russia_novosibirsk"
                 android:dialogTitle="@string/text_Enter_your_place" />
+        <ListPreference
+            android:title="@string/text_digits_amount"
+            android:key="@string/pref_key_digits_amount"
+            android:summary="@string/text_select_digits_amount"
+            android:defaultValue="###"
+            android:entries="@array/digitsArray"
+            android:entryValues="@array/digitsValue" />
         <CheckBoxPreference
             android:title="@string/app_widget_theme_light"
             android:id="@+id/widget_theme_light"

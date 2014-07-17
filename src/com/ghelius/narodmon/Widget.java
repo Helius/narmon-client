@@ -1,5 +1,7 @@
 package com.ghelius.narodmon;
 
+import java.text.DecimalFormat;
+
 /**
  * User: eugene
  * Date: 9/3/13
@@ -22,6 +24,14 @@ public class Widget {
 		curValue = 0;
 		type = 0;
 	}
+
+    String getTextValue (String pattern) {
+        if (pattern.equals("-"))
+            return String.valueOf(curValue);
+        DecimalFormat df = new DecimalFormat(pattern);
+        return df.format(curValue);
+    }
+
 	Widget(int widgetId, int sensorId, String screenName, int type) {
 		this.widgetId = widgetId;
 		this.sensorId = sensorId;

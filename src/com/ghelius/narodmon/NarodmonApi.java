@@ -321,7 +321,8 @@ public class NarodmonApi {
                     float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
                     int deviceId = devicesArray.getJSONObject(i).getInt("id");
                     boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
-                    //if(DEBUG) Log.d(TAG, + i + ": " + location);
+//                    if(DEBUG) Log.d(TAG, + i + ": " + location);
+                    Log.d(TAG,"my is " + my);
                     JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
                     for (int j = 0; j < sensorsArray.length(); j++) {
                         String values = sensorsArray.getJSONObject(j).getString("value");

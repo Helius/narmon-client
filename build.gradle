@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.11.+'
+        classpath 'com.android.tools.build:gradle:0.10.+'
     }
 }
 apply plugin: 'android'
@@ -64,12 +64,12 @@ android {
             signingConfig signingConfigs.release
         }
     }
-		lintOptions {
-	          // checkReleaseBuilds false
-							// Or, if you prefer, you can continue to check for errors in release builds,
-							// but continue the build even when errors are found:
-						abortOnError false
-		}
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
 
 }
 repositories {

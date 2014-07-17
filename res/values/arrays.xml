@@ -29,5 +29,17 @@
         <item>\'Out of limits\' alarm</item>
         <item>\'Within of limits\' alarm</item>
     </string-array>
+    <string-array name="digitsArray">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>all</item>
+    </string-array>
+    <string-array name="digitsValue">
+        <item>#</item>
+        <item>#.#</item>
+        <item>#.##</item>
+        <item>-</item>
+    </string-array>
 
 </resources>

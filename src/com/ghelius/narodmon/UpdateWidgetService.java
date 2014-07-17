@@ -35,7 +35,9 @@ public class UpdateWidgetService extends Service {
 		for (Widget w: widgets) {
 			Log.d(TAG,"updateFilter: " + w.screenName + ", curr: " + w.curValue + ", last: " + w.lastValue);
             if (!problem)
-                remoteViews.setTextViewText(R.id.value, String.valueOf(w.curValue));
+                remoteViews.setTextViewText(R.id.value, w.getTextValue(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(
+                       getString(R.string.pref_key_digits_amount) ,"-"
+                )));
             else
                 remoteViews.setTextViewText(R.id.value, "--");
 			remoteViews.setTextViewText(R.id.name, w.screenName);

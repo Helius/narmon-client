@@ -19,6 +19,7 @@
     <string name="menu_text_preference">Preference</string>
     <string name="pref_user_settings">User settings</string>
     <string name="pref_key_login">key_login</string>
+    <string name="pref_key_digits_amount">key_widget_digits_after_point</string>
     <string name="pref_key_passwd">key_passwd</string>
     <string name="pref_key_geoloc">key_geoloc</string>
     <string name="local_service_started">Narodmon Alarm</string>
@@ -127,5 +128,7 @@
     <string name="menu_all_text">All</string>
     <string name="empty_alarm_list">No alarm was added yet, you can add it on sensor screen.</string>
     <string name="empty_sensor_list">There are no sensor, check filters, check connection, try later.</string>
+    <string name="text_digits_amount">Widgets value rounding</string>
+    <string name="text_select_digits_amount">Select number of decimal digit after point</string>
 
 </resources>

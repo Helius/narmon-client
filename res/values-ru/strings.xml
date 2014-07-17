@@ -103,4 +103,6 @@
     <string name="menu_alarm_text">Наблюдение</string>
     <string name="empty_alarm_list">У вас нет "наблюдений". Для добавления в "наблюдение", нажмите "колокольчик" на экране датчика.</string>
     <string name="empty_sensor_list">Нет датчиков, проверьте фильтр, проверьте соединение с интернетом, попробуйте позже.</string>
+    <string name="text_digits_amount">Округление показаний на виджете</string>
+    <string name="text_select_digits_amount">Количество цифр после запятой</string>
 </resources>
