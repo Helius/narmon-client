@@ -186,6 +186,13 @@ public class MainActivity extends ActionBarActivity implements
                     getSensorsList(deviceRequestLimit);
                 }
             }
+
+            @Override
+            public void moreButtonPressed() {
+                deviceRequestLimit += 10;
+                Log.d(TAG, "more get list");
+                getSensorsList(deviceRequestLimit);
+            }
         });
 
         slidingMenu = new SlidingMenuFragment();

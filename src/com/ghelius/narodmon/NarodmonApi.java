@@ -277,8 +277,9 @@ public class NarodmonApi {
                 types += "]";
             }
 //            String types = ",\"types\":"+ "[0,1]";
-            getter.execute(apiUrl, makeRequestHeader("sensorNear") + ",\"limit\":"+ String.valueOf(radius) + types + ",\"lat\":" + String.valueOf(lat) + ",\"lng\":" + String.valueOf(lng) +",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
+            getter.execute(apiUrl, makeRequestHeader("sensorNear") + ",\"radius\":10000" + ",\"limit\":"+ String.valueOf(radius) + types + ",\"lat\":" + String.valueOf(lat) + ",\"lng\":" + String.valueOf(lng) +",\"lang\":\"" + Locale.getDefault().getLanguage() + "\"}");
         }
+
         @Override
         public void onResultReceived(String result) {
             if(DEBUG) Log.d(TAG,"listUpdater: result received, call listener");
@@ -286,6 +287,7 @@ public class NarodmonApi {
                 listener.onSensorListResult(true, "");
             else
                 Log.e(TAG,"listUpdater, listener is null!");
+
         }
         @Override
         public void onNoResult() {
@@ -301,7 +303,9 @@ public class NarodmonApi {
         public boolean asyncJobWithResult(String result) {
             if(DEBUG) Log.d(TAG,"do asyncJob");
             try {
-                makeSensorListFromJson(result);
+                sensorList.clear();
+                sensorList.addAll(makeSensorListFromJson(result));
+                saveList(sensorList, context);
                 if(DEBUG) Log.d(TAG,"asyncJob done with " + sensorList.size() + " sensor");
             } catch (JSONException e) {
                 Log.e(TAG,e.getMessage());
@@ -310,49 +314,39 @@ public class NarodmonApi {
             return true;
         }
 
-        private void makeSensorListFromJson (String result) throws JSONException {
-            if (result != null) {
-                JSONObject jObject = new JSONObject(result);
-                JSONArray devicesArray = jObject.getJSONArray("devices");
-                Log.d(TAG,"receive " + devicesArray.length() + " devices");
-                sensorList.clear();
-                for (int i = 0; i < devicesArray.length(); i++) {
-                    String location = devicesArray.getJSONObject(i).getString("location");
-                    float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
-                    int deviceId = devicesArray.getJSONObject(i).getInt("id");
-                    boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
-//                    if(DEBUG) Log.d(TAG, + i + ": " + location);
-                    Log.d(TAG,"my is " + my);
-                    JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
-                    for (int j = 0; j < sensorsArray.length(); j++) {
-                        String values = sensorsArray.getJSONObject(j).getString("value");
-                        String name   = sensorsArray.getJSONObject(j).getString("name");
-                        int type      = sensorsArray.getJSONObject(j).getInt("type");
-                        int id        = sensorsArray.getJSONObject(j).getInt("id");
-                        boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
-                        long times    = sensorsArray.getJSONObject(j).getLong("time");
-                        Sensor s = new Sensor(id, deviceId, type, location, name, values, distance, my, pub, times);
-//                        boolean exist = false;
-//                        for (int ind = 0; ind < sensorList.size(); ind++) {
-//                            if (sensorList.get(ind).id == s.id) {
-//                                sensorList.set(ind,s);
-//                                exist = true;
-//                                break;
-//                            }
-//                        }
-//                        if (!exist)
-                            sensorList.add(s);
-                    }
-                }
-                // save sensor list to file
-                saveList(sensorList, context);
-            }
-        }
-
 	    public void setLocation(Float lat, Float lng) {
 		    this.lat = lat;
 		    this.lng = lng;
 	    }
+    }
+
+    public static ArrayList<Sensor> makeSensorListFromJson (String json) throws JSONException {
+        ArrayList<Sensor> list = new ArrayList<Sensor>();
+        if (json != null) {
+            JSONObject jObject = new JSONObject(json);
+            JSONArray devicesArray = jObject.getJSONArray("devices");
+            Log.d(TAG,"receive " + devicesArray.length() + " devices");
+            for (int i = 0; i < devicesArray.length(); i++) {
+                String location = devicesArray.getJSONObject(i).getString("location");
+                float distance = Float.parseFloat(devicesArray.getJSONObject(i).getString("distance"));
+                int deviceId = devicesArray.getJSONObject(i).getInt("id");
+                boolean my      = (devicesArray.getJSONObject(i).getInt("my") != 0);
+//                    if(DEBUG) Log.d(TAG, + i + ": " + location);
+                Log.d(TAG,"my is " + my);
+                JSONArray sensorsArray = devicesArray.getJSONObject(i).getJSONArray("sensors");
+                for (int j = 0; j < sensorsArray.length(); j++) {
+                    String values = sensorsArray.getJSONObject(j).getString("value");
+                    String name   = sensorsArray.getJSONObject(j).getString("name");
+                    int type      = sensorsArray.getJSONObject(j).getInt("type");
+                    int id        = sensorsArray.getJSONObject(j).getInt("id");
+                    boolean pub   = (sensorsArray.getJSONObject(j).getInt("pub") != 0);
+                    long times    = sensorsArray.getJSONObject(j).getLong("time");
+                    Sensor s = new Sensor(id, deviceId, type, location, name, values, distance, my, pub, times);
+                    list.add(s);
+                }
+            }
+        }
+        return list;
     }
 
     /*
