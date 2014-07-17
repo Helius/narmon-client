@@ -421,7 +421,7 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d(TAG, "onSharedPreferenceChanged " + key);
-        if (key.equals(getString(R.string.pref_key_interval))) { // updateFilter interval changed
+        if (key.equals(getString(R.string.pref_key_interval)) || key.equals(getString(R.string.pref_key_digits_amount))) { // updateFilter interval changed
             scheduleAlarmWatcher();
             startUpdateTimer();
         } else if (key.equals(getString(R.string.pref_key_geoloc)) || key.equals(getString(R.string.pref_key_use_geocode))) {
@@ -803,7 +803,7 @@ public class MainActivity extends ActionBarActivity implements
                 getString(getString(R.string.pref_key_interval), "5")));
 
         am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + (1 * 60000), // 1 minute
+                SystemClock.elapsedRealtime() + (3 * 1000), // 3 sec
                 (60000 * Integer.valueOf(PreferenceManager.
                         getDefaultSharedPreferences(this).
                         getString(getString(R.string.pref_key_interval), "5"))),
