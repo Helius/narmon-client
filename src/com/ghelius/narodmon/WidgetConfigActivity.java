@@ -48,6 +48,7 @@ public class WidgetConfigActivity extends ActionBarActivity {
 
                 // save to db
                 DatabaseManager.getInstance().addWidget(new Widget(mAppWidgetId, sensor.id, name, adapter.getItem(position).type));
+                DatabaseManager.getInstance().addFavorites(sensor.id,sensor.deviceId);
 
                 // set up widget icon and name
 //				views.setTextViewText(R.id.name, name);
