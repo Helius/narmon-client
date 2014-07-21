@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ public class SensorListFragment extends ListFragment {
     private int i2prev;
     private int i3prev;
     private TextView emptyTextView;
+    private Button more;
 
     public void setEmptyMessage(String emptyMessage) {
         emptyTextView.setText(emptyMessage);
@@ -31,6 +33,7 @@ public class SensorListFragment extends ListFragment {
     interface OnSensorListClickListener {
        void onItemClick (ListView l, View v, int position, long id);
        void scrollOverDown();
+       void moreButtonPressed();
     }
 
     public void setOnListItemClickListener (OnSensorListClickListener listener) {
@@ -92,6 +95,16 @@ public class SensorListFragment extends ListFragment {
                 }
             }
         });
+        more = new Button (getActivity().getApplicationContext());
+        more.setText(getString(R.string.more_button_text));
+        more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener!= null)
+                    listener.moreButtonPressed();
+            }
+        });
+        getListView().addFooterView(more);
     }
 
 
