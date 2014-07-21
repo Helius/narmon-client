@@ -80,8 +80,8 @@ public class LoginDialog extends android.support.v4.app.DialogFragment implement
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().setTitle(this.getString(R.string.login_dialog_title));
         final View v = inflater.inflate(R.layout.login_dialog_activity, null);
-        if (listener != null)
-            prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+//        if (listener != null)
+        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
 
 
         loginTextView = (TextView) v.findViewById(R.id.login_textview);

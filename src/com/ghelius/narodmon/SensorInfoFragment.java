@@ -118,6 +118,8 @@ public class SensorInfoFragment extends Fragment {
 
 	private void updateGraph() {
 		Log.d(TAG,"updating graph...");
+        if (getActivity() == null)
+            return;
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
 		logGetter.getLog(sensorId, period, offset);
 		String title = "";
