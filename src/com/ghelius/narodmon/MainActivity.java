@@ -60,7 +60,8 @@ public class MainActivity extends ActionBarActivity implements
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
 
-    private static final String api_key = "85UneTlo8XBlA";
+    //private static final String api_key = "85UneTlo8XBlA";
+    private static final String api_key = "36nzbVLboSwPM";
     private final String TAG = "narodmon-main";
     private ArrayList<Sensor> sensorList;
     private SensorItemAdapter listAdapter;
