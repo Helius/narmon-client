@@ -257,7 +257,9 @@ public class SensorInfoFragment extends Fragment {
             // create a simple date format that draws on the year portion of our timestamp.
             // see http://download.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
             // for a full description of SimpleDateFormat.
-            private SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+            private SimpleDateFormat daysDateFormat = new SimpleDateFormat("HH:mm");
+            private SimpleDateFormat weekDateFormat = new SimpleDateFormat("E");
+            private SimpleDateFormat monsDateFormat = new SimpleDateFormat("d,E");
 
             @Override
             public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
@@ -266,7 +268,15 @@ public class SensorInfoFragment extends Fragment {
                 // we multiply our timestamp by 1000:
                 long timestamp = ((Number) obj).longValue() * 1000;
                 Date date = new Date(timestamp);
-                return dateFormat.format(date, toAppendTo, pos);
+                switch (period) {
+                    case day:
+                        return daysDateFormat.format(date, toAppendTo, pos);
+                    case week:
+                        return weekDateFormat.format(date, toAppendTo, pos);
+                    case month:
+                        return monsDateFormat.format(date, toAppendTo, pos);
+                }
+                return daysDateFormat.format(date, toAppendTo, pos);
             }
 
             @Override
@@ -424,13 +434,21 @@ public class SensorInfoFragment extends Fragment {
 //        summ +=
         ArrayList<Number> values = new ArrayList<Number>();
         ArrayList<Number> times = new ArrayList<Number>();
+        long prevTime = -1;
         for (Point data : logData) {
+
 //            summ += data.value;
 //            if (data.value > max) max = data.value;
 //            if (data.value < min) min = data.value;
-            values.add(data.value);
-            times.add(data.time);
-//            timeSeries.add((data.time * 1000), data.value);
+            if ((data.time - prevTime) > max_gap) {
+                values.add(null);
+                times.add(data.time-1);
+            } else {
+                values.add(data.value);
+                times.add(data.time);
+            }
+
+            prevTime = data.time;
         }
         XYSeries series = new SimpleXYSeries(
                 times,
