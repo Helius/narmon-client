@@ -35,6 +35,14 @@ import java.io.ObjectInputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYSeries;
+import com.androidplot.xy.*;
+import android.graphics.*;
+import java.text.*;
+import java.util.Arrays;
+import java.util.Date;
+
 public class SensorInfoFragment extends Fragment {
 
 	private final String TAG = "narodmon-info";
@@ -60,6 +68,9 @@ public class SensorInfoFragment extends Fragment {
 	private XYSeriesRenderer mCurrentRenderer;
     private XYSeriesRenderer mCurrentRendereHiLevel ;
     private XYSeriesRenderer mCurrentRendereLowLevel ;
+
+    private XYPlot plot1 = null;
+    LineAndPointFormatter formatter;
 
 	private SensorConfigChangeListener listener = null;
 
@@ -102,13 +113,15 @@ public class SensorInfoFragment extends Fragment {
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
 		super.onCreate (savedInstanceState);
-		initChart();
+//		initChart();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		logGetter = new SensorLogGetter();
-		return inflater.inflate(R.layout.sensorinfo, null);
+		View v = inflater.inflate(R.layout.sensorinfo, null);
+        plot1 = (XYPlot) v.findViewById(R.id.plot1);
+        return v;
 	}
 
 	public void setId(int id) {
@@ -122,38 +135,43 @@ public class SensorInfoFragment extends Fragment {
             return;
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.VISIBLE);
 		logGetter.getLog(sensorId, period, offset);
-		String title = "";
-		switch (period) {
-			case day:
-				if (offset == 0)
-					title = getString(R.string.text_today);
-				else
-					title = String.valueOf(offset) + " " + getString(R.string.text_days_ago);
-				break;
-			case week:
-				if (offset == 0)
-					title = getString(R.string.text_this_week);
-				else
-					title = String.valueOf(offset) + " " + getString(R.string.text_weeks_ago);
-				break;
-			case month:
-				if (offset == 0)
-					title = getString(R.string.text_this_month);
-				else
-					title = String.valueOf(offset) + " " + getString(R.string.text_month_ago);
-				break;
-			case year:
-				if (offset == 0)
-					title = getString(R.string.text_this_year);
-				else
-					title = String.valueOf(offset) + " " + getString(R.string.text_yars_ago);
-				break;
-		}
 		if (offset == 0) {
 
 		}
-		mRenderer.setXTitle(title);
+//		mRenderer.setXTitle(title);
 	}
+
+    private String getTitle() {
+
+        String title = "";
+        switch (period) {
+            case day:
+                if (offset == 0)
+                    title = getString(R.string.text_today);
+                else
+                    title = String.valueOf(offset) + " " + getString(R.string.text_days_ago);
+                break;
+            case week:
+                if (offset == 0)
+                    title = getString(R.string.text_this_week);
+                else
+                    title = String.valueOf(offset) + " " + getString(R.string.text_weeks_ago);
+                break;
+            case month:
+                if (offset == 0)
+                    title = getString(R.string.text_this_month);
+                else
+                    title = String.valueOf(offset) + " " + getString(R.string.text_month_ago);
+                break;
+            case year:
+                if (offset == 0)
+                    title = getString(R.string.text_this_year);
+                else
+                    title = String.valueOf(offset) + " " + getString(R.string.text_yars_ago);
+                break;
+        }
+        return title;
+    }
 
 	public static String getTimeSince (Context context, Long time) {
 		long diffTime = (System.currentTimeMillis() - time*1000)/1000;
@@ -172,60 +190,151 @@ public class SensorInfoFragment extends Fragment {
 
 
 	private void initChart() {
-		Log.d(TAG,"init chart");
-        mHiLevel = new TimeSeries("hi level");
-        mLowLevel = new TimeSeries("low level");
-		timeSeries = new TimeSeries("value");
-		while (mDataset.getSeriesCount() != 0) {
-            Log.d(TAG,"removeSeries");
-			mDataset.removeSeries(mDataset.getSeriesCount()-1);
-        }
-		mDataset.addSeries(timeSeries);
-        mDataset.addSeries(mHiLevel);
-        mDataset.addSeries(mLowLevel);
-		mCurrentRenderer = new XYSeriesRenderer();
-        mCurrentRendereHiLevel = new XYSeriesRenderer();
-        mCurrentRendereLowLevel = new XYSeriesRenderer();
 
-		mRenderer.removeAllRenderers();
-		mRenderer.addSeriesRenderer(mCurrentRenderer);
-        mRenderer.addSeriesRenderer(mCurrentRendereHiLevel);
-        mRenderer.addSeriesRenderer(mCurrentRendereLowLevel);
+//        Number[] numSightings = {5, 8, 9, 2, 5};
+//
+//        // an array of years in milliseconds:
+//        Number[] years = {
+//                1411718371,  // 2001
+//                1411718371 + 311,  // 2001
+//                1411718371 + 311 + 311,  // 2001
+//                1411718371 + 311 + 311+ 300,  // 2001
+//                1411718371 + 922 + 234,  // 2001
+//        };
+//        // create our series from our array of nums:
+//        XYSeries series2 = new SimpleXYSeries(
+//                Arrays.asList(years),
+//                Arrays.asList(numSightings),
+//                "Sightings in USA");
 
-		mRenderer.setShowLabels(true);
-		mRenderer.setShowGrid(true);
-		mRenderer.setGridColor(0xFF505050);
+        plot1.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
+        plot1.getGraphWidget().getDomainGridLinePaint().setColor(Color.GRAY);
+        plot1.getGraphWidget().getDomainGridLinePaint().
+                setPathEffect(new DashPathEffect(new float[]{1, 1}, 1));
+        plot1.getGraphWidget().getRangeGridLinePaint().setColor(Color.GRAY);
+        plot1.getGraphWidget().getRangeGridLinePaint().
+                setPathEffect(new DashPathEffect(new float[]{1, 1}, 1));
+        plot1.getGraphWidget().getDomainOriginLinePaint().setColor(Color.RED);
+        plot1.getGraphWidget().getRangeOriginLinePaint().setColor(Color.RED);
 
-		mRenderer.setXTitle(getString(R.string.text_today));
-		mRenderer.setYLabels(18);
-		mRenderer.setPointSize(2f);
-		mRenderer.setAxisTitleTextSize(20);
-		mRenderer.setChartTitleTextSize(20);
-		mRenderer.setLabelsTextSize(18);
-		mRenderer.setLegendTextSize(18);
-		mRenderer.setYLabelsPadding(-20);
-		mRenderer.setXLabelsAlign(Paint.Align.CENTER);
-		mRenderer.setXLabels(12);
-
-        mRenderer.setLegendHeight(10);
-//        mRenderer.setShowLabels(false);
-        mRenderer.setShowLegend(false);
+        // Create a formatter to use for drawing a series using LineAndPointRenderer:
 
 
-		mCurrentRenderer.setColor(0xFF00FF00);
-		mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
-		mCurrentRenderer.setFillPoints(true);
-		mCurrentRenderer.setChartValuesTextSize(18);
+        // setup our line fill paint to be a slightly transparent gradient:
+        Paint lineFill = new Paint();
+        lineFill.setAlpha(0);
 
-        mCurrentRendereHiLevel.setColor(0xFFFF4040);
-        mCurrentRendereHiLevel.setFillPoints(true);
-        mCurrentRendereHiLevel.setChartValuesTextSize(18);
-        mCurrentRendereHiLevel.setLineWidth(2);
+        // ugly usage of LinearGradient. unfortunately there's no way to determine the actual size of
+        // a View from within onCreate.  one alternative is to specify a dimension in resources
+        // and use that accordingly.  at least then the values can be customized for the device type and orientation.
+//        lineFill.setShader(new LinearGradient(0, 0, 200, 200, Color.WHITE, Color.GREEN, Shader.TileMode.CLAMP));
 
-        mCurrentRendereLowLevel.setColor(0xFF4040FF);
-        mCurrentRendereLowLevel.setFillPoints(true);
-        mCurrentRendereLowLevel.setChartValuesTextSize(18);
-        mCurrentRendereLowLevel.setLineWidth(2);
+        formatter = new LineAndPointFormatter(Color.rgb(0, 255, 0), Color.GREEN, Color.RED, null);
+        formatter.setFillPaint(lineFill);
+        plot1.getGraphWidget().setPaddingRight(1);
+//        plot1.addSeries(series2, formatter);
+
+        // customize our domain/range labels
+//        plot1.setDomainLabel("Year");
+//        plot1.setRangeLabel("# of Sightings");
+
+
+        // get rid of decimal points in our range labels:
+        plot1.setRangeValueFormat(new DecimalFormat("0"));
+
+//        plot1.getLayoutManager().remove(plot1.getDomainLabelWidget());
+//        plot1.getLegendWidget().setVisible(false);
+//        plot1.setBackgroundPaint(null);
+//        plot1.getGraphWidget().setBackgroundPaint(null);
+//        plot1.getGraphWidget().setGridBackgroundPaint(null);
+//        plot1.getGraphWidget().setDomainOriginLinePaint(null);
+//        plot1.getGraphWidget().setRangeOriginLinePaint(null);
+        http://stackoverflow.com/questions/13761455/androidplot-remove-domain-values-from-graphwidget
+
+
+        plot1.setDomainValueFormat(new Format() {
+
+            // create a simple date format that draws on the year portion of our timestamp.
+            // see http://download.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
+            // for a full description of SimpleDateFormat.
+            private SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+
+            @Override
+            public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
+
+                // because our timestamps are in seconds and SimpleDateFormat expects milliseconds
+                // we multiply our timestamp by 1000:
+                long timestamp = ((Number) obj).longValue() * 1000;
+                Date date = new Date(timestamp);
+                return dateFormat.format(date, toAppendTo, pos);
+            }
+
+            @Override
+            public Object parseObject(String source, ParsePosition pos) {
+                return null;
+
+            }
+        });
+
+        // by default, AndroidPlot displays developer guides to aid in laying out your plot.
+        // To get rid of them call disableAllMarkup():
+        //plot1.disableAllMarkup();
+
+
+//		Log.d(TAG,"init chart");
+//        mHiLevel = new TimeSeries("hi level");
+//        mLowLevel = new TimeSeries("low level");
+//		timeSeries = new TimeSeries("value");
+//		while (mDataset.getSeriesCount() != 0) {
+//            Log.d(TAG,"removeSeries");
+//			mDataset.removeSeries(mDataset.getSeriesCount()-1);
+//        }
+//		mDataset.addSeries(timeSeries);
+//        mDataset.addSeries(mHiLevel);
+//        mDataset.addSeries(mLowLevel);
+//		mCurrentRenderer = new XYSeriesRenderer();
+//        mCurrentRendereHiLevel = new XYSeriesRenderer();
+//        mCurrentRendereLowLevel = new XYSeriesRenderer();
+//
+//		mRenderer.removeAllRenderers();
+//		mRenderer.addSeriesRenderer(mCurrentRenderer);
+//        mRenderer.addSeriesRenderer(mCurrentRendereHiLevel);
+//        mRenderer.addSeriesRenderer(mCurrentRendereLowLevel);
+//
+//		mRenderer.setShowLabels(true);
+//		mRenderer.setShowGrid(true);
+//		mRenderer.setGridColor(0xFF505050);
+//
+//		mRenderer.setXTitle(getString(R.string.text_today));
+//		mRenderer.setYLabels(18);
+//		mRenderer.setPointSize(2f);
+//		mRenderer.setAxisTitleTextSize(20);
+//		mRenderer.setChartTitleTextSize(20);
+//		mRenderer.setLabelsTextSize(18);
+//		mRenderer.setLegendTextSize(18);
+//		mRenderer.setYLabelsPadding(-20);
+//		mRenderer.setXLabelsAlign(Paint.Align.CENTER);
+//		mRenderer.setXLabels(12);
+//
+//        mRenderer.setLegendHeight(10);
+////        mRenderer.setShowLabels(false);
+//        mRenderer.setShowLegend(false);
+//
+//
+//		mCurrentRenderer.setColor(0xFF00FF00);
+//		mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
+//		mCurrentRenderer.setFillPoints(true);
+//		mCurrentRenderer.setChartValuesTextSize(18);
+//
+//        mCurrentRendereHiLevel.setColor(0xFFFF4040);
+//        mCurrentRendereHiLevel.setFillPoints(true);
+//        mCurrentRendereHiLevel.setChartValuesTextSize(18);
+//        mCurrentRendereHiLevel.setLineWidth(2);
+//
+//        mCurrentRendereLowLevel.setColor(0xFF4040FF);
+//        mCurrentRendereLowLevel.setFillPoints(true);
+//        mCurrentRendereLowLevel.setChartValuesTextSize(18);
+//        mCurrentRendereLowLevel.setLineWidth(2);
 	}
 
 	private void addSampleData() {
@@ -245,72 +354,95 @@ public class SensorInfoFragment extends Fragment {
 			max_gap = 24*60*60; //day
 		}
 
-		if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format
-			Log.d(TAG,"recreate chart");
-			LinearLayout layout = (LinearLayout) getActivity().findViewById(R.id.sensorInfoChart);
-			layout.removeAllViews();
-			if (period == LogPeriod.day) {
-				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "H:mm");
-			} else if (period == LogPeriod.week) {
-				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "E");
-			} else if (period == LogPeriod.month) {
-				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "d");
-			} else if (period == LogPeriod.year) {
-				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "M.d");
-			}
-			oldPeriod = period;
-			layout.addView(mChart);
-		}
-		timeSeries.clear();
-        mHiLevel.clear();
-        mLowLevel.clear();
-		if (!logData.isEmpty()) {
-            Log.d(TAG,"logData isn't empty: " + logData.size());
-			long prevTime = logData.get(0).time;
-			float max = logData.get(0).value;
-			float min = logData.get(0).value;
-            float summ = 0;
-            if (task != null && logData.size()>1) {
-                Log.d(TAG,"task not null");
-                if (task.job != AlarmSensorTask.NOTHING) {
-                    Log.d(TAG,"add hi level");
-                    mHiLevel.add((logData.get(0).time-1)*1000, task.hi);
-                    mHiLevel.add((logData.get(logData.size()-1).time-1)*1000, task.hi);
-                }
-                if (task.job == AlarmSensorTask.OUT_OF || task.job == AlarmSensorTask.WITHIN_OF) {
-                    Log.d(TAG,"add low level");
-                    mLowLevel.add((logData.get(0).time-1)*1000, task.lo);
-                    mLowLevel.add((logData.get(logData.size()-1).time-1)*1000, task.lo);
-                }
-            }
-			for (Point data : logData) {
-                summ +=data.value;
-				if (data.value > max) max = data.value;
-				if (data.value < min) min = data.value;
-				timeSeries.add((data.time * 1000), data.value);
-//                Log.d(TAG,"cur:"+data.time + " prev:" + prevTime + " diff:" + (data.time-prevTime));
-				if ((data.time - prevTime) > max_gap) {
-					timeSeries.add(((data.time - 1) * 1000), MathHelper.NULL_VALUE);
-				}
-				prevTime = data.time;
-			}
-			mRenderer.initAxesRange(1);
-            TextView seriesInfo = (TextView) getView().findViewById(R.id.series_info);
-            if (seriesInfo != null) {
-                seriesInfo.setText("max: " + max + "\navg: " + String.format("%.2f%n", summ/logData.size())+ "min: " + min );
-            }
-            if (task!=null && task.job != AlarmSensorTask.NOTHING) {
-                min = task.lo < min ? task.lo : min;
-                max = task.hi > max ? task.hi : max;
-            }
-			mRenderer.setYAxisMin(min-(max-min)/10);
-			mRenderer.setYAxisMax(max+(max-min)/10);
-
-		} else {
-            Log.e(TAG,"logData is empty: " + logData.size());
+//		if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format
+//			Log.d(TAG,"recreate chart");
+//			LinearLayout layout = (LinearLayout) getActivity().findViewById(R.id.sensorInfoChart);
+//			layout.removeAllViews();
+//			if (period == LogPeriod.day) {
+//				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "H:mm");
+//			} else if (period == LogPeriod.week) {
+//				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "E");
+//			} else if (period == LogPeriod.month) {
+//				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "d");
+//			} else if (period == LogPeriod.year) {
+//				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "M.d");
+//			}
+//			oldPeriod = period;
+//			layout.addView(mChart);
+//		}
+//		timeSeries.clear();
+//        mHiLevel.clear();
+//        mLowLevel.clear();
+//		if (!logData.isEmpty()) {
+//            Log.d(TAG,"logData isn't empty: " + logData.size());
+//			long prevTime = logData.get(0).time;
+//			float max = logData.get(0).value;
+//			float min = logData.get(0).value;
+//            float summ = 0;
+//            if (task != null && logData.size()>1) {
+//                Log.d(TAG,"task not null");
+//                if (task.job != AlarmSensorTask.NOTHING) {
+//                    Log.d(TAG,"add hi level");
+//                    mHiLevel.add((logData.get(0).time-1)*1000, task.hi);
+//                    mHiLevel.add((logData.get(logData.size()-1).time-1)*1000, task.hi);
+//                }
+//                if (task.job == AlarmSensorTask.OUT_OF || task.job == AlarmSensorTask.WITHIN_OF) {
+//                    Log.d(TAG,"add low level");
+//                    mLowLevel.add((logData.get(0).time-1)*1000, task.lo);
+//                    mLowLevel.add((logData.get(logData.size()-1).time-1)*1000, task.lo);
+//                }
+//            }
+//			for (Point data : logData) {
+//                summ +=data.value;
+//				if (data.value > max) max = data.value;
+//				if (data.value < min) min = data.value;
+//				timeSeries.add((data.time * 1000), data.value);
+////                Log.d(TAG,"cur:"+data.time + " prev:" + prevTime + " diff:" + (data.time-prevTime));
+//				if ((data.time - prevTime) > max_gap) {
+//					timeSeries.add(((data.time - 1) * 1000), MathHelper.NULL_VALUE);
+//				}
+//				prevTime = data.time;
+//			}
+//			mRenderer.initAxesRange(1);
+//            TextView seriesInfo = (TextView) getView().findViewById(R.id.series_info);
+//            if (seriesInfo != null) {
+//                seriesInfo.setText("max: " + max + "\navg: " + String.format("%.2f%n", summ/logData.size())+ "min: " + min );
+//            }
+//            if (task!=null && task.job != AlarmSensorTask.NOTHING) {
+//                min = task.lo < min ? task.lo : min;
+//                max = task.hi > max ? task.hi : max;
+//            }
+//			mRenderer.setYAxisMin(min-(max-min)/10);
+//			mRenderer.setYAxisMax(max+(max-min)/10);
+//
+//		} else {
+//            Log.e(TAG,"logData is empty: " + logData.size());
+//        }
+//        Log.d(TAG,"repaint");
+//		mChart.repaint();
+//        float summ = 0;
+//        summ +=
+        ArrayList<Number> values = new ArrayList<Number>();
+        ArrayList<Number> times = new ArrayList<Number>();
+        for (Point data : logData) {
+//            summ += data.value;
+//            if (data.value > max) max = data.value;
+//            if (data.value < min) min = data.value;
+            values.add(data.value);
+            times.add(data.time);
+//            timeSeries.add((data.time * 1000), data.value);
         }
-        Log.d(TAG,"repaint");
-		mChart.repaint();
+        XYSeries series = new SimpleXYSeries(
+                times,
+                values,
+                getTitle());
+        plot1.clear();
+        plot1.addSeries(series, formatter);
+        // draw a domain tick for each year:
+//        plot1.setDomainStep(XYStepMode.SUBDIVIDE, 16);
+        plot1.setRangeStep(XYStepMode.SUBDIVIDE, 10);
+        plot1.redraw();
+
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
 	}
 
@@ -319,6 +451,7 @@ public class SensorInfoFragment extends Fragment {
 		Log.d(TAG,"onResume");
 		super.onResume();
         loadInfo();
+        initChart();
 	}
 
     public void loadInfo () {

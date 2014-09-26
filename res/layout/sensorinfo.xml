@@ -220,11 +220,17 @@
         android:layout_weight="1">
 
 
-        <LinearLayout
-            android:orientation="vertical"
+        <com.androidplot.xy.XYPlot
+            android:id="@+id/plot1"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/sensorInfoChart" />
+            title="plot_title"
+            renderMode="use_main_thread"/>
+        <!--<LinearLayout-->
+            <!--android:orientation="vertical"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:id="@+id/sensorInfoChart" />-->
 
         <ProgressBar
             android:indeterminate="true"
