@@ -130,5 +130,6 @@
     <string name="empty_sensor_list">There are no sensor, check filters, check connection, try later.</string>
     <string name="text_digits_amount">Widgets value rounding</string>
     <string name="text_select_digits_amount">Select number of decimal digit after point</string>
+    <string name="empty_sensor_for_widget_message">No sensor collected! Please launch application and get sensor list before add widgets</string>
 
 </resources>

@@ -105,4 +105,5 @@
     <string name="empty_sensor_list">Нет датчиков, проверьте фильтр, проверьте соединение с интернетом, попробуйте позже.</string>
     <string name="text_digits_amount">Округление показаний на виджете</string>
     <string name="text_select_digits_amount">Количество цифр после запятой</string>
+    <string name="empty_sensor_for_widget_message">Датчики не найдены. Перед добавлением виджета, запустите программу и дождитесь загрузки датчиков.</string>
 </resources>

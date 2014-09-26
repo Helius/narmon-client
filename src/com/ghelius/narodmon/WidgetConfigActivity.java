@@ -1,16 +1,19 @@
 package com.ghelius.narodmon;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RemoteViews;
+import android.widget.TextView;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 
@@ -22,6 +25,7 @@ public class WidgetConfigActivity extends ActionBarActivity {
     private final static String TAG = "narodmon-widgetConfig";
     private int mAppWidgetId;
     private SensorItemAdapter adapter;
+    private TextView emptyTextMessage;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,9 +34,15 @@ public class WidgetConfigActivity extends ActionBarActivity {
         setResult(RESULT_CANCELED);
         Intent intent = getIntent();
         ListView list = (ListView) findViewById(R.id.listView);
+        emptyTextMessage = noItems(list, "");
+        list.setEmptyView(emptyTextMessage);
         adapter = new SensorItemAdapter(getApplicationContext(), getSavedList());
         adapter.hideValue(true);
         adapter.updateFilter();
+        if (adapter.getCount() == 0) {
+            emptyTextMessage.setText(getString(R.string.empty_sensor_for_widget_message));
+        }
+
 
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -54,9 +64,7 @@ public class WidgetConfigActivity extends ActionBarActivity {
 //				views.setTextViewText(R.id.name, name);
 //				views.setImageViewBitmap(R.id.imageView,((BitmapDrawable)SensorTypeProvider.getInstance(getApplicationContext()).getIcon(sensor.type)).getBitmap());
 //				views.setTextViewText(R.id.unit, SensorTypeProvider.getInstance(getApplicationContext()).getUnitForType(sensor.type));
-
-
-				/* did it in watchService in updating */
+//				/* did it in watchService in updating */
                 // When we click the widget, we want to open our main activity.
 //				Intent launchActivity = new Intent(getApplicationContext(), SensorInfo.class);
 //				launchActivity.putExtra("sensorId", adapter.getItem(position).id);
@@ -109,5 +117,25 @@ public class WidgetConfigActivity extends ActionBarActivity {
             Log.e(TAG, "Can't read sensorList: " + e.getMessage());
         }
         return sensorList;
+    }
+
+    private TextView noItems(ListView listView, String text) {
+        TextView emptyView = new TextView(this);
+        //Make sure you import android.widget.LinearLayout.LayoutParams;
+        emptyView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT));
+        //Instead of passing resource id here I passed resolved color
+        //That is, getResources().getColor((R.color.gray_dark))
+//        emptyView.setTextColor(getResources().getColor(R.color.));
+        emptyView.setText(text);
+        emptyView.setTextSize(14);
+        emptyView.setVisibility(View.GONE);
+        emptyView.setGravity(Gravity.CENTER_VERTICAL
+                | Gravity.CENTER_HORIZONTAL);
+
+        //Add the view to the list view. This might be what you are missing
+        ((ViewGroup) listView.getParent()).addView(emptyView);
+
+        return emptyView;
     }
 }
