@@ -901,21 +901,21 @@ public class MainActivity extends ActionBarActivity implements
             if (list != null) {
                 Log.d(TAG, "receive devices list: " + list);
                 for (Sensor newSensor : list) {
-                    boolean unique = true;
+                    boolean notExist = true;
                     for (Sensor s : sensorList) {
                         if (s.id == newSensor.id) {
-                            unique = false;
+                            notExist = false;
                             s.distance = newSensor.distance;
                             s.location = newSensor.location;
                             s.name = newSensor.name;
-                            s.my = newSensor.my;
+//                            s.my = newSensor.my;
                             s.type = newSensor.type;
                             s.time = newSensor.time;
                             s.value = newSensor.value;
                             break;
                         }
                     }
-                    if (unique)
+                    if (notExist)
                         sensorList.add(newSensor);
                 }
             } else {

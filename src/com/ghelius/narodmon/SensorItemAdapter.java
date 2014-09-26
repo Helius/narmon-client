@@ -253,10 +253,13 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
                     holder.valueDecimal.setText("");
             }
 
-			if (sensor.my)
-				holder.name.setTextColor(Color.argb(0xFF, 0x33, 0xb5, 0xe5));
-            else
+			if (sensor.my) {
+                Log.d(TAG, "it's mine");
+                holder.name.setTextColor(Color.argb(0xFF, 0x33, 0xb5, 0xe5));
+            } else {
+                Log.d(TAG, "it's NOT mine");
                 holder.name.setTextColor(Color.WHITE);
+            }
 
             if (sensor.alarmed)
                 holder.value.setTextColor(Color.argb(0xFF, 0xFF, 0x00, 0x00));
