@@ -220,7 +220,7 @@
         android:layout_weight="1">
 
 
-        <com.androidplot.xy.XYPlot
+        <com.ghelius.narodmon.MultitouchPlot
             android:id="@+id/plot1"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

@@ -43,7 +43,7 @@ import java.text.*;
 import java.util.Arrays;
 import java.util.Date;
 
-public class SensorInfoFragment extends Fragment {
+public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomListener {
 
 	private final String TAG = "narodmon-info";
 	private int sensorId = -1;
@@ -69,13 +69,26 @@ public class SensorInfoFragment extends Fragment {
     private XYSeriesRenderer mCurrentRendereHiLevel ;
     private XYSeriesRenderer mCurrentRendereLowLevel ;
 
-    private XYPlot plot1 = null;
+    private MultitouchPlot plot1 = null;
     LineAndPointFormatter formatter;
 
 	private SensorConfigChangeListener listener = null;
 
     public void setSensor(Sensor tmpS) {
         sensor = tmpS;
+    }
+
+    @Override
+    public void zoommed(Number minX, Number maxX) {
+        long diff = maxX.longValue() - minX.longValue();
+        Log.d(TAG, "time lenght is: " + String.valueOf(diff));
+        if (diff < 3*24*3600) {
+            period = LogPeriod.day;
+        } else if (diff > 3*24*3600 && diff < 12*24*3600) {
+            period = LogPeriod.week;
+        } else if (diff > 12*24*3600) {
+            period = LogPeriod.month;
+        }
     }
 
 
@@ -112,7 +125,7 @@ public class SensorInfoFragment extends Fragment {
 
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
-		super.onCreate (savedInstanceState);
+		super.onCreate(savedInstanceState);
 //		initChart();
 	}
 
@@ -120,7 +133,8 @@ public class SensorInfoFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		logGetter = new SensorLogGetter();
 		View v = inflater.inflate(R.layout.sensorinfo, null);
-        plot1 = (XYPlot) v.findViewById(R.id.plot1);
+        plot1 = (MultitouchPlot) v.findViewById(R.id.plot1);
+        plot1.setZoomListener(this);
         return v;
 	}
 
@@ -272,7 +286,7 @@ public class SensorInfoFragment extends Fragment {
                     case day:
                         return daysDateFormat.format(date, toAppendTo, pos);
                     case week:
-                        return weekDateFormat.format(date, toAppendTo, pos);
+                        return monsDateFormat.format(date, toAppendTo, pos);
                     case month:
                         return monsDateFormat.format(date, toAppendTo, pos);
                 }
