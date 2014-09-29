@@ -8,7 +8,7 @@
     <string name="text_distance">Удаленность:</string>
     <string name="text_km">км</string>
     <string name="text_type">Тип:</string>
-    <string name="text_lastupdate">Последние показание:</string>
+    <string name="text_lastupdate">Обновлено:</string>
     <string name="menu_text_quit">выход</string>
     <string name="menu_text_preference">Настройки</string>
     <string name="pref_user_settings">Пользователь</string>

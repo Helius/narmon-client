@@ -152,7 +152,6 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 		if (offset == 0) {
 
 		}
-//		mRenderer.setXTitle(title);
 	}
 
     private String getTitle() {
@@ -205,22 +204,6 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
 	private void initChart() {
 
-//        Number[] numSightings = {5, 8, 9, 2, 5};
-//
-//        // an array of years in milliseconds:
-//        Number[] years = {
-//                1411718371,  // 2001
-//                1411718371 + 311,  // 2001
-//                1411718371 + 311 + 311,  // 2001
-//                1411718371 + 311 + 311+ 300,  // 2001
-//                1411718371 + 922 + 234,  // 2001
-//        };
-//        // create our series from our array of nums:
-//        XYSeries series2 = new SimpleXYSeries(
-//                Arrays.asList(years),
-//                Arrays.asList(numSightings),
-//                "Sightings in USA");
-
         plot1.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
         plot1.getGraphWidget().getDomainGridLinePaint().setColor(Color.GRAY);
         plot1.getGraphWidget().getDomainGridLinePaint().
@@ -233,19 +216,13 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
         // Create a formatter to use for drawing a series using LineAndPointRenderer:
 
-
         // setup our line fill paint to be a slightly transparent gradient:
         Paint lineFill = new Paint();
         lineFill.setAlpha(0);
 
-        // ugly usage of LinearGradient. unfortunately there's no way to determine the actual size of
-        // a View from within onCreate.  one alternative is to specify a dimension in resources
-        // and use that accordingly.  at least then the values can be customized for the device type and orientation.
-//        lineFill.setShader(new LinearGradient(0, 0, 200, 200, Color.WHITE, Color.GREEN, Shader.TileMode.CLAMP));
-
         formatter = new LineAndPointFormatter(Color.rgb(0, 255, 0), Color.GREEN, Color.RED, null);
         formatter.setFillPaint(lineFill);
-        plot1.getGraphWidget().setPaddingRight(1);
+//        plot1.getGraphWidget().setPaddingRight(+10);
 //        plot1.addSeries(series2, formatter);
 
         // customize our domain/range labels
@@ -254,7 +231,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
 
         // get rid of decimal points in our range labels:
-        plot1.setRangeValueFormat(new DecimalFormat("0"));
+        plot1.setRangeValueFormat(new DecimalFormat("###.##"));
 
 //        plot1.getLayoutManager().remove(plot1.getDomainLabelWidget());
 //        plot1.getLegendWidget().setVisible(false);
@@ -657,12 +634,14 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
     private void updateTime (long timeStamp) {
 
         TextView time = (TextView) getView().findViewById(R.id.text_time);
-        long dv = timeStamp *1000;// its need to be in millisecond
-        Date df = new java.util.Date(dv);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-        sdf.setTimeZone(TimeZone.getDefault());
-        String vv = sdf.format(df);
-        time.setText(vv);
+        if (time != null) {
+            long dv = timeStamp * 1000;// its need to be in millisecond
+            Date df = new java.util.Date(dv);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+            sdf.setTimeZone(TimeZone.getDefault());
+            String vv = sdf.format(df);
+            time.setText(vv);
+        }
 
         TextView ago = (TextView) getView().findViewById(R.id.text_ago);
         ago.setText(getTimeSince(getActivity().getApplicationContext(), timeStamp));

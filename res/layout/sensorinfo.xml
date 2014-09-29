@@ -164,12 +164,12 @@
 
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/text_lastupdate"
-                android:id="@+id/textView"
-                android:layout_marginRight="10dp" />
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="@string/text_lastupdate"-->
+                <!--android:id="@+id/textView"-->
+                <!--android:layout_marginRight="10dp" />-->
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -179,8 +179,15 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="time"
-                    android:id="@+id/text_time" />
+                    android:text="@string/text_lastupdate"
+                    android:id="@+id/textView"
+                   />
+
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="time"-->
+                    <!--android:id="@+id/text_time" />-->
 
                 <TextView
                     android:layout_width="wrap_content"
