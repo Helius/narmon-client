@@ -211,11 +211,11 @@
                 android:layout_weight="1">
 
 
-                <LinearLayout
+                <com.ghelius.narodmon.MultitouchPlot
                     android:orientation="vertical"
                     android:layout_width="fill_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/sensorInfoChart" />
+                    android:id="@+id/plot1" />
 
                 <ProgressBar
                     android:indeterminate="true"

@@ -94,6 +94,7 @@ public class MultitouchPlot extends XYPlot implements OnTouchListener
                     maxYSeriesValue = series.getY(i);
             }
 		}
+        setDomainBoundaries(minXSeriesValue, maxXSeriesValue, BoundaryMode.AUTO);
 		return super.addSeries(series, formatter);
 	}
 
