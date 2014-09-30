@@ -98,6 +98,12 @@ public class MultitouchPlot extends XYPlot implements OnTouchListener
 		return super.addSeries(series, formatter);
 	}
 
+    public Number getMinYSeriesValue () {
+        return minYSeriesValue;
+    }
+    public Number getMaxYSeriesValue () {
+        return maxYSeriesValue;
+    }
 
 	public boolean onTouch(View view, MotionEvent motionEvent)
 	{

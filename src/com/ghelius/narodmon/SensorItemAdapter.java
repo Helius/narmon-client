@@ -254,10 +254,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             }
 
 			if (sensor.my) {
-                Log.d(TAG, "it's mine");
                 holder.name.setTextColor(Color.argb(0xFF, 0x33, 0xb5, 0xe5));
             } else {
-                Log.d(TAG, "it's NOT mine");
                 holder.name.setTextColor(Color.WHITE);
             }
 
