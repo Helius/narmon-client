@@ -114,9 +114,8 @@ public class MultitouchPlot extends XYPlot implements OnTouchListener
             if (m.getValue().doubleValue() < minYSeriesValue.doubleValue())
                 minYSeriesValue = m.getValue().doubleValue();
         }
-//        Log.d(TAG, "new bound is: min " + minYSeriesValue.doubleValue() + ", max " + maxYSeriesValue.doubleValue());
         setDomainBoundaries(minXSeriesValue, maxXSeriesValue, BoundaryMode.FIXED);
-        setRangeBoundaries(minYSeriesValue, maxYSeriesValue, BoundaryMode.FIXED);
+        setRangeBoundaries(minYSeriesValue, maxYSeriesValue, BoundaryMode.AUTO);
 		return super.addSeries(series, formatter);
 	}
 
