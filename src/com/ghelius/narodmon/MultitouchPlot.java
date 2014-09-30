@@ -3,13 +3,17 @@ package com.ghelius.narodmon;
 import android.content.Context;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+
+import com.androidplot.xy.XValueMarker;
 import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeriesFormatter;
+import com.androidplot.xy.YValueMarker;
 
 /**
  * 
@@ -34,6 +38,7 @@ public class MultitouchPlot extends XYPlot implements OnTouchListener
 	static final private int ONE_FINGER_DRAG = 1;
 	static final private int TWO_FINGERS_DRAG = 2;
 	private int mode = NONE;
+    static final private String TAG = "plot";
 
 	private Number minXSeriesValue;
 	private Number maxXSeriesValue;
@@ -77,6 +82,13 @@ public class MultitouchPlot extends XYPlot implements OnTouchListener
         this.listener = listener;
     }
 
+    public void clearBoundaryValue() {
+        minXSeriesValue = null;
+        maxXSeriesValue = null;
+        minYSeriesValue = null;
+        maxYSeriesValue = null;
+    }
+
 	public boolean addSeries(XYSeries series, XYSeriesFormatter formatter)
 	{
 		//Overriden to compute min and max series values
@@ -94,7 +106,17 @@ public class MultitouchPlot extends XYPlot implements OnTouchListener
                     maxYSeriesValue = series.getY(i);
             }
 		}
-        setDomainBoundaries(minXSeriesValue, maxXSeriesValue, BoundaryMode.AUTO);
+//        Log.d(TAG, "markers.size " + getYValueMarkers().size());
+        for (YValueMarker m: getYValueMarkers()) {
+//            Log.d(TAG, "marker value is " + m.getValue().doubleValue() + ", min " + minYSeriesValue.doubleValue() + ", max " + maxYSeriesValue.doubleValue());
+            if (m.getValue().doubleValue() > maxYSeriesValue.doubleValue())
+                maxYSeriesValue = m.getValue();
+            if (m.getValue().doubleValue() < minYSeriesValue.doubleValue())
+                minYSeriesValue = m.getValue().doubleValue();
+        }
+//        Log.d(TAG, "new bound is: min " + minYSeriesValue.doubleValue() + ", max " + maxYSeriesValue.doubleValue());
+        setDomainBoundaries(minXSeriesValue, maxXSeriesValue, BoundaryMode.FIXED);
+        setRangeBoundaries(minYSeriesValue, maxYSeriesValue, BoundaryMode.FIXED);
 		return super.addSeries(series, formatter);
 	}
 

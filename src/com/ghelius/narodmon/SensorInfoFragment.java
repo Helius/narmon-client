@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -195,7 +196,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
 
 	private void initChart() {
-
+        assert (plot != null);
         plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
         plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.GRAY);
         plot.getGraphWidget().getDomainGridLinePaint().
@@ -207,6 +208,8 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
         plot.getGraphWidget().getDomainLabelPaint().setTextSize(16);
         plot.getGraphWidget().getRangeLabelPaint().setTextSize(16);
+        plot.getGraphWidget().setRangeLabelHorizontalOffset(-40);
+        plot.getGraphWidget().setDrawMarkersEnabled(true);
 
 
         // Create a formatter to use for drawing a series using LineAndPointRenderer:
@@ -479,11 +482,32 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
                 values,
                 getTitle());
         plot.clear();
+
+
+        if (task!=null && task.job != AlarmSensorTask.NOTHING) {
+            Paint phi = new Paint();
+            Paint plo = new Paint();
+            phi.setColor(Color.RED);
+            plo.setColor(Color.BLUE);
+            YValueMarker mhi = new YValueMarker(task.hi, "High Limit");
+            YValueMarker mlo = new YValueMarker(task.lo, "Low Limit");
+            mhi.setLinePaint(phi);
+            mhi.setTextPaint(phi);
+            mlo.setLinePaint(plo);
+            mlo.setTextPaint(plo);
+            plot.removeYMarkers();
+            plot.addMarker(mlo);
+            plot.addMarker(mhi);
+        } else {
+            plot.removeMarkers();
+        }
+        plot.clearBoundaryValue();
         plot.addSeries(series, formatter);
+
         // draw a domain tick for each year:
 //        plot.setDomainStep(XYStepMode.SUBDIVIDE, 16);
-//        float step =(plot.getMaxYSeriesValue().floatValue() - plot.getMinYSeriesValue().floatValue())/10;
-        plot.setRangeStep(XYStepMode.SUBDIVIDE, 10);
+//        float step =(Math.floor(plot.getMaxYSeriesValue().doubleValue()) - Math.floor(plot.getMinYSeriesValue().doubleValue()) )/10;
+        plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
         plot.redraw();
 
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
