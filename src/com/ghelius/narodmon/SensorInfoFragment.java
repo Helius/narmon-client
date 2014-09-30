@@ -313,62 +313,6 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         // by default, AndroidPlot displays developer guides to aid in laying out your plot.
         // To get rid of them call disableAllMarkup():
         //plot.disableAllMarkup();
-
-
-//		Log.d(TAG,"init chart");
-//        mHiLevel = new TimeSeries("hi level");
-//        mLowLevel = new TimeSeries("low level");
-//		timeSeries = new TimeSeries("value");
-//		while (mDataset.getSeriesCount() != 0) {
-//            Log.d(TAG,"removeSeries");
-//			mDataset.removeSeries(mDataset.getSeriesCount()-1);
-//        }
-//		mDataset.addSeries(timeSeries);
-//        mDataset.addSeries(mHiLevel);
-//        mDataset.addSeries(mLowLevel);
-//		mCurrentRenderer = new XYSeriesRenderer();
-//        mCurrentRendereHiLevel = new XYSeriesRenderer();
-//        mCurrentRendereLowLevel = new XYSeriesRenderer();
-//
-//		mRenderer.removeAllRenderers();
-//		mRenderer.addSeriesRenderer(mCurrentRenderer);
-//        mRenderer.addSeriesRenderer(mCurrentRendereHiLevel);
-//        mRenderer.addSeriesRenderer(mCurrentRendereLowLevel);
-//
-//		mRenderer.setShowLabels(true);
-//		mRenderer.setShowGrid(true);
-//		mRenderer.setGridColor(0xFF505050);
-//
-//		mRenderer.setXTitle(getString(R.string.text_today));
-//		mRenderer.setYLabels(18);
-//		mRenderer.setPointSize(2f);
-//		mRenderer.setAxisTitleTextSize(20);
-//		mRenderer.setChartTitleTextSize(20);
-//		mRenderer.setLabelsTextSize(18);
-//		mRenderer.setLegendTextSize(18);
-//		mRenderer.setYLabelsPadding(-20);
-//		mRenderer.setXLabelsAlign(Paint.Align.CENTER);
-//		mRenderer.setXLabels(12);
-//
-//        mRenderer.setLegendHeight(10);
-////        mRenderer.setShowLabels(false);
-//        mRenderer.setShowLegend(false);
-//
-//
-//		mCurrentRenderer.setColor(0xFF00FF00);
-//		mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
-//		mCurrentRenderer.setFillPoints(true);
-//		mCurrentRenderer.setChartValuesTextSize(18);
-//
-//        mCurrentRendereHiLevel.setColor(0xFFFF4040);
-//        mCurrentRendereHiLevel.setFillPoints(true);
-//        mCurrentRendereHiLevel.setChartValuesTextSize(18);
-//        mCurrentRendereHiLevel.setLineWidth(2);
-//
-//        mCurrentRendereLowLevel.setColor(0xFF4040FF);
-//        mCurrentRendereLowLevel.setFillPoints(true);
-//        mCurrentRendereLowLevel.setChartValuesTextSize(18);
-//        mCurrentRendereLowLevel.setLineWidth(2);
 	}
 
 	private void addSampleData() {
@@ -388,72 +332,6 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 			max_gap = 24*60*60; //day
 		}
 
-//		if (oldPeriod != period) { // period was change, we need to create new mChart with other date-time format
-//			Log.d(TAG,"recreate chart");
-//			LinearLayout layout = (LinearLayout) getActivity().findViewById(R.id.sensorInfoChart);
-//			layout.removeAllViews();
-//			if (period == LogPeriod.day) {
-//				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "H:mm");
-//			} else if (period == LogPeriod.week) {
-//				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "E");
-//			} else if (period == LogPeriod.month) {
-//				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "d");
-//			} else if (period == LogPeriod.year) {
-//				mChart = ChartFactory.getTimeChartView(getActivity().getApplicationContext(), mDataset, mRenderer, "M.d");
-//			}
-//			oldPeriod = period;
-//			layout.addView(mChart);
-//		}
-//		timeSeries.clear();
-//        mHiLevel.clear();
-//        mLowLevel.clear();
-//		if (!logData.isEmpty()) {
-//            Log.d(TAG,"logData isn't empty: " + logData.size());
-//			long prevTime = logData.get(0).time;
-//			float max = logData.get(0).value;
-//			float min = logData.get(0).value;
-//            float summ = 0;
-//            if (task != null && logData.size()>1) {
-//                Log.d(TAG,"task not null");
-//                if (task.job != AlarmSensorTask.NOTHING) {
-//                    Log.d(TAG,"add hi level");
-//                    mHiLevel.add((logData.get(0).time-1)*1000, task.hi);
-//                    mHiLevel.add((logData.get(logData.size()-1).time-1)*1000, task.hi);
-//                }
-//                if (task.job == AlarmSensorTask.OUT_OF || task.job == AlarmSensorTask.WITHIN_OF) {
-//                    Log.d(TAG,"add low level");
-//                    mLowLevel.add((logData.get(0).time-1)*1000, task.lo);
-//                    mLowLevel.add((logData.get(logData.size()-1).time-1)*1000, task.lo);
-//                }
-//            }
-//			for (Point data : logData) {
-//                summ +=data.value;
-//				if (data.value > max) max = data.value;
-//				if (data.value < min) min = data.value;
-//				timeSeries.add((data.time * 1000), data.value);
-////                Log.d(TAG,"cur:"+data.time + " prev:" + prevTime + " diff:" + (data.time-prevTime));
-//				if ((data.time - prevTime) > max_gap) {
-//					timeSeries.add(((data.time - 1) * 1000), MathHelper.NULL_VALUE);
-//				}
-//				prevTime = data.time;
-//			}
-//			mRenderer.initAxesRange(1);
-//            TextView seriesInfo = (TextView) getView().findViewById(R.id.series_info);
-//            if (seriesInfo != null) {
-//                seriesInfo.setText("max: " + max + "\navg: " + String.format("%.2f%n", summ/logData.size())+ "min: " + min );
-//            }
-//            if (task!=null && task.job != AlarmSensorTask.NOTHING) {
-//                min = task.lo < min ? task.lo : min;
-//                max = task.hi > max ? task.hi : max;
-//            }
-//			mRenderer.setYAxisMin(min-(max-min)/10);
-//			mRenderer.setYAxisMax(max+(max-min)/10);
-//
-//		} else {
-//            Log.e(TAG,"logData is empty: " + logData.size());
-//        }
-//        Log.d(TAG,"repaint");
-//		mChart.repaint();
         float summ = 0;
         Point max = new Point(Long.valueOf(0), Float.valueOf(0));
         Point min = new Point(Long.valueOf(0), Float.valueOf(0));
@@ -488,23 +366,23 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         plot.clear();
 
 
+        plot.removeMarkers();
         if (task!=null && task.job != AlarmSensorTask.NOTHING) {
             Paint phi = new Paint();
-            Paint plo = new Paint();
             phi.setColor(Color.RED);
-            plo.setColor(Color.BLUE);
             YValueMarker mhi = new YValueMarker(task.hi, "High Limit");
-            YValueMarker mlo = new YValueMarker(task.lo, "Low Limit");
             mhi.setLinePaint(phi);
             mhi.setTextPaint(phi);
+            plot.addMarker(mhi);
+            //TODO: for more_than and less_than only one line
+            Paint plo = new Paint();
+            plo.setColor(Color.BLUE);
+            YValueMarker mlo = new YValueMarker(task.lo, "Low Limit");
             mlo.setLinePaint(plo);
             mlo.setTextPaint(plo);
-            plot.removeYMarkers();
             plot.addMarker(mlo);
-            plot.addMarker(mhi);
-        } else {
-            plot.removeMarkers();
         }
+
 
         if (max.value - min.value > 1000)
             plot.setRangeValueFormat(new DecimalFormat("####"));
