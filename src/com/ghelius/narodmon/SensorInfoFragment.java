@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +33,6 @@ import com.androidplot.xy.*;
 import com.androidplot.ui.SizeLayoutType;
 import android.graphics.*;
 import java.text.*;
-import java.util.Arrays;
 import java.util.Date;
 
 public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomListener {
@@ -63,7 +61,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 //    private XYSeriesRenderer mCurrentRendereHiLevel ;
 //    private XYSeriesRenderer mCurrentRendereLowLevel ;
 
-    private MultitouchPlot plot1 = null;
+    private MultitouchPlot plot = null;
     LineAndPointFormatter formatter;
 
 	private SensorConfigChangeListener listener = null;
@@ -127,8 +125,8 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		logGetter = new SensorLogGetter();
 		View v = inflater.inflate(R.layout.sensorinfo, null);
-        plot1 = (MultitouchPlot) v.findViewById(R.id.plot1);
-        plot1.setZoomListener(this);
+        plot = (MultitouchPlot) v.findViewById(R.id.plot1);
+        plot.setZoomListener(this);
         return v;
 	}
 
@@ -198,17 +196,17 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
 	private void initChart() {
 
-        plot1.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
-        plot1.getGraphWidget().getDomainGridLinePaint().setColor(Color.GRAY);
-        plot1.getGraphWidget().getDomainGridLinePaint().
+        plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
+        plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.GRAY);
+        plot.getGraphWidget().getDomainGridLinePaint().
                 setPathEffect(new DashPathEffect(new float[]{1, 1}, 1));
-        plot1.getGraphWidget().getRangeGridLinePaint().setColor(Color.GRAY);
-        plot1.getGraphWidget().getRangeGridLinePaint().
+        plot.getGraphWidget().getRangeGridLinePaint().setColor(Color.GRAY);
+        plot.getGraphWidget().getRangeGridLinePaint().
                 setPathEffect(new DashPathEffect(new float[]{1, 1}, 1));
-        plot1.getGraphWidget().getDomainOriginLinePaint().setColor(Color.GRAY);
-        plot1.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
-        plot1.getGraphWidget().getDomainLabelPaint().setTextSize(16);
-        plot1.getGraphWidget().getRangeLabelPaint().setTextSize(16);
+        plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.GRAY);
+        plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
+        plot.getGraphWidget().getDomainLabelPaint().setTextSize(16);
+        plot.getGraphWidget().getRangeLabelPaint().setTextSize(16);
 
 
         // Create a formatter to use for drawing a series using LineAndPointRenderer:
@@ -219,32 +217,32 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
         formatter = new LineAndPointFormatter(Color.GREEN, Color.GREEN, Color.BLACK, null);
         formatter.setFillPaint(lineFill);
-//        plot1.getGraphWidget().setPaddingRight(+10);
-//        plot1.addSeries(series2, formatter);
+//        plot.getGraphWidget().setPaddingRight(+10);
+//        plot.addSeries(series2, formatter);
 
         // customize our domain/range labels
-//        plot1.setDomainLabel("Year");
-//        plot1.setRangeLabel("# of Sightings");
+//        plot.setDomainLabel("Year");
+//        plot.setRangeLabel("# of Sightings");
 
 
         // get rid of decimal points in our range labels:
-        plot1.setRangeValueFormat(new DecimalFormat("###.##"));
-        plot1.getGraphWidget().setSize(new SizeMetrics(
+        plot.setRangeValueFormat(new DecimalFormat("###.##"));
+        plot.getGraphWidget().setSize(new SizeMetrics(
                 20, SizeLayoutType.FILL,
                 -5, SizeLayoutType.FILL));
 
-//        plot1.getLayoutManager().remove(plot1.getDomainLabelWidget());
-//        plot1.getLegendWidget().setVisible(false);
-//        plot1.getGraphWidget().setGridBackgroundPaint(null);
-//        plot1.getGraphWidget().setDomainOriginLinePaint(null);
-//        plot1.getGraphWidget().setRangeOriginLinePaint(null);
+//        plot.getLayoutManager().remove(plot.getDomainLabelWidget());
+//        plot.getLegendWidget().setVisible(false);
+//        plot.getGraphWidget().setGridBackgroundPaint(null);
+//        plot.getGraphWidget().setDomainOriginLinePaint(null);
+//        plot.getGraphWidget().setRangeOriginLinePaint(null);
 //        http://stackoverflow.com/questions/13761455/androidplot-remove-domain-values-from-graphwidget
 
 //        if (!mBackgroundOn) {
             // remove the background stuff.
-            plot1.setBackgroundPaint(null);
-            plot1.getGraphWidget().setBackgroundPaint(null);
-            plot1.getGraphWidget().setGridBackgroundPaint(null);
+            plot.setBackgroundPaint(null);
+            plot.getGraphWidget().setBackgroundPaint(null);
+            plot.getGraphWidget().setGridBackgroundPaint(null);
 //        }
 
 //        if (!mKeyOn)
@@ -259,7 +257,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 //        }
 //        if (!mBoarderOn){
 //            //mDynamicPlot.setDrawBorderEnabled(false);
-            plot1.setBorderPaint(null);
+            plot.setBorderPaint(null);
 //        }if (!mRangeLabelOn)
 //            mDynamicPlot.getLayoutManager().remove(
 //                    mDynamicPlot.getRangeLabelWidget());
@@ -278,7 +276,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 //        }
 
 
-        plot1.setDomainValueFormat(new Format() {
+        plot.setDomainValueFormat(new Format() {
 
             // create a simple date format that draws on the year portion of our timestamp.
             // see http://download.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
@@ -314,7 +312,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
         // by default, AndroidPlot displays developer guides to aid in laying out your plot.
         // To get rid of them call disableAllMarkup():
-        //plot1.disableAllMarkup();
+        //plot.disableAllMarkup();
 
 
 //		Log.d(TAG,"init chart");
@@ -480,13 +478,13 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
                 times,
                 values,
                 getTitle());
-        plot1.clear();
-        plot1.addSeries(series, formatter);
+        plot.clear();
+        plot.addSeries(series, formatter);
         // draw a domain tick for each year:
-//        plot1.setDomainStep(XYStepMode.SUBDIVIDE, 16);
-//        float step =(plot1.getMaxYSeriesValue().floatValue() - plot1.getMinYSeriesValue().floatValue())/10;
-        plot1.setRangeStep(XYStepMode.SUBDIVIDE, 10);
-        plot1.redraw();
+//        plot.setDomainStep(XYStepMode.SUBDIVIDE, 16);
+//        float step =(plot.getMaxYSeriesValue().floatValue() - plot.getMinYSeriesValue().floatValue())/10;
+        plot.setRangeStep(XYStepMode.SUBDIVIDE, 10);
+        plot.redraw();
 
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
 	}
