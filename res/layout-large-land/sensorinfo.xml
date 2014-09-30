@@ -146,10 +146,15 @@
                         android:layout_height="wrap_content"
                         android:text="Termometr"
                         android:id="@+id/text_type" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
                         android:text="@string/text_lastupdate"
                         android:layout_marginRight="10dp" />
                     <TextView
@@ -157,7 +162,7 @@
                         android:layout_height="wrap_content"
                         android:text="agoTime"
                         android:id="@+id/text_ago"
-                         />
+                        />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -165,7 +170,7 @@
                         android:text="@string/text_ago"
                         android:id="@+id/textView6"
                         android:layout_marginLeft="5dp" />
-                </LinearLayout>
+                    </LinearLayout>
 
 
                 <!--<LinearLayout-->
@@ -243,6 +248,11 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.5">
 
+                <com.ghelius.narodmon.MultitouchPlot
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/plot1"/>
                 <TextView
                     android:id="@+id/series_info"
                     android:singleLine="false"
@@ -251,11 +261,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.ghelius.narodmon.MultitouchPlot
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/plot1"/>
 
                 <ProgressBar
                     android:indeterminate="true"

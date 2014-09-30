@@ -200,8 +200,14 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
         plot.getGraphWidget().getDomainLabelPaint().setTextSize(16);
         plot.getGraphWidget().getRangeLabelPaint().setTextSize(16);
-        plot.getGraphWidget().setRangeLabelHorizontalOffset(-40);
+        plot.getGraphWidget().setRangeLabelHorizontalOffset(-50);
+        Paint p = new Paint();
+        p.setTextSize(16);
+        p.setColor(Color.WHITE);
+        plot.getLegendWidget().setTextPaint(p);
         plot.getGraphWidget().setDrawMarkersEnabled(true);
+        plot.getLegendWidget().setHeight(90);
+
 
 
         // Create a formatter to use for drawing a series using LineAndPointRenderer:
@@ -221,10 +227,9 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
 
         // get rid of decimal points in our range labels:
-        plot.setRangeValueFormat(new DecimalFormat("###.##"));
         plot.getGraphWidget().setSize(new SizeMetrics(
-                20, SizeLayoutType.FILL,
-                -5, SizeLayoutType.FILL));
+                0, SizeLayoutType.FILL,
+                -40, SizeLayoutType.FILL));
 
 //        plot.getLayoutManager().remove(plot.getDomainLabelWidget());
 //        plot.getLegendWidget().setVisible(false);
@@ -450,16 +455,22 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 //        Log.d(TAG,"repaint");
 //		mChart.repaint();
         float summ = 0;
-        Float max = null;
-        Float min = null;
+        Point max = new Point(Long.valueOf(0), Float.valueOf(0));
+        Point min = new Point(Long.valueOf(0), Float.valueOf(0));
         long prevTime = -1;
         ArrayList<Number> values = new ArrayList<Number>();
         ArrayList<Number> times = new ArrayList<Number>();
 
         for (Point data : logData) {
             summ += data.value;
-            if (max == null || data.value > max) max = data.value;
-            if (min == null || data.value < min) min = data.value;
+            if (max.time == 0 || data.value > max.value) {
+                max.value = data.value;
+                max.time = data.time;
+            }
+            if (min.time == 0 || data.value < min.value) {
+                min.value = data.value;
+                min.time = data.time;
+            }
             if ((data.time - prevTime) > max_gap) {
                 values.add(null);
                 times.add(data.time-1);
@@ -494,15 +505,26 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         } else {
             plot.removeMarkers();
         }
+
+        if (max.value - min.value > 1000)
+            plot.setRangeValueFormat(new DecimalFormat("####"));
+        else if (max.value - min.value > 100)
+            plot.setRangeValueFormat(new DecimalFormat("###.#"));
+        else if (max.value- min.value > 10)
+            plot.setRangeValueFormat(new DecimalFormat("##.##"));
+
+//        plot.getGraphWidget().setDomainCursorPosition(max.time);
+//        plot.getGraphWidget().setRangeCursorPosition(max.value-10);
+//        plot.setCursorPosition(min.time, min.value);
+
         plot.clearBoundaryValue();
         plot.addSeries(series, formatter);
-
-        plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
+        plot.setRangeStep(XYStepMode.SUBDIVIDE, 10);
         plot.redraw();
 
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
         if (seriesInfo != null)
-            seriesInfo.setText("max: " + max + "\navg: " + String.format("%.2f%n", summ/logData.size())+ "min: " + min );
+            seriesInfo.setText("max: " + max.value + "\navg: " + String.format("%.2f%n", summ/logData.size())+ "min: " + min.value );
 	}
 
 	@Override
