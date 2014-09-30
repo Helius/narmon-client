@@ -52,16 +52,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
     private int type;
     AlarmSensorTask task = null;
 
-//	private GraphicalView mChart;
-//	private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
-//	private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
-//	private TimeSeries timeSeries;
-//    private TimeSeries mHiLevel;
-//    private TimeSeries mLowLevel;
-//	private XYSeriesRenderer mCurrentRenderer;
-//    private XYSeriesRenderer mCurrentRendereHiLevel ;
-//    private XYSeriesRenderer mCurrentRendereLowLevel ;
-
+    TextView seriesInfo;
     private MultitouchPlot plot = null;
     LineAndPointFormatter formatter;
 
@@ -128,6 +119,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 		View v = inflater.inflate(R.layout.sensorinfo, null);
         plot = (MultitouchPlot) v.findViewById(R.id.plot1);
         plot.setZoomListener(this);
+        seriesInfo = (TextView) v.findViewById(R.id.series_info);
         return v;
 	}
 
@@ -457,16 +449,17 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 //        }
 //        Log.d(TAG,"repaint");
 //		mChart.repaint();
-//        float summ = 0;
-//        summ +=
+        float summ = 0;
+        Float max = null;
+        Float min = null;
+        long prevTime = -1;
         ArrayList<Number> values = new ArrayList<Number>();
         ArrayList<Number> times = new ArrayList<Number>();
-        long prevTime = -1;
-        for (Point data : logData) {
 
-//            summ += data.value;
-//            if (data.value > max) max = data.value;
-//            if (data.value < min) min = data.value;
+        for (Point data : logData) {
+            summ += data.value;
+            if (max == null || data.value > max) max = data.value;
+            if (min == null || data.value < min) min = data.value;
             if ((data.time - prevTime) > max_gap) {
                 values.add(null);
                 times.add(data.time-1);
@@ -504,13 +497,12 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         plot.clearBoundaryValue();
         plot.addSeries(series, formatter);
 
-        // draw a domain tick for each year:
-//        plot.setDomainStep(XYStepMode.SUBDIVIDE, 16);
-//        float step =(Math.floor(plot.getMaxYSeriesValue().doubleValue()) - Math.floor(plot.getMinYSeriesValue().doubleValue()) )/10;
         plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 10);
         plot.redraw();
 
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
+        if (seriesInfo != null)
+            seriesInfo.setText("max: " + max + "\navg: " + String.format("%.2f%n", summ/logData.size())+ "min: " + min );
 	}
 
 	@Override
