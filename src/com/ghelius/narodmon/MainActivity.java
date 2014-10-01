@@ -105,13 +105,13 @@ public class MainActivity extends ActionBarActivity implements
                 //Enable Up button only  if there are entries in the back stack
                 boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
                 if (canBack) {
-                    if (mOptionsMenu != null) {
-                        mOptionsMenu.clear();
-                    }
-                    clearOptionsMenu = true;
+//                    if (mOptionsMenu != null) {
+//                        mOptionsMenu.clear();
+//                    }
+//                    clearOptionsMenu = true;
                 } else {
                     clearOptionsMenu = false;
-                    supportInvalidateOptionsMenu();
+//                    supportInvalidateOptionsMenu();
                     View v = findViewById(R.id.content_frame1);
                     if (v != null)
                         v.setVisibility(View.GONE);
@@ -476,7 +476,7 @@ public class MainActivity extends ActionBarActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         mOptionsMenu = menu;
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.icon_menu, menu);
+        inflater.inflate(R.menu.main_menu, menu);
         setRefreshProgress(showRefreshProgress);
         if (clearOptionsMenu) {
             mOptionsMenu.clear();

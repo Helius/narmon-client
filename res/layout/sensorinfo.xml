@@ -37,39 +37,6 @@
                 android:textSize="30dp"
                 android:layout_gravity="center_vertical" />
         </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageButton
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:id="@+id/addMonitoring"
-                android:src="@drawable/btn_star_big_off"
-                android:layout_gravity="center"
-                android:clickable="true"
-                android:background="#000000FF"
-                android:adjustViewBounds="false"
-                android:scaleType="fitCenter"
-                android:layout_marginRight="3dp"
-                android:layout_marginLeft="3dp"
-                android:layout_marginTop="3dp" />
-
-            <ImageButton
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:id="@+id/alarmSetup"
-                android:src="@drawable/alarm_blue"
-                android:layout_gravity="center"
-                android:clickable="true"
-                android:scaleType="fitCenter"
-                android:background="#000000FF"
-                android:layout_marginRight="3dp"
-                android:layout_marginLeft="3dp"
-                android:layout_marginTop="10dp" />
-        </LinearLayout>
     </LinearLayout>
 
     <HorizontalScrollView

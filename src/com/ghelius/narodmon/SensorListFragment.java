@@ -5,6 +5,9 @@ import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -107,7 +110,6 @@ public class SensorListFragment extends ListFragment {
         getListView().addFooterView(more);
     }
 
-
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		if (listener != null)
@@ -115,4 +117,33 @@ public class SensorListFragment extends ListFragment {
 		super.onListItemClick(l, v, position, id);
 	}
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.icon_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onCreate (Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//
+//        // Handle action buttons
+//        switch (item.getItemId()) {
+//            case R.id.menu_refresh:
+//                Log.d(TAG, "refresh menu pressed...");
+////                getSensorsList(deviceRequestLimit);
+//                break;
+//            case R.id.menu_filter:
+//                Log.d(TAG, "filte menu pressed..");
+////                getSensorsList(deviceRequestLimit);
+//                break;
+//            default:
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 }

@@ -5,21 +5,10 @@
           android:icon="@drawable/ic_action_refresh"
           android:onClick="onUpdateBtnPress"
           app:showAsAction="always"/>
-    <item android:id="@+id/item1"
+    <item android:id="@+id/menu_filter"
           android:title="@string/menu_text_filter"
           android:icon="@drawable/ic_action_sort_by_size"
           app:showAsAction="always"
           android:onClick="showFilterDialog"
           />
-<group android:id="@+id/group">
-    <item android:id="@+id/menu_login"
-          android:title="@string/menu_autorisation_name"
-            />
-    <item android:id="@+id/menu_settings"
-          android:title="@string/menu_settings_text"
-            />
-    <item android:id="@+id/menu_help"
-          android:title="@string/menu_helppage_text"
-            />
-</group>
 </menu>

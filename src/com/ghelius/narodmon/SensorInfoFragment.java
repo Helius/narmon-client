@@ -8,12 +8,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,17 +47,29 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 	private int offset = 0;
 	private LogPeriod period = LogPeriod.day;
 	private SensorLogGetter logGetter;
-	private LogPeriod oldPeriod;
 	private TextView sensorValueUnitText;
     private float currentValue;
     private int type;
     AlarmSensorTask task = null;
+    Menu menu = null;
+    AlarmsSetupDialog dialog = null;
 
     TextView seriesInfo;
     private MultitouchPlot plot = null;
     LineAndPointFormatter formatter;
 
 	private SensorConfigChangeListener listener = null;
+
+    private void setMenuIcon (int itemId, int drawableId) {
+        if (menu == null) {
+            return;
+        }
+        MenuItem i = menu.findItem(itemId);
+        if (i != null)
+            i.setIcon(drawableId);
+        else
+            Log.e(TAG,"menuItem is null");
+    }
 
     public void setSensor(Sensor tmpS) {
         sensor = tmpS;
@@ -110,7 +123,18 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 	}
+
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.sensor_info_menu, menu);
+        this.menu = menu;
+        super.onCreateOptionsMenu(menu, inflater);
+        updateMenuIcons();
+    }
+
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -121,6 +145,32 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         seriesInfo = (TextView) v.findViewById(R.id.series_info);
         return v;
 	}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // Handle action buttons
+        switch (item.getItemId()) {
+            case R.id.menu_alarm:
+                Log.d(TAG,"alarm menu pressed...");
+                showAlarmSetupDialog();
+                break;
+            case R.id.menu_favorites:
+                Log.d(TAG,"favorites menu pressed...");
+                ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavoritesId();
+                if (favorites.contains(sensorId))
+                    DatabaseManager.getInstance().removeFavorites(sensorId);
+                else
+                    DatabaseManager.getInstance().addFavorites(sensor.id, sensor.deviceId);
+                updateMenuIcons();
+                if (listener != null)
+                    listener.favoritesChanged();
+                break;
+            default:
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 	public void setId(int id) {
         Log.d(TAG,"set id: " + id);
@@ -187,7 +237,11 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
 
 	private void initChart() {
-        assert (plot != null);
+        if (plot == null) {
+            Log.e(TAG,"plot is null!");
+            return;
+        }
+
         plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
         plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.GRAY);
         plot.getGraphWidget().getDomainGridLinePaint().
@@ -415,6 +469,22 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         initChart();
 	}
 
+    private void updateMenuIcons () {
+        // init menu icon
+        ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavoritesId();
+        if (favorites.contains(sensorId)) { // we are favorite!
+            setMenuIcon(R.id.menu_favorites, R.drawable.btn_star_big_on);
+        } else {
+            setMenuIcon(R.id.menu_favorites, R.drawable.btn_star_big_off);
+        }
+        task = DatabaseManager.getInstance().getAlarmById(sensor.id);
+        if (task == null || task.job == AlarmSensorTask.NOTHING) {
+            setMenuIcon(R.id.menu_alarm, R.drawable.alarm_gray);
+        } else {
+            setMenuIcon(R.id.menu_alarm, R.drawable.alarm_blue);
+        }
+    }
+
     public void loadInfo () {
         if (getActivity()==null) {
             Log.e(TAG,"loadInfo: getActivity return null");
@@ -500,47 +570,12 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         });
 
 
-        final ImageButton monitor = (ImageButton) getActivity().findViewById(R.id.addMonitoring);
-
-
-        ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavoritesId();
-        if (favorites.contains(sensorId)) { // we are favorite!
-            monitor.setImageResource(R.drawable.btn_star_big_on);
-        } else {
-            monitor.setImageResource(R.drawable.btn_star_big_off);
-        }
-        monitor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG,"monitoring onClick");
-                ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavoritesId();
-                if (favorites.contains(sensorId)) { // we are favorite!
-                    // remove us
-                    DatabaseManager.getInstance().removeFavorites(sensorId);
-                    monitor.setImageResource(R.drawable.btn_star_big_off);
-                } else {
-                    // add us
-                    //TODO: wtf, sensorId instead sensor.id?
-                    DatabaseManager.getInstance().addFavorites(sensorId, sensor.deviceId);
-                    monitor.setImageResource(R.drawable.btn_star_big_on);
-                }
-                if (listener != null)
-                    listener.favoritesChanged();
-            }
-        });
-
-        final ImageButton alarm = (ImageButton) getActivity().findViewById(R.id.alarmSetup);
-        final AlarmsSetupDialog dialog = new AlarmsSetupDialog();
+        dialog = new AlarmsSetupDialog();
         dialog.setOnAlarmChangeListener(new AlarmsSetupDialog.AlarmChangeListener() {
             @Override
             public void onAlarmChange(AlarmSensorTask task_) {
                 task = task_;
                 Log.d(TAG, task.toString());
-                if (task.job == AlarmSensorTask.NOTHING) {
-                    ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_gray);
-                } else {
-                    ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_blue);
-                }
                 task.lastValue = currentValue;
                 //task.deviceId = sensor.deviceId;
                 if (task.job == AlarmSensorTask.NOTHING)
@@ -549,38 +584,28 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
                     DatabaseManager.getInstance().addAlarmTask(task);
                 if (listener!=null)
                     listener.alarmChanged();
-
+                updateMenuIcons();
                 addSampleData();
             }
         });
-        final Sensor s = sensor;
 
-        task = DatabaseManager.getInstance().getAlarmById(s.id);
-        if (task == null || task.job == AlarmSensorTask.NOTHING) {
-            ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_gray);
-        } else {
-            ((ImageButton) getActivity().findViewById(R.id.alarmSetup)).setImageResource(R.drawable.alarm_blue);
-        }
-        alarm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.setCurrentValue(currentValue);
-
-                AlarmSensorTask task = DatabaseManager.getInstance().getAlarmById(s.id);
-                if (task != null) {
-                    Log.d(TAG, "Found: SensorTask " + task);
-                } else {
-                    task = new AlarmSensorTask(sensorId, s.deviceId, 0, 0f, 0f, currentValue, s.name);
-                    Log.e(TAG, "sensorTask not found, create empty:" + task.toString());
-//                    DatabaseManager.getInstance().addAlarmTask(task);
-                }
-                dialog.setSensorTask(task);
-                dialog.show(getActivity().getSupportFragmentManager(), "alarmDialog");
-            }
-        });
-
-        oldPeriod = LogPeriod.year; // for create chart (in updateFilter)
+        updateMenuIcons();
         startTimer();
+    }
+
+    private void showAlarmSetupDialog () {
+        dialog.setCurrentValue(currentValue);
+
+        AlarmSensorTask task = DatabaseManager.getInstance().getAlarmById(sensor.id);
+        if (task != null) {
+            Log.d(TAG, "Found: SensorTask " + task);
+        } else {
+            task = new AlarmSensorTask(sensorId, sensor.deviceId, 0, 0f, 0f, currentValue, sensor.name);
+            Log.e(TAG, "sensorTask not found, create empty:" + task.toString());
+//                    DatabaseManager.getInstance().addAlarmTask(task);
+        }
+        dialog.setSensorTask(task);
+        dialog.show(getActivity().getSupportFragmentManager(), "alarmDialog");
     }
 
     private void updateTime (long timeStamp) {
