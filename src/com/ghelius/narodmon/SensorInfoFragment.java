@@ -440,12 +440,13 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         }
 
 
-        if (max.value - min.value > 1000)
-            plot.setRangeValueFormat(new DecimalFormat("####"));
-        else if (max.value - min.value > 100)
-            plot.setRangeValueFormat(new DecimalFormat("###.#"));
+//        if (max.value - min.value > 1000)
+//            plot.setRangeValueFormat(new DecimalFormat("####"));
+        //else
+        if (max.value - min.value > 100)
+            plot.setRangeValueFormat(new DecimalFormat("###"));
         else if (max.value- min.value > 10)
-            plot.setRangeValueFormat(new DecimalFormat("##.##"));
+            plot.setRangeValueFormat(new DecimalFormat("##.#"));
 
 //        plot.getGraphWidget().setDomainCursorPosition(max.time);
 //        plot.getGraphWidget().setRangeCursorPosition(max.value-10);
