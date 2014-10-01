@@ -42,7 +42,7 @@
             android:layout_width="25dp"
             android:layout_height="match_parent"
             android:layout_marginRight="5dp"
-            android:src="@drawable/btn_star_small_on" />
+            android:src="@drawable/ic_action_important" />
 
         <ImageView
             android:id="@+id/alarmIcon"
