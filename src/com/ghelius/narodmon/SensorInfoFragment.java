@@ -110,7 +110,6 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-//		initChart();
 	}
 
 	@Override
