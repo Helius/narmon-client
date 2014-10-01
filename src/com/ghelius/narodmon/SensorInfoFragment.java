@@ -473,9 +473,9 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         // init menu icon
         ArrayList<Integer> favorites = DatabaseManager.getInstance().getFavoritesId();
         if (favorites.contains(sensorId)) { // we are favorite!
-            setMenuIcon(R.id.menu_favorites, R.drawable.btn_star_big_on);
+            setMenuIcon(R.id.menu_favorites, R.drawable.ic_action_important);
         } else {
-            setMenuIcon(R.id.menu_favorites, R.drawable.btn_star_big_off);
+            setMenuIcon(R.id.menu_favorites, R.drawable.ic_action_not_important);
         }
         task = DatabaseManager.getInstance().getAlarmById(sensor.id);
         if (task == null || task.job == AlarmSensorTask.NOTHING) {

@@ -53,37 +53,37 @@
                     android:ellipsize="none" />
 
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0">
+                <!--<LinearLayout-->
+                    <!--android:orientation="horizontal"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="0">-->
 
-                    <ImageButton
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:id="@+id/addMonitoring"
-                        android:src="@drawable/btn_star_big_off"
-                        android:layout_marginRight="10dp"
-                        android:clickable="true"
-                        android:background="#000000FF"
-                        android:adjustViewBounds="false"
-                        android:scaleType="fitCenter"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="10dp" />
+                    <!--<ImageButton-->
+                        <!--android:layout_width="40dp"-->
+                        <!--android:layout_height="40dp"-->
+                        <!--android:id="@+id/addMonitoring"-->
+                        <!--android:src="@drawable/btn_star_big_off"-->
+                        <!--android:layout_marginRight="10dp"-->
+                        <!--android:clickable="true"-->
+                        <!--android:background="#000000FF"-->
+                        <!--android:adjustViewBounds="false"-->
+                        <!--android:scaleType="fitCenter"-->
+                        <!--android:layout_marginLeft="10dp"-->
+                        <!--android:layout_marginTop="10dp" />-->
 
-                    <ImageButton
-                        android:layout_width="30dp"
-                        android:layout_height="40dp"
-                        android:id="@+id/alarmSetup"
-                        android:src="@drawable/alarm_blue"
-                        android:layout_marginRight="10dp"
-                        android:clickable="true"
-                        android:scaleType="fitCenter"
-                        android:background="#000000FF"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="10dp" />
-                </LinearLayout>
+                    <!--<ImageButton-->
+                        <!--android:layout_width="30dp"-->
+                        <!--android:layout_height="40dp"-->
+                        <!--android:id="@+id/alarmSetup"-->
+                        <!--android:src="@drawable/alarm_blue"-->
+                        <!--android:layout_marginRight="10dp"-->
+                        <!--android:clickable="true"-->
+                        <!--android:scaleType="fitCenter"-->
+                        <!--android:background="#000000FF"-->
+                        <!--android:layout_marginLeft="10dp"-->
+                        <!--android:layout_marginTop="10dp" />-->
+                <!--</LinearLayout>-->
             </LinearLayout>
 
             <TextView
