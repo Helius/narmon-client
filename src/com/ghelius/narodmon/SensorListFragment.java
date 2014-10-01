@@ -131,6 +131,10 @@ public class SensorListFragment extends ListFragment {
         setHasOptionsMenu(true);
     }
 
+    public void showMoreButton (boolean show) {
+        more.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
     /* Called whenever we call invalidateOptionsMenu() */
 //    @Override
 //    public void onPrepareOptionsMenu(Menu menu) {

@@ -206,6 +206,7 @@ public class MainActivity extends ActionBarActivity implements
                     mDrawerLayout.closeDrawer(mDrawerMenu);
                 allMenuSelected = true;
                 sensorListFragment.setEmptyMessage(getString(R.string.empty_sensor_list));
+                sensorListFragment.showMoreButton(true);
             }
 
             @Override
@@ -219,6 +220,7 @@ public class MainActivity extends ActionBarActivity implements
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
                 allMenuSelected = false;
+                sensorListFragment.showMoreButton(false);
             }
 
             @Override
@@ -231,6 +233,7 @@ public class MainActivity extends ActionBarActivity implements
                 if (mDrawerLayout != null)
                     mDrawerLayout.closeDrawer(mDrawerMenu);
                 allMenuSelected = false;
+                sensorListFragment.showMoreButton(false);
             }
 
             @Override
@@ -243,6 +246,7 @@ public class MainActivity extends ActionBarActivity implements
 //                }
                 setTitle(getString(R.string.menu_alarm_text));
                 allMenuSelected = false;
+                sensorListFragment.showMoreButton(false);
             }
         });
 
