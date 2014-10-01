@@ -367,19 +367,22 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
         plot.removeMarkers();
         if (task!=null && task.job != AlarmSensorTask.NOTHING) {
-            Paint phi = new Paint();
-            phi.setColor(Color.RED);
-            YValueMarker mhi = new YValueMarker(task.hi, "High Limit");
-            mhi.setLinePaint(phi);
-            mhi.setTextPaint(phi);
-            plot.addMarker(mhi);
-            //TODO: for more_than and less_than only one line
-            Paint plo = new Paint();
-            plo.setColor(Color.BLUE);
-            YValueMarker mlo = new YValueMarker(task.lo, "Low Limit");
-            mlo.setLinePaint(plo);
-            mlo.setTextPaint(plo);
-            plot.addMarker(mlo);
+            if (task.job != AlarmSensorTask.LESS_THAN) {
+                Paint phi = new Paint();
+                phi.setColor(Color.RED);
+                YValueMarker mhi = new YValueMarker(task.hi, " ");
+                mhi.setLinePaint(phi);
+                mhi.setTextPaint(phi);
+                plot.addMarker(mhi);
+            }
+            if (task.job != AlarmSensorTask.MORE_THAN) {
+                Paint plo = new Paint();
+                plo.setColor(Color.BLUE);
+                YValueMarker mlo = new YValueMarker(task.lo, " ");
+                mlo.setLinePaint(plo);
+                mlo.setTextPaint(plo);
+                plot.addMarker(mlo);
+            }
         }
 
 
