@@ -119,7 +119,9 @@ public class SensorListFragment extends ListFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.icon_menu, menu);
+        if (menu.findItem(R.id.menu_refresh) == null) {
+            inflater.inflate(R.menu.icon_menu, menu);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -128,6 +130,17 @@ public class SensorListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+
+    public void showMoreButton (boolean show) {
+        more.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    /* Called whenever we call invalidateOptionsMenu() */
+//    @Override
+//    public void onPrepareOptionsMenu(Menu menu) {
+//        menu.clear();
+//        super.onPrepareOptionsMenu(menu);
+//    }
 
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
