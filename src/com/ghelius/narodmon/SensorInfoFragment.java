@@ -480,11 +480,13 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         } else {
             setMenuIcon(R.id.menu_favorites, R.drawable.ic_action_not_important);
         }
-        task = DatabaseManager.getInstance().getAlarmById(sensor.id);
-        if (task == null || task.job == AlarmSensorTask.NOTHING) {
-            setMenuIcon(R.id.menu_alarm, R.drawable.ic_bell);
-        } else {
-            setMenuIcon(R.id.menu_alarm, R.drawable.ic_bell_fill);
+        if (sensor != null) {
+            task = DatabaseManager.getInstance().getAlarmById(sensor.id);
+            if (task == null || task.job == AlarmSensorTask.NOTHING) {
+                setMenuIcon(R.id.menu_alarm, R.drawable.ic_bell);
+            } else {
+                setMenuIcon(R.id.menu_alarm, R.drawable.ic_bell_fill);
+            }
         }
     }
 
