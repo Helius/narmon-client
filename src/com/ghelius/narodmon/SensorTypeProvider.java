@@ -105,7 +105,7 @@ public class SensorTypeProvider {
 			case 6:
 				return context.getResources().getDrawable(R.drawable.lamp_icon);
 			case 7:
-				return context.getResources().getDrawable(R.drawable.storage_icon);
+				return context.getResources().getDrawable(R.drawable.ic_network);
 			case 8:
 				return context.getResources().getDrawable(R.drawable.ethernet_icon);
 			case 9:
@@ -118,6 +118,8 @@ public class SensorTypeProvider {
                 return context.getResources().getDrawable(R.drawable.radiation_icon);
             case 13:
                 return context.getResources().getDrawable(R.drawable.voltage_icon);
+            case 14:
+                return context.getResources().getDrawable(R.drawable.ic_co2);
 		}
 		return context.getResources().getDrawable(R.drawable.unknown_icon);
 	}

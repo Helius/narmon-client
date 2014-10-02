@@ -39,7 +39,7 @@
 
         <ImageView
             android:id="@+id/favoriteIcon"
-            android:layout_width="25dp"
+            android:layout_width="20dp"
             android:layout_height="match_parent"
             android:layout_marginRight="5dp"
             android:src="@drawable/ic_action_important" />
@@ -48,7 +48,7 @@
             android:id="@+id/alarmIcon"
             android:layout_width="20dp"
             android:layout_height="match_parent"
-            android:src="@drawable/alarm_blue_small" />
+            android:src="@drawable/ic_bell_fill" />
 
     </LinearLayout>
 

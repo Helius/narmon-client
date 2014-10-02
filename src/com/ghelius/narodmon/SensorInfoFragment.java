@@ -2,6 +2,7 @@ package com.ghelius.narodmon;
 
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +30,11 @@ import java.io.ObjectInputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.androidplot.ui.AnchorPosition;
+import com.androidplot.ui.PositionMetrics;
 import com.androidplot.ui.SizeMetrics;
+import com.androidplot.ui.XLayoutStyle;
+import com.androidplot.ui.YLayoutStyle;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.*;
@@ -235,13 +241,16 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 		return agoText;
 	}
 
+    private float dpToFloat (int dp) {
+        Resources r = getResources();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
+    }
 
 	private void initChart() {
         if (plot == null) {
             Log.e(TAG,"plot is null!");
             return;
         }
-
         plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
         plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.GRAY);
         plot.getGraphWidget().getDomainGridLinePaint().
@@ -251,19 +260,19 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
                 setPathEffect(new DashPathEffect(new float[]{1, 1}, 1));
         plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.GRAY);
         plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
-        plot.getGraphWidget().getDomainLabelPaint().setTextSize(16);
-        plot.getGraphWidget().getRangeLabelPaint().setTextSize(16);
-        plot.getGraphWidget().setRangeLabelHorizontalOffset(-50);
+
+        plot.getGraphWidget().getDomainLabelPaint().setTextSize(dpToFloat(10));
+        plot.getGraphWidget().getRangeLabelPaint().setTextSize(dpToFloat(10));
+        plot.getGraphWidget().getRangeLabelPaint().setTextAlign(Paint.Align.LEFT);
         Paint p = new Paint();
-        p.setTextSize(16);
+        p.setTextSize(dpToFloat(12));
         p.setColor(Color.WHITE);
         plot.getLegendWidget().setTextPaint(p);
+
+//        plot.getLegendWidget().setHeight(dpToFloat(30));
+//        plot.getGraphWidget().setDomainLabelWidth(-dpToFloat(50));
+
         plot.getGraphWidget().setDrawMarkersEnabled(true);
-        plot.getLegendWidget().setHeight(90);
-
-
-
-        // Create a formatter to use for drawing a series using LineAndPointRenderer:
 
         // setup our line fill paint to be a slightly transparent gradient:
         Paint lineFill = new Paint();
@@ -271,25 +280,19 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
         formatter = new LineAndPointFormatter(Color.GREEN, Color.GREEN, Color.BLACK, null);
         formatter.setFillPaint(lineFill);
-//        plot.getGraphWidget().setPaddingRight(+10);
-//        plot.addSeries(series2, formatter);
-
-        // customize our domain/range labels
-//        plot.setDomainLabel("Year");
-//        plot.setRangeLabel("# of Sightings");
 
 
-        // get rid of decimal points in our range labels:
-        plot.getGraphWidget().setSize(new SizeMetrics(
-                0, SizeLayoutType.FILL,
-                -40, SizeLayoutType.FILL));
+//        plot.getGraphWidget().setSize(new SizeMetrics(
+//                dpToFloat(100), SizeLayoutType.FILL,
+//                -dpToFloat(0), SizeLayoutType.FILL));
+        plot.getGraphWidget().setRangeLabelHorizontalOffset(-dpToFloat(30));
+        plot.getGraphWidget().setMarginBottom(dpToFloat(15));
+        plot.getGraphWidget().setMarginLeft(dpToFloat(-35));
+        plot.getLegendWidget().setMarginBottom(dpToFloat(0));
+        plot.getLegendWidget().setHeight(dpToFloat(16));
 
-//        plot.getLayoutManager().remove(plot.getDomainLabelWidget());
-//        plot.getLegendWidget().setVisible(false);
-//        plot.getGraphWidget().setGridBackgroundPaint(null);
-//        plot.getGraphWidget().setDomainOriginLinePaint(null);
-//        plot.getGraphWidget().setRangeOriginLinePaint(null);
-//        http://stackoverflow.com/questions/13761455/androidplot-remove-domain-values-from-graphwidget
+        /* customisation */
+        //http://stackoverflow.com/questions/13761455/androidplot-remove-domain-values-from-graphwidget
 
 //        if (!mBackgroundOn) {
             // remove the background stuff.
@@ -297,7 +300,6 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
             plot.getGraphWidget().setBackgroundPaint(null);
             plot.getGraphWidget().setGridBackgroundPaint(null);
 //        }
-
 //        if (!mKeyOn)
 //            mDynamicPlot.getLayoutManager()
 //                    .remove(mDynamicPlot.getLegendWidget());
@@ -327,6 +329,9 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 //        if (!mTitleOn) {
 //            mDynamicPlot.getLayoutManager().remove(mDynamicPlot.getTitleWidget());
 //        }
+        // by default, AndroidPlot displays developer guides to aid in laying out your plot.
+        // To get rid of them call disableAllMarkup():
+        plot.setMarkupEnabled(false);
 
 
         plot.setDomainValueFormat(new Format() {
@@ -363,9 +368,6 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
             }
         });
 
-        // by default, AndroidPlot displays developer guides to aid in laying out your plot.
-        // To get rid of them call disableAllMarkup():
-        //plot.disableAllMarkup();
 	}
 
 	private void addSampleData() {
@@ -479,9 +481,9 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         }
         task = DatabaseManager.getInstance().getAlarmById(sensor.id);
         if (task == null || task.job == AlarmSensorTask.NOTHING) {
-            setMenuIcon(R.id.menu_alarm, R.drawable.alarm_gray);
+            setMenuIcon(R.id.menu_alarm, R.drawable.ic_bell);
         } else {
-            setMenuIcon(R.id.menu_alarm, R.drawable.alarm_blue);
+            setMenuIcon(R.id.menu_alarm, R.drawable.ic_bell_fill);
         }
     }
 

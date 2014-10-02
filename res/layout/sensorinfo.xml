@@ -14,11 +14,11 @@
         android:baselineAligned="false">
 
         <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:id="@+id/info_sensor_icon"
             android:layout_gravity="center"
-            android:src="@drawable/ic_launcher"
+            android:paddingRight="5dp"
             android:scaleType="fitStart" />
 
         <LinearLayout
