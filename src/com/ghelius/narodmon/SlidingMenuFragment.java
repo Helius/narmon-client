@@ -64,6 +64,8 @@ public class SlidingMenuFragment extends Fragment {
     }
 
     private void callListenerMethod (Integer position) {
+        if (listener == null)
+            return;
         Log.d(TAG,"callListenerMethod " + position);
         lastSelectedItemPosition = position;
         switch (position) {

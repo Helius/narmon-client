@@ -32,6 +32,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Filter;
 
 
 public class MainActivity extends ActionBarActivity implements
@@ -44,7 +45,6 @@ public class MainActivity extends ActionBarActivity implements
     private FilterFragment filterFragment;
     private SensorListFragment sensorListFragment;
     private Menu mOptionsMenu;
-//    private long lastUpdateTime;
     private final static int gpsUpdateIntervalMs = 20 * 60 * 1000; // time interval for updateFilter coordinates and sensor list
     private NarodmonApi.onResultReceiveListener apiListener;
     private boolean showRefreshProgress;
@@ -60,8 +60,7 @@ public class MainActivity extends ActionBarActivity implements
 
     enum LoginStatus {LOGIN, LOGOUT, ERROR}
 
-    //private static final String api_key = "85UneTlo8XBlA";
-    private static final String api_key = "36nzbVLboSwPM";
+    private static final String api_key = "36nzbVLboSwPM"; // prev value "85UneTlo8XBlA"
     private final String TAG = "narodmon-main";
     private ArrayList<Sensor> sensorList;
     private SensorItemAdapter listAdapter;
@@ -89,7 +88,7 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, ">>>>>>>> onCreate");
+        Log.i(TAG, ">>>>>>>> onCreate, rotate " + !(savedInstanceState == null));
         super.onCreate(savedInstanceState);
         myUpdateLocationListener = new UpdateLocationListener();
         uiFlags = UiFlags.load(this);
@@ -138,7 +137,7 @@ public class MainActivity extends ActionBarActivity implements
         }
         sensorList = ((MyApplication)this.getApplication()).getSensorList();
 
-//        mTitle = getString(R.string.app_name);
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -168,35 +167,58 @@ public class MainActivity extends ActionBarActivity implements
             };
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
-        sensorListFragment = new SensorListFragment();
-        sensorListFragment.setOnListItemClickListener(new SensorListFragment.OnSensorListClickListener() {
-            @Override
-            public void onItemClick(ListView l, View v, int position, long id) {
-                Log.d(TAG,"sensor clicked: " + position);
-                sensorItemClick(position);
-            }
 
-            @Override
-            public void scrollOverDown() {
-                Log.d(TAG,"more: !showRefreshProgress=" + !showRefreshProgress +
-                        ", allMenuSelected=" + allMenuSelected +
-                        ", !dontUpdateMore=" + !dontUpdateMore);
-                if (!showRefreshProgress && allMenuSelected && !dontUpdateMore) {
+        if (savedInstanceState != null) {
+            Log.d(TAG, "rotate backstack count: " + getSupportFragmentManager().getBackStackEntryCount());
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                sensorInfoFragment = (SensorInfoFragment)getSupportFragmentManager().findFragmentByTag("SENSOR_INFO_FRAGMENT");
+                Log.d(TAG, "rotate, sensorInfoFragment exist:" + (sensorInfoFragment != null));
+                sensorListFragment = (SensorListFragment)getSupportFragmentManager().findFragmentByTag("MAIN_LIST_FRAGMENT");
+                Log.d(TAG, "rotate, sensorListFragment exist:" + (sensorListFragment != null));
+                filterFragment = (FilterFragment)getSupportFragmentManager().findFragmentByTag("FILTER_FRAGMENT");
+                Log.d(TAG, "rotate, filterFragment exist:" + (filterFragment != null));
+                slidingMenu = (SlidingMenuFragment)getSupportFragmentManager().findFragmentByTag("SLIDING_MENU");
+                Log.d(TAG, "rotate, filterFragment exist:" + (slidingMenu != null));
+            }
+        }
+
+        if (sensorListFragment == null) {
+            Log.d(TAG,"rotate: create new sensorListFragment");
+
+            sensorListFragment = new SensorListFragment();
+            sensorListFragment.setOnListItemClickListener(new SensorListFragment.OnSensorListClickListener() {
+                @Override
+                public void onItemClick(ListView l, View v, int position, long id) {
+                    Log.d(TAG, "sensor clicked: " + position);
+                    sensorItemClick(position);
+                }
+
+                @Override
+                public void scrollOverDown() {
+                    Log.d(TAG, "more: !showRefreshProgress=" + !showRefreshProgress +
+                            ", allMenuSelected=" + allMenuSelected +
+                            ", !dontUpdateMore=" + !dontUpdateMore);
+                    if (!showRefreshProgress && allMenuSelected && !dontUpdateMore) {
+                        deviceRequestLimit += 10;
+                        Log.d(TAG, "more get list");
+                        getSensorsList(deviceRequestLimit);
+                    }
+                }
+
+                @Override
+                public void moreButtonPressed() {
                     deviceRequestLimit += 10;
                     Log.d(TAG, "more get list");
                     getSensorsList(deviceRequestLimit);
                 }
-            }
+            });
+        } else {
+            Log.d(TAG, "rotate, dont create new sensorListFragment");
+        }
 
-            @Override
-            public void moreButtonPressed() {
-                deviceRequestLimit += 10;
-                Log.d(TAG, "more get list");
-                getSensorsList(deviceRequestLimit);
-            }
-        });
-
-        slidingMenu = new SlidingMenuFragment();
+        if (slidingMenu == null) {
+            slidingMenu = new SlidingMenuFragment();
+        }
         slidingMenu.setOnMenuClickListener(new SlidingMenuFragment.MenuClickListener() {
             @Override
             public void menuAllClicked() {
@@ -250,18 +272,20 @@ public class MainActivity extends ActionBarActivity implements
             }
         });
 
-        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-        trans.replace(R.id.content_frame, sensorListFragment);
-        trans.replace(R.id.left_menu_view, slidingMenu);
-        trans.commit();
+        if (savedInstanceState == null) {
+            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+            trans.replace(R.id.content_frame, sensorListFragment, "MAIN_LIST_FRAGMENT");
+            trans.replace(R.id.left_menu_view, slidingMenu, "SLIDING_MENU");
+            trans.commit();
+        }
 
         //clear all fragment history from backstack
-        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
-        for (int i = 0; i < backStackCount; i++) {
-            // Get the back stack fragment id.
-            int backStackId = getSupportFragmentManager().getBackStackEntryAt(i).getId();
-            getSupportFragmentManager().popBackStack(backStackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }
+//        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+//        for (int i = 0; i < backStackCount; i++) {
+//            // Get the back stack fragment id.
+//            int backStackId = getSupportFragmentManager().getBackStackEntryAt(i).getId();
+//            getSupportFragmentManager().popBackStack(backStackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//        }
 
 
 
@@ -630,7 +654,6 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
-
     void updateLocation() {
         // try to avoid multiply listener calls, but it doesn't work...
         MyLocation myLocation = ((MyApplication)getApplication()).getMyLocation();
@@ -646,6 +669,7 @@ public class MainActivity extends ActionBarActivity implements
             sensorInfoFragment = new SensorInfoFragment();
             sensorInfoFragment.setFavoritesChangeListener(this);
         }
+
         Sensor tmpS = null;
         for (Sensor s : sensorList) {
             if (s.id == sensorId) {
@@ -665,7 +689,7 @@ public class MainActivity extends ActionBarActivity implements
                 findViewById(R.id.content_frame1).setVisibility(View.VISIBLE);
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.hide(getSupportFragmentManager().findFragmentById(R.id.left_menu_view));
-                trans.add(R.id.content_frame1, sensorInfoFragment);
+                trans.add(R.id.content_frame1, sensorInfoFragment, "SENSOR_INFO_FRAGMENT");
                 trans.addToBackStack(null);
                 trans.commit();
             } else {
@@ -673,11 +697,13 @@ public class MainActivity extends ActionBarActivity implements
             }
             sensorInfoFragment.loadInfo();
         } else {
-            Log.d(TAG,"frame1 doesn't exist");
-            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-            trans.replace(R.id.content_frame, sensorInfoFragment);
-            trans.addToBackStack(null);
-            trans.commit();
+            if (getSupportFragmentManager().findFragmentByTag("SENSOR_INFO_FRAGMENT") == null) {
+                Log.d(TAG, "frame1 doesn't exist");
+                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                trans.replace(R.id.content_frame, sensorInfoFragment, "SENSOR_INFO_FRAGMENT");
+                trans.addToBackStack(null);
+                trans.commitAllowingStateLoss();
+            }
         }
 //        sensorInfoFragment.loadInfo();
     }
@@ -696,7 +722,7 @@ public class MainActivity extends ActionBarActivity implements
                 findViewById(R.id.content_frame1).setVisibility(View.VISIBLE);
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.hide(getSupportFragmentManager().findFragmentById(R.id.left_menu_view));
-                trans.add(R.id.content_frame1, filterFragment);
+                trans.add(R.id.content_frame1, filterFragment, "FILTER_FRAGMENT");
                 trans.addToBackStack(null);
                 trans.commit();
             } else {
