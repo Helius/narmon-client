@@ -245,7 +245,8 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
                 holder.value.setText("");
                 holder.valueDecimal.setText("");
             } else {
-                String[] arr = sensor.value.split("\\.");
+
+                String[] arr = sensor.value.replace("+","").split("\\.");
                 holder.value.setText(arr[0]);
                 if (arr.length > 1)
                     holder.valueDecimal.setText("."+arr[1]);
