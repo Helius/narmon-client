@@ -1,5 +1,6 @@
 package com.ghelius.narodmon;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -39,9 +40,9 @@ public class SensorListFragment extends ListFragment {
        void moreButtonPressed();
     }
 
-    public void setOnListItemClickListener (OnSensorListClickListener listener) {
-		this.listener = listener;
-	}
+//    public void setOnListItemClickListener (OnSensorListClickListener listener) {
+//		this.listener = listener;
+//	}
 
     private TextView noItems(String text) {
         TextView emptyView = new TextView(getActivity());
@@ -73,6 +74,18 @@ public class SensorListFragment extends ListFragment {
         emptyTextView = noItems("");
         getListView().setEmptyView(emptyTextView);
     }
+
+    @Override
+    public void onAttach (Activity activity) {
+        super.onAttach(activity);
+        try {
+            listener = (OnSensorListClickListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnSensorListClickListener");
+        }
+
+    }
+
 
     @Override
     public void onActivityCreated (Bundle savedInstance) {
@@ -134,6 +147,12 @@ public class SensorListFragment extends ListFragment {
 
     public void showMoreButton (boolean show) {
         more.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    @Override
+    public void onDetach () {
+        super.onDetach();
+        listener = null;
     }
 
     /* Called whenever we call invalidateOptionsMenu() */

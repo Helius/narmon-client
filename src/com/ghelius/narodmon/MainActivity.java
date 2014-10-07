@@ -32,13 +32,15 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Filter;
 
 
 public class MainActivity extends ActionBarActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener,
         SensorInfoFragment.SensorConfigChangeListener,
-        FilterFragment.OnFilterChangeListener {
+        FilterFragment.OnFilterChangeListener,
+        SensorListFragment.OnSensorListClickListener {
+
+    enum LoginStatus {LOGIN, LOGOUT, ERROR}
 
     private static final int MAX_DEVICES_LIMIT = 20;
     private SensorInfoFragment sensorInfoFragment;
@@ -56,10 +58,6 @@ public class MainActivity extends ActionBarActivity implements
     private ArrayList<Integer> oldHidenTypes = new ArrayList<Integer>();
     private boolean dontUpdateMore = false;
     private ArrayList<Integer> additionalSensors = new ArrayList<Integer>();
-    //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
-
-    enum LoginStatus {LOGIN, LOGOUT, ERROR}
-
     private static final String api_key = "36nzbVLboSwPM"; // prev value "85UneTlo8XBlA"
     private final String TAG = "narodmon-main";
     private ArrayList<Sensor> sensorList;
@@ -71,13 +69,48 @@ public class MainActivity extends ActionBarActivity implements
     private NarodmonApi mNarodmonApi;
     private String apiHeader;
     private LoginStatus loginStatus = LoginStatus.LOGOUT;
-    String uid;
-
+    private String uid;
     private DrawerLayout mDrawerLayout = null;
     private View mDrawerMenu = null;
     private ActionBarDrawerToggle mDrawerToggle = null;
     private CharSequence mTitle;
-    SlidingMenuFragment slidingMenu;
+    private SlidingMenuFragment slidingMenu;
+    //	private final static int gpsUpdateIntervalMs = 1*60*1000; // time interval for updateFilter coordinates and sensor list
+
+
+
+
+    // ********************************************
+    // SensorListFragment.OnSensorListClickListener
+    // ********************************************
+    @Override
+    public void onItemClick(ListView l, View v, int position, long id) {
+        Log.d(TAG, "sensor clicked: " + position);
+        sensorItemClick(position);
+    }
+
+    @Override
+    public void scrollOverDown() {
+        Log.d(TAG, "more: !showRefreshProgress=" + !showRefreshProgress +
+                ", allMenuSelected=" + allMenuSelected +
+                ", !dontUpdateMore=" + !dontUpdateMore);
+        if (!showRefreshProgress && allMenuSelected && !dontUpdateMore) {
+            deviceRequestLimit += 10;
+            Log.d(TAG, "more get list");
+            getSensorsList(deviceRequestLimit);
+        }
+    }
+
+    @Override
+    public void moreButtonPressed() {
+        deviceRequestLimit += 10;
+        Log.d(TAG, "more get list");
+        getSensorsList(deviceRequestLimit);
+    }
+    // ********************************************
+
+
+
 
     // for catch sensorId from widget click
     @Override
@@ -170,7 +203,7 @@ public class MainActivity extends ActionBarActivity implements
 
         if (savedInstanceState != null) {
             Log.d(TAG, "rotate backstack count: " + getSupportFragmentManager().getBackStackEntryCount());
-            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+//            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                 sensorInfoFragment = (SensorInfoFragment)getSupportFragmentManager().findFragmentByTag("SENSOR_INFO_FRAGMENT");
                 Log.d(TAG, "rotate, sensorInfoFragment exist:" + (sensorInfoFragment != null));
                 sensorListFragment = (SensorListFragment)getSupportFragmentManager().findFragmentByTag("MAIN_LIST_FRAGMENT");
@@ -179,39 +212,15 @@ public class MainActivity extends ActionBarActivity implements
                 Log.d(TAG, "rotate, filterFragment exist:" + (filterFragment != null));
                 slidingMenu = (SlidingMenuFragment)getSupportFragmentManager().findFragmentByTag("SLIDING_MENU");
                 Log.d(TAG, "rotate, filterFragment exist:" + (slidingMenu != null));
-            }
+//            }
         }
 
         if (sensorListFragment == null) {
             Log.d(TAG,"rotate: create new sensorListFragment");
 
             sensorListFragment = new SensorListFragment();
-            sensorListFragment.setOnListItemClickListener(new SensorListFragment.OnSensorListClickListener() {
-                @Override
-                public void onItemClick(ListView l, View v, int position, long id) {
-                    Log.d(TAG, "sensor clicked: " + position);
-                    sensorItemClick(position);
-                }
-
-                @Override
-                public void scrollOverDown() {
-                    Log.d(TAG, "more: !showRefreshProgress=" + !showRefreshProgress +
-                            ", allMenuSelected=" + allMenuSelected +
-                            ", !dontUpdateMore=" + !dontUpdateMore);
-                    if (!showRefreshProgress && allMenuSelected && !dontUpdateMore) {
-                        deviceRequestLimit += 10;
-                        Log.d(TAG, "more get list");
-                        getSensorsList(deviceRequestLimit);
-                    }
-                }
-
-                @Override
-                public void moreButtonPressed() {
-                    deviceRequestLimit += 10;
-                    Log.d(TAG, "more get list");
-                    getSensorsList(deviceRequestLimit);
-                }
-            });
+//            sensorListFragment.setOnListItemClickListener(new SensorListFragment.OnSensorListClickListener() {
+//            });
         } else {
             Log.d(TAG, "rotate, dont create new sensorListFragment");
         }
@@ -383,6 +392,7 @@ public class MainActivity extends ActionBarActivity implements
                 mNarodmonApi.getTypeDictionary();
             }
         }, 5000);
+        mDrawerToggle.setDrawerIndicatorEnabled(!(getSupportFragmentManager().getBackStackEntryCount() > 0));
     }
 
     @Override
@@ -486,10 +496,10 @@ public class MainActivity extends ActionBarActivity implements
 
 
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle savedInstanceState) {
+//        super.onSaveInstanceState(savedInstanceState);
+//    }
 
 
     private void updateMenuSensorCounts() {
@@ -665,9 +675,10 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void showSensorInfo (int sensorId) {
+        sensorInfoFragment = (SensorInfoFragment)getSupportFragmentManager().findFragmentByTag("SENSOR_INFO_FRAGMENT");
         if (sensorInfoFragment == null) { // lazy
             sensorInfoFragment = new SensorInfoFragment();
-            sensorInfoFragment.setFavoritesChangeListener(this);
+            sensorInfoFragment.setConfigChangeListener(this);
         }
 
         Sensor tmpS = null;
@@ -702,7 +713,7 @@ public class MainActivity extends ActionBarActivity implements
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.replace(R.id.content_frame, sensorInfoFragment, "SENSOR_INFO_FRAGMENT");
                 trans.addToBackStack(null);
-                trans.commitAllowingStateLoss();
+                trans.commit();
             }
         }
 //        sensorInfoFragment.loadInfo();

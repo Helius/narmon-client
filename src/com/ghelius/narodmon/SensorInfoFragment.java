@@ -100,9 +100,15 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 		void alarmChanged();
 	}
 
-	public void setFavoritesChangeListener (SensorConfigChangeListener listener) {
+	public void setConfigChangeListener(SensorConfigChangeListener listener) {
 		this.listener = listener;
 	}
+
+    @Override
+    public void onDetach () {
+        super.onDetach();
+        this.listener = null;
+    }
 
 
 
