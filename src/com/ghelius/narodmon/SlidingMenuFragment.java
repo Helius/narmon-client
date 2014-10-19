@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class SlidingMenuFragment extends Fragment {
 
     private final static String TAG="narodmon-menuFragment";
+    private static final boolean DEBUG = false;
     private ArrayList<View> menuItems = new ArrayList<View>();
     private MenuClickListener listener;
     private Integer lastSelectedItemPosition;
@@ -53,7 +54,7 @@ public class SlidingMenuFragment extends Fragment {
     public void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        Log.d(TAG,"onCreate");
+        Log.d(TAG, "onCreate");
     }
 
     @Override
@@ -90,7 +91,7 @@ public class SlidingMenuFragment extends Fragment {
     private void callListenerMethod (Integer position) {
         if (listener == null)
             return;
-        Log.d(TAG,"callListenerMethod " + position);
+        if(DEBUG) Log.d(TAG,"callListenerMethod " + position);
         lastSelectedItemPosition = position;
         switch (position) {
             case 0: // all

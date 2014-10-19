@@ -54,7 +54,7 @@ public class MainActivity extends ActionBarActivity implements
     private NarodmonApi.onResultReceiveListener apiListener;
     private boolean showRefreshProgress;
     private int oldRadius = 0;
-    private boolean clearOptionsMenu;
+    private boolean clearOptionsMenu = false;
     private MyLocation.LocationResult myUpdateLocationListener;
     private int deviceRequestLimit = MAX_DEVICES_LIMIT;
     private boolean allMenuSelected;
@@ -124,6 +124,7 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void onBackStackChanged() {
+        supportInvalidateOptionsMenu();
         //Enable Up button only  if there are entries in the back stack
         Log.d(TAG, "rotate: onBackStackListener");
         boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
@@ -363,7 +364,10 @@ public class MainActivity extends ActionBarActivity implements
             v.setVisibility(View.GONE);
             return;
         }
-        String backStackTag = getSupportFragmentManager().getBackStackEntryAt(backStackCount-1).getName();
+        String backStackTag = "";
+        if (backStackCount > 0)
+            backStackTag = getSupportFragmentManager().getBackStackEntryAt(backStackCount-1).getName();
+
         if ( v != null) { // tablet
             if (backStackTag.equals("SENSOR_INFO")) {
                 v.setVisibility(View.VISIBLE);
@@ -516,9 +520,10 @@ public class MainActivity extends ActionBarActivity implements
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.d(TAG,"onPrepareOptionMenu");
         // If the nav drawer is open, hide action items related to the content view
 //        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-//        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
+        menu.findItem(R.id.menu_filter).setVisible(getSupportFragmentManager().getBackStackEntryCount() == 0);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -715,7 +720,8 @@ public class MainActivity extends ActionBarActivity implements
             filterFragment = new FilterFragment();
         }
 //        mOptionsMenu.clear();
-        mOptionsMenu.removeItem(1);
+//        invalidateOptionsMenu();
+//        mOptionsMenu.removeItem(1);
 
         if (findViewById(R.id.content_frame1) != null) {
             Log.d(TAG, "frame1 exist");
