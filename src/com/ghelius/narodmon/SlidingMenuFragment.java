@@ -1,6 +1,7 @@
 package com.ghelius.narodmon;
 
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
@@ -30,13 +31,36 @@ public class SlidingMenuFragment extends Fragment {
         void menuAlarmClicked();
     }
 
-    public void setOnMenuClickListener (MenuClickListener listener) {
-        this.listener = listener;
+    @Override
+    public void onAttach(Activity activity) {
+        Log.d(TAG,"onAttach");
+        super.onAttach(activity);
+        try {
+            listener = (MenuClickListener) activity;
+        } catch (Exception e) {
+            Log.e(TAG, "Activity needs to implement MenuClickListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        Log.d(TAG,"onDetach");
+        super.onDetach();
+        listener = null;
+    }
+
+    @Override
+    public void onCreate (Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        Log.d(TAG,"onCreate");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG,"onCreateView");
         View v = inflater.inflate(R.layout.sliding_menu_fragment, null);
+        menuItems.clear();
 
         // collect menu item views
 		menuItems.add(v.findViewById(R.id.menu_item0));
