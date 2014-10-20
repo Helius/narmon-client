@@ -21,8 +21,6 @@ public class SensorListFragment extends ListFragment {
 
 	private OnSensorListClickListener listener = null;
     private final static String TAG = "narodmon-listfragment";
-//    Button more;
-    private SensorItemAdapter listAdapter;
     private int iprev;
     private int i2prev;
     private int i3prev;
@@ -32,17 +30,12 @@ public class SensorListFragment extends ListFragment {
     public void setEmptyMessage(String emptyMessage) {
         emptyTextView.setText(emptyMessage);
     }
-//    private TextView msgTextView;
 
     interface OnSensorListClickListener {
        void onItemClick (ListView l, View v, int position, long id);
        void scrollOverDown();
        void moreButtonPressed();
     }
-
-//    public void setOnListItemClickListener (OnSensorListClickListener listener) {
-//		this.listener = listener;
-//	}
 
     private TextView noItems(String text) {
         TextView emptyView = new TextView(getActivity());
@@ -90,8 +83,6 @@ public class SensorListFragment extends ListFragment {
     @Override
     public void onActivityCreated (Bundle savedInstance) {
         super.onActivityCreated(savedInstance);
-//        if (listAdapter != null)
-//            setListAdapter(listAdapter);
         getListView().setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
@@ -154,29 +145,4 @@ public class SensorListFragment extends ListFragment {
         super.onDetach();
         listener = null;
     }
-
-    /* Called whenever we call invalidateOptionsMenu() */
-//    @Override
-//    public void onPrepareOptionsMenu(Menu menu) {
-//        menu.clear();
-//        super.onPrepareOptionsMenu(menu);
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//
-//        // Handle action buttons
-//        switch (item.getItemId()) {
-//            case R.id.menu_refresh:
-//                Log.d(TAG, "refresh menu pressed...");
-////                getSensorsList(deviceRequestLimit);
-//                break;
-//            case R.id.menu_filter:
-//                Log.d(TAG, "filte menu pressed..");
-////                getSensorsList(deviceRequestLimit);
-//                break;
-//            default:
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 }

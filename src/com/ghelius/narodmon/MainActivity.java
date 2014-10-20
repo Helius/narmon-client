@@ -129,13 +129,8 @@ public class MainActivity extends ActionBarActivity implements
         Log.d(TAG, "rotate: onBackStackListener");
         boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
         if (canBack) {
-//                    if (mOptionsMenu != null) {
-//                        mOptionsMenu.clear();
-//                    }
-//                    clearOptionsMenu = true;
         } else {
             clearOptionsMenu = false;
-//                    supportInvalidateOptionsMenu();
             View v = findViewById(R.id.content_frame1);
             if (v != null)
                 v.setVisibility(View.GONE);
@@ -159,17 +154,7 @@ public class MainActivity extends ActionBarActivity implements
         Log.d(TAG, "radius: " + uiFlags.radiusKm);
         setContentView(R.layout.activity_main);
         apiListener = new ApiListener();
-
-
-//        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-//            @Override
-//        });
         getSupportFragmentManager().addOnBackStackChangedListener(this);
-
-//        if (getSupportFragmentManager().findFragmentByTag("sensorProviderFragment") == null) {
-//            SensorProviderFragment sensorProviderFragment = new SensorProviderFragment();
-//            getSupportFragmentManager().beginTransaction().add(sensorProviderFragment, "sensorProviderFragment").commit();
-//        }
         sensorList = ((MyApplication)this.getApplication()).getSensorList();
 
 
@@ -220,8 +205,6 @@ public class MainActivity extends ActionBarActivity implements
         if (sensorListFragment == null) {
             Log.d(TAG,"rotate: create new sensorListFragment");
             sensorListFragment = new SensorListFragment();
-//            sensorListFragment.setOnListItemClickListener(new SensorListFragment.OnSensorListClickListener() {
-//            });
         } else {
             Log.d(TAG, "rotate, dont create new sensorListFragment");
         }
@@ -236,24 +219,6 @@ public class MainActivity extends ActionBarActivity implements
             trans.replace(R.id.left_menu_view, slidingMenu, "SLIDING_MENU");
             trans.commit();
         }
-
-        //clear all fragment history from backstack
-//        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
-//        for (int i = 0; i < backStackCount; i++) {
-//            // Get the back stack fragment id.
-//            int backStackId = getSupportFragmentManager().getBackStackEntryAt(i).getId();
-//            getSupportFragmentManager().popBackStack(backStackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//        }
-
-//        if (getSupportFragmentManager().getBackStackEntryCount() == 1 && sensorInfoFragment != null) {
-//            findViewById(R.id.left_menu_view).setVisibility(View.GONE);
-//            findViewById(R.id.content_frame1).setVisibility(View.VISIBLE);
-//            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-//            trans.hide(getSupportFragmentManager().findFragmentById(R.id.left_menu_view));
-////            trans.add(R.id.content_frame1, sensorInfoFragment, "SENSOR_INFO_FRAGMENT");
-////            trans.addToBackStack(null);
-//            trans.commit();
-//        }
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
@@ -315,7 +280,7 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onResume() {
         super.onResume();
-//        Log.d(TAG, ">>>>>>>> onResume: " + System.currentTimeMillis() + " but saved is " + lastUpdateTime + ", diff is " + (System.currentTimeMillis() - lastUpdateTime));
+        Log.d(TAG, ">>>>>>>> onResume: ");
 
         Intent startIntent = getIntent();
         final int sensorId = startIntent.getIntExtra("sensorId", -1);
@@ -331,9 +296,6 @@ public class MainActivity extends ActionBarActivity implements
             Log.d(TAG,"regular launch");
         }
 
-//        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_autologin), false)) {
-//            getSensorsList(true);
-//        }
         updateSensorsValue();
         initLocationUpdater();
 
@@ -379,15 +341,6 @@ public class MainActivity extends ActionBarActivity implements
         } else {                                         // phone
             // nothing todo
         }
-//        if (getSupportFragmentManager().findFragmentById(R.id.left_menu_view).isHidden()) {
-//            Log.d(TAG, "rotate: menu fragment is hidden");
-//            findViewById(R.id.left_menu_view).setVisibility(View.INVISIBLE);
-//        } else {
-//            Log.d(TAG, "rotate: menu fragment is not hidden");
-//            findViewById(R.id.left_menu_view).setVisibility(View.VISIBLE);
-//        }
-
-
     }
 
     @Override
@@ -425,17 +378,6 @@ public class MainActivity extends ActionBarActivity implements
         listAdapter.updateAlarms();
         listAdapter.updateFilter();
     }
-
-    //This method is called when the up button is pressed. Just the pop back stack.
-//    @Override
-//    public boolean onSupportNavigateUp() {
-//        Log.d(TAG, "onSupportNavigateUp");
-//        getSupportFragmentManager().popBackStack();
-//        View v = findViewById(R.id.content_frame1);
-//        if (v != null)
-//            v.setVisibility(View.GONE);
-//        return true;
-//    }
 
     @Override
     public void filterChange() {
@@ -488,13 +430,6 @@ public class MainActivity extends ActionBarActivity implements
             mNarodmonApi.sendLocation(prefs.getString(getString(R.string.pref_key_geoloc), ""));
         }
     }
-
-
-
-//    @Override
-//    public void onSaveInstanceState(Bundle savedInstanceState) {
-//        super.onSaveInstanceState(savedInstanceState);
-//    }
 
 
     private void updateMenuSensorCounts() {
@@ -695,7 +630,6 @@ public class MainActivity extends ActionBarActivity implements
             Log.d(TAG,"frame1 exist");
             if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
                 Log.d(TAG,"rotate: add sensorInfoFragment to frame1");
-//                findViewById(R.id.content_frame1).setVisibility(View.VISIBLE);
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.hide(getSupportFragmentManager().findFragmentById(R.id.left_menu_view));
                 trans.add(R.id.content_frame1, sensorInfoFragment, "SENSOR_INFO_FRAGMENT");
@@ -714,17 +648,12 @@ public class MainActivity extends ActionBarActivity implements
                 trans.commit();
             }
         }
-//        sensorInfoFragment.loadInfo();
     }
 
     private void showFilter () {
         if (filterFragment == null) { // lazy
             filterFragment = new FilterFragment();
         }
-//        mOptionsMenu.clear();
-//        invalidateOptionsMenu();
-//        mOptionsMenu.removeItem(1);
-
         if (findViewById(R.id.content_frame1) != null) {
             Log.d(TAG, "frame1 exist");
             if (getSupportFragmentManager().findFragmentById(R.id.content_frame1) == null) {
@@ -1009,9 +938,6 @@ public class MainActivity extends ActionBarActivity implements
     public void menuWatchedClicked() {
         listAdapter.setGroups(SensorItemAdapter.SensorGroups.Watched);
         setTitle(getString(R.string.menu_watched_text));
-//                if (DatabaseManager.getInstance().getFavoritesId().size() == 0) {
-//                    Log.d(TAG,"watched is empty, show message");
-//                }
         sensorListFragment.setEmptyMessage(getString(R.string.empty_watched_msg));
         if (mDrawerLayout != null)
             mDrawerLayout.closeDrawer(mDrawerMenu);
@@ -1022,9 +948,7 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void menuMyClicked() {
         listAdapter.setGroups(SensorItemAdapter.SensorGroups.My);
-        //if (listAdapter.getMyCount() == 0) {
         sensorListFragment.setEmptyMessage(getString(R.string.empty_my_list));
-        //}
         setTitle(getString(R.string.menu_my_text));
         if (mDrawerLayout != null)
             mDrawerLayout.closeDrawer(mDrawerMenu);
@@ -1037,9 +961,7 @@ public class MainActivity extends ActionBarActivity implements
         if (mDrawerLayout != null)
             mDrawerLayout.closeDrawer(mDrawerMenu);
         listAdapter.setGroups(SensorItemAdapter.SensorGroups.Alarmed);
-//                if (listAdapter.getMyCount() == 0) {
         sensorListFragment.setEmptyMessage(getString(R.string.empty_alarm_list));
-//                }
         setTitle(getString(R.string.menu_alarm_text));
         allMenuSelected = false;
         sensorListFragment.showMoreButton(false);
