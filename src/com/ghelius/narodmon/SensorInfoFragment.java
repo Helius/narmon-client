@@ -107,6 +107,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
     @Override
     public void onDetach () {
         super.onDetach();
+        Log.d(TAG, "onDetach");
         this.listener = null;
     }
 
@@ -135,6 +136,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
         setHasOptionsMenu(true);
         setRetainInstance(true);
 	}
@@ -151,6 +153,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG,"onCreateView");
 		logGetter = new SensorLogGetter();
 		View v = inflater.inflate(R.layout.sensorinfo, null);
         plot = (MultitouchPlot) v.findViewById(R.id.plot1);
@@ -258,7 +261,9 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 //            Log.e(TAG,"plot is null!");
 //            return;
 //        }
-        plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
+        if (plot.getGraphWidget().getGridBackgroundPaint() != null) {
+            plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
+        }
         plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.GRAY);
         plot.getGraphWidget().getDomainGridLinePaint().
                 setPathEffect(new DashPathEffect(new float[]{1, 1}, 1));
