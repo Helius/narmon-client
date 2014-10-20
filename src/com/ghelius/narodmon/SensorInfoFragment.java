@@ -254,10 +254,10 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
     }
 
 	private void initChart() {
-        if (plot == null || plot.getGraphWidget() == null) {
-            Log.e(TAG,"plot is null!");
-            return;
-        }
+//        if (plot == null || plot.getGraphWidget() == null) {
+//            Log.e(TAG,"plot is null!");
+//            return;
+//        }
         plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
         plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.GRAY);
         plot.getGraphWidget().getDomainGridLinePaint().
@@ -483,7 +483,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
             public void run() {
                 initChart();
             }
-        }, 1);
+        }, 50);
 	}
 
     private void updateMenuIcons () {
