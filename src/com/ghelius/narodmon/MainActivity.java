@@ -523,7 +523,9 @@ public class MainActivity extends ActionBarActivity implements
         Log.d(TAG,"onPrepareOptionMenu");
         // If the nav drawer is open, hide action items related to the content view
 //        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.menu_filter).setVisible(getSupportFragmentManager().getBackStackEntryCount() == 0);
+        MenuItem i = menu.findItem(R.id.menu_filter);
+        if (i != null)
+            i.setVisible(getSupportFragmentManager().getBackStackEntryCount() == 0);
         return super.onPrepareOptionsMenu(menu);
     }
 
