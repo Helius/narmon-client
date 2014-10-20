@@ -254,7 +254,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
     }
 
 	private void initChart() {
-        if (plot == null) {
+        if (plot == null || plot.getGraphWidget() == null) {
             Log.e(TAG,"plot is null!");
             return;
         }
@@ -375,6 +375,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
             }
         });
 
+        plot.setVisibility(View.VISIBLE);
 	}
 
 	private void addSampleData() {
@@ -475,8 +476,14 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 	public void onResume() {
 		Log.d(TAG,"onResume");
 		super.onResume();
+        plot.setVisibility(View.INVISIBLE);
         loadInfo();
-        initChart();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                initChart();
+            }
+        }, 1);
 	}
 
     private void updateMenuIcons () {
