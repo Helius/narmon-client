@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.androidplot.ui.AnchorPosition;
+import com.androidplot.ui.LayoutManager;
 import com.androidplot.ui.PositionMetrics;
 import com.androidplot.ui.SizeMetrics;
 import com.androidplot.ui.XLayoutStyle;
@@ -262,7 +263,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 //            return;
 //        }
         if (plot.getGraphWidget().getGridBackgroundPaint() != null) {
-            plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.BLACK);
+            plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.TRANSPARENT);
         }
         plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.GRAY);
         plot.getGraphWidget().getDomainGridLinePaint().
@@ -294,14 +295,23 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         formatter.setFillPaint(lineFill);
 
 
-//        plot.getGraphWidget().setSize(new SizeMetrics(
-//                dpToFloat(100), SizeLayoutType.FILL,
-//                -dpToFloat(0), SizeLayoutType.FILL));
-        plot.getGraphWidget().setRangeLabelHorizontalOffset(-dpToFloat(30));
-        plot.getGraphWidget().setMarginBottom(dpToFloat(15));
-        plot.getGraphWidget().setMarginLeft(dpToFloat(-35));
-        plot.getLegendWidget().setMarginBottom(dpToFloat(0));
+        plot.getGraphWidget().setSize(new SizeMetrics(
+                dpToFloat(0), SizeLayoutType.FILL,
+                dpToFloat(-20), SizeLayoutType.FILL));
+        plot.getGraphWidget().position(
+                dpToFloat(-20), XLayoutStyle.ABSOLUTE_FROM_LEFT,
+                dpToFloat(0), YLayoutStyle.ABSOLUTE_FROM_TOP);
+        plot.getGraphWidget().setRangeLabelHorizontalOffset(-dpToFloat(10));
+        plot.getGraphWidget().setDomainLabelHorizontalOffset(dpToFloat(10));
+        plot.getGraphWidget().setMarginBottom(dpToFloat(18));
+//        plot.getGraphWidget().setMarginLeft(dpToFloat(-35));
+
+//        plot.getLegendWidget().setMarginBottom(dpToFloat(0));
         plot.getLegendWidget().setHeight(dpToFloat(16));
+
+
+        plot.setRangeStep(XYStepMode.SUBDIVIDE, 10);
+        plot.setDomainStep(XYStepMode.SUBDIVIDE, getResources().getInteger(R.integer.step));
 
         /* customisation */
         //http://stackoverflow.com/questions/13761455/androidplot-remove-domain-values-from-graphwidget
@@ -469,7 +479,6 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
         plot.clearBoundaryValue();
         plot.addSeries(series, formatter);
-        plot.setRangeStep(XYStepMode.SUBDIVIDE, 10);
         plot.redraw();
 
 		getActivity().findViewById(R.id.marker_progress).setVisibility(View.INVISIBLE);
@@ -483,12 +492,12 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 		super.onResume();
         plot.setVisibility(View.INVISIBLE);
         loadInfo();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                initChart();
-            }
-        }, 50);
+        initChart();
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//            }
+//        }, 50);
 	}
 
     private void updateMenuIcons () {
