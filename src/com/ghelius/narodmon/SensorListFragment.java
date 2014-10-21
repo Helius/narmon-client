@@ -24,11 +24,12 @@ public class SensorListFragment extends ListFragment {
     private int iprev;
     private int i2prev;
     private int i3prev;
-    private TextView emptyTextView;
+    private TextView emptyTextView = null;
     private Button more;
 
     public void setEmptyMessage(String emptyMessage) {
-        emptyTextView.setText(emptyMessage);
+        if (emptyTextView != null)
+            emptyTextView.setText(emptyMessage);
     }
 
     interface OnSensorListClickListener {
