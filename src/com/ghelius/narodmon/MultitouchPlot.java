@@ -243,6 +243,8 @@ public class MultitouchPlot extends XYPlot implements OnTouchListener
 
 	private void fixBoundariesForZoom()
 	{
+        if (newMaxX == null || newMinX == null || minXSeriesValue == null || maxXSeriesValue == null)
+            return;
 		if(newMinX.floatValue() < minXSeriesValue.floatValue())
 		{
 			newMinX = minXSeriesValue;
