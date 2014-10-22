@@ -106,16 +106,17 @@ public class MultitouchPlot extends XYPlot implements OnTouchListener
                     maxYSeriesValue = series.getY(i);
             }
 		}
-//        Log.d(TAG, "markers.size " + getYValueMarkers().size());
+
         for (YValueMarker m: getYValueMarkers()) {
-//            Log.d(TAG, "marker value is " + m.getValue().doubleValue() + ", min " + minYSeriesValue.doubleValue() + ", max " + maxYSeriesValue.doubleValue());
-            if (m.getValue().doubleValue() > maxYSeriesValue.doubleValue())
+            if (maxYSeriesValue != null && m.getValue().doubleValue() > maxYSeriesValue.doubleValue())
                 maxYSeriesValue = m.getValue();
-            if (m.getValue().doubleValue() < minYSeriesValue.doubleValue())
+            if (minYSeriesValue != null && m.getValue().doubleValue() < minYSeriesValue.doubleValue())
                 minYSeriesValue = m.getValue().doubleValue();
         }
-        setDomainBoundaries(minXSeriesValue, maxXSeriesValue, BoundaryMode.FIXED);
-        setRangeBoundaries(minYSeriesValue, maxYSeriesValue, BoundaryMode.AUTO);
+        if (minYSeriesValue != null && maxYSeriesValue != null)
+            setDomainBoundaries(minXSeriesValue, maxXSeriesValue, BoundaryMode.FIXED);
+        if (minXSeriesValue != null && maxXSeriesValue != null)
+            setRangeBoundaries(minYSeriesValue, maxYSeriesValue, BoundaryMode.AUTO);
 		return super.addSeries(series, formatter);
 	}
 
@@ -205,6 +206,8 @@ public class MultitouchPlot extends XYPlot implements OnTouchListener
 
 	private void fixBoundariesForScroll()
 	{
+        if (newMaxX == null || newMinX == null || minXSeriesValue == null || maxXSeriesValue == null)
+            return;
 		float diff = newMaxX.floatValue() - newMinX.floatValue();
 		if(newMinX.floatValue() < minXSeriesValue.floatValue())
 		{

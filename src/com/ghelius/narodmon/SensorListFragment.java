@@ -25,7 +25,7 @@ public class SensorListFragment extends ListFragment {
     private int i2prev;
     private int i3prev;
     private TextView emptyTextView = null;
-    private Button more;
+    private Button more = null;
 
     public void setEmptyMessage(String emptyMessage) {
         if (emptyTextView != null)
@@ -138,7 +138,8 @@ public class SensorListFragment extends ListFragment {
     }
 
     public void showMoreButton (boolean show) {
-        more.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+        if (more != null)
+            more.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
