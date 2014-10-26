@@ -314,7 +314,7 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
 
 
-        plot.setRangeStep(XYStepMode.SUBDIVIDE, 20);
+        plot.setRangeStep(XYStepMode.SUBDIVIDE, 10);
         plot.setDomainStep(XYStepMode.SUBDIVIDE, getResources().getInteger(R.integer.step));
 
         /* customisation */
