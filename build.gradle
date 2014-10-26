@@ -12,6 +12,9 @@ apply plugin: 'android'
 
 repositories {
     mavenCentral()
+    flatDir {
+        dirs 'aars'
+    }
 }
 
     android {
@@ -52,7 +55,7 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file("my-release-key.keystore")
+            storeFile file('my-release-key.keystore')
             storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
             keyAlias System.getenv("ANDROID_KEYSTORE_ALIAS")
             keyPassword System.getenv("ANDROID_KEY_PASSWORD")
@@ -79,11 +82,12 @@ repositories {
 }
 
 dependencies {
-    compile "com.androidplot:androidplot-core:0.6.1"
+    //compile "com.androidplot:androidplot-core:0.6.1"
     compile 'com.commonsware.cwac:wakeful:1.0.1'
     compile 'com.android.support:support-v4:19.0.1'
     compile 'com.android.support:appcompat-v7:19.0.1'
     compile files('libs/achartengine-1.0.0.jar')
     compile files('libs/acra-4.4.0.jar')
+    compile project(':AndroidPlot-Core')
 }
 

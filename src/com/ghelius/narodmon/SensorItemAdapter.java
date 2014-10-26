@@ -270,14 +270,14 @@ public class SensorItemAdapter extends ArrayAdapter<Sensor> {
             if (holder.alarmIcon != null) {
                 if (sensor.hasAlarm) {
                     holder.alarmIcon.setVisibility(View.VISIBLE);
-                    holder.alarmIcon.setImageResource(R.drawable.alarm_blue_small);
+//                    holder.alarmIcon.setImageResource(R.drawable.alarm_blue_small);
                 } else
                     holder.alarmIcon.setVisibility(View.INVISIBLE);
             }
             if (holder.favoriteIcon != null) {
                 if (sensor.favorite) {
                     holder.favoriteIcon.setVisibility(View.VISIBLE);
-                    holder.favoriteIcon.setImageResource(R.drawable.btn_star_small_on);
+//                    holder.favoriteIcon.setImageResource(R.drawable.btn_star_small_on);
                 } else
                     holder.favoriteIcon.setVisibility(View.INVISIBLE);
             }

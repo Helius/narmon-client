@@ -36,6 +36,7 @@ import com.androidplot.ui.PositionMetrics;
 import com.androidplot.ui.SizeMetrics;
 import com.androidplot.ui.XLayoutStyle;
 import com.androidplot.ui.YLayoutStyle;
+import com.androidplot.ui.widget.TextLabelWidget;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.*;
@@ -282,6 +283,8 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         p.setColor(Color.WHITE);
         plot.getLegendWidget().setTextPaint(p);
 
+
+
 //        plot.getLegendWidget().setHeight(dpToFloat(30));
 //        plot.getGraphWidget().setDomainLabelWidth(-dpToFloat(50));
 
@@ -310,7 +313,8 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         plot.getLegendWidget().setHeight(dpToFloat(16));
 
 
-        plot.setRangeStep(XYStepMode.SUBDIVIDE, 10);
+
+        plot.setRangeStep(XYStepMode.SUBDIVIDE, 20);
         plot.setDomainStep(XYStepMode.SUBDIVIDE, getResources().getInteger(R.integer.step));
 
         /* customisation */
@@ -357,7 +361,6 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 
 
         plot.setDomainValueFormat(new Format() {
-
             // create a simple date format that draws on the year portion of our timestamp.
             // see http://download.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
             // for a full description of SimpleDateFormat.
@@ -387,6 +390,35 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
             public Object parseObject(String source, ParsePosition pos) {
                 return null;
 
+            }
+        });
+        final DecimalFormat f100 = new DecimalFormat("###");
+        final DecimalFormat f10 = new DecimalFormat("##.#");
+        final DecimalFormat f1 = new DecimalFormat("#.#");
+        final DecimalFormat f0 = new DecimalFormat("#.##");
+        final DecimalFormat f_1 = new DecimalFormat("##0.###");
+        plot.setRangeValueFormat(new Format() {
+            @Override
+            public StringBuffer format(Object o, StringBuffer stringBuffer, FieldPosition fieldPosition) {
+                double value = ((Number) o).doubleValue();
+                Log.d(TAG,"value is: " + value);
+//                if (value > 100) {
+//                    return new StringBuffer(f100.format(value));
+//                } else if (value > 10) {
+//                    return new StringBuffer(f10.format(value));
+//                } else if (value > 1) {
+//                    return new StringBuffer(f1.format(value));
+//                } else if (value > 0.1) {
+//                    return new StringBuffer(f0.format(value));
+//                } else if (value > 0.01) {
+//                    return new StringBuffer(f_1.format(value));
+//                }
+                return new StringBuffer (f_1.format(value));
+            }
+
+            @Override
+            public Object parseObject(String s, ParsePosition parsePosition) {
+                return null;
             }
         });
 
@@ -468,10 +500,10 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
 //        if (max.value - min.value > 1000)
 //            plot.setRangeValueFormat(new DecimalFormat("####"));
         //else
-        if (max.value - min.value > 100)
-            plot.setRangeValueFormat(new DecimalFormat("###"));
-        else if (max.value- min.value > 10)
-            plot.setRangeValueFormat(new DecimalFormat("##.#"));
+//        if (max.value - min.value > 100)
+//            plot.setRangeValueFormat(new DecimalFormat("###"));
+//        else if (max.value- min.value > 10)
+//            plot.setRangeValueFormat(new DecimalFormat("##.#"));
 
 //        plot.getGraphWidget().setDomainCursorPosition(max.time);
 //        plot.getGraphWidget().setRangeCursorPosition(max.value-10);

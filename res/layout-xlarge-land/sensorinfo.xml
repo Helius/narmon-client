@@ -36,7 +36,6 @@
                     android:layout_height="48dp"
                     android:id="@+id/info_sensor_icon"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_launcher"
                     android:scaleType="fitStart" />
 
                 <LinearLayout
