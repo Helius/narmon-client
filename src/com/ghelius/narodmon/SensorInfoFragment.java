@@ -304,8 +304,8 @@ public class SensorInfoFragment extends Fragment implements MultitouchPlot.ZoomL
         plot.getGraphWidget().position(
                 dpToFloat(-20), XLayoutStyle.ABSOLUTE_FROM_LEFT,
                 dpToFloat(0), YLayoutStyle.ABSOLUTE_FROM_TOP);
-        plot.getGraphWidget().setRangeLabelHorizontalOffset(-dpToFloat(10));
-        plot.getGraphWidget().setDomainLabelHorizontalOffset(dpToFloat(10));
+        plot.getGraphWidget().setRangeLabelHorizontalOffset(dpToFloat(10));
+//        plot.getGraphWidget().setDomainLabelHorizontalOffset(dpToFloat(10));
         plot.getGraphWidget().setMarginBottom(dpToFloat(18));
 //        plot.getGraphWidget().setMarginLeft(dpToFloat(-35));
 
