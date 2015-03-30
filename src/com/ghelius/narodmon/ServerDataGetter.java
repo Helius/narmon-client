@@ -67,7 +67,11 @@ class ServerDataGetter extends AsyncTask<String, String, String> {
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG,e.getMessage());
         } catch (ClientProtocolException e) {
-            Log.e(TAG,e.getMessage());
+            String exceptionStr = e.getMessage();
+            if (exceptionStr == null) {
+                exceptionStr = e.toString(); 
+            }
+            Log.e(TAG,exceptionStr);
         } catch (IOException e) {
             Log.e(TAG,e.getMessage());
         }
